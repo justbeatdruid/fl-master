@@ -24,7 +24,7 @@ import java.util.UUID;
  * @since 2020-05-25
  */
 @RestController
-@RequestMapping("/federation")
+@RequestMapping("/federations")
 public class FederationController {
     @Value("${requesturls.url}")
     private String url;

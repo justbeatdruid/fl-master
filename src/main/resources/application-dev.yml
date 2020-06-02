@@ -52,3 +52,6 @@ mybatis-plus:
   typeAliasesPackage: com.cmcc.algo.entity
   configuration:
     map-underscore-to-camel-case: true
+
+requesturls:
+  url: www.baidu.com
