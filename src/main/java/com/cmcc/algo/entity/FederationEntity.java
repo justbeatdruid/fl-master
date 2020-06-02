@@ -1,12 +1,18 @@
 package com.cmcc.algo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.cmcc.algo.common.validator.group.AddGroup;
+import com.cmcc.algo.common.validator.group.UpdateGroup;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 
+import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
+import java.util.Date;
 /**
  * <p>
  * 联邦信息表
@@ -15,23 +21,36 @@ import java.io.Serializable;
  * @author hjy
  * @since 2020-05-25
  */
+//@EqualsAndHashCode(callSuper = false)
+//@Accessors(chain = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
 @TableName("tb_federation")
-public class Federation implements Serializable {
+public class FederationEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 联邦ID
      */
-    private String id;
+    @TableId
+    private Long id;
 
     /**
      * 联邦名称
      */
+    @NotBlank(message="名字不能为空", groups = {AddGroup.class, UpdateGroup.class})
     private String name;
+
+    /**
+     *联邦唯一ID
+     */
+    @NotBlank(message="uuid不能为空")
+    private String uuid;
+
+    /**
+     * 联邦创建时间
+     */
+    private Date createdAt;
 
     /**
      * 联邦类型(0:横向联邦，1:纵向联邦)
