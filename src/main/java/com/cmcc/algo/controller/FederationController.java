@@ -1,16 +1,17 @@
 package com.cmcc.algo.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cmcc.algo.common.annotation.SysLog;
 import com.cmcc.algo.common.utils.R;
 import com.cmcc.algo.common.validator.ValidatorUtils;
 import com.cmcc.algo.entity.FederationEntity;
 import com.cmcc.algo.service.IFederationService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -58,11 +59,19 @@ public class FederationController {
     @SysLog("save federation")
     @PostMapping("")
     public R save(@RequestBody FederationEntity federation){
+        if (federation==null) {
+            return R.error("bad request: entity is null");
+        }
         //ValidatorUtils.validateEntity(federation, AddGroup.class);
-
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        //federation.setCreateUserId("");
         federation.setUuid(uuid);
+        List<FederationEntity> list = federationService.list(new QueryWrapper<FederationEntity>()
+                        .eq("name", federation.getName())
+                        .or().eq("uuid", federation.getUuid()));
+        if(CollectionUtils.isNotEmpty(list)){
+            return R.error("名字重复，请重试。");
+        }
+
         federationService.saveFederation(federation);
         return R.ok();
     }

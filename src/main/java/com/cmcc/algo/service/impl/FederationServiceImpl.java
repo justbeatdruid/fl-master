@@ -22,32 +22,39 @@ import java.util.*;
  */
 @Service("federationService")
 public class FederationServiceImpl extends ServiceImpl<FederationMapper, FederationEntity> implements IFederationService {
-	@Autowired
-	private IFederationService federationService;
-	@Autowired
-	private FederationMapper federationMapper;
-	@Override
-	public List<Map<String, Object>> queryFederations(Map<String, Object> params) {
+        @Autowired
+        private IFederationService federationService;
+        @Autowired
+        private FederationMapper federationMapper;
+        @Override
+        public List<Map<String, Object>> queryFederations(Map<String, Object> params) {
                 String name = (String)params.get("name");
 
-		//List<Map<String, Object>> maps = this.listMaps(new QueryWrapper<FederationEntity>());
+                //List<Map<String, Object>> maps = this.listMaps(new QueryWrapper<FederationEntity>());
                 List<Map<String, Object>> maps = this.listMaps(
                         new QueryWrapper<FederationEntity>()
                                 .eq(StringUtils.isNotBlank(name), "name", name)
                 );
 
-		return maps;
-	}
+                return maps;
+        }
 
-	@Override
-	public FederationEntity queryFederationById(String id) {
-		return federationMapper.queryById(id);
-	}
+        @Override
+        public FederationEntity queryFederationById(String id) {
+                return federationMapper.queryById(id);
+        }
 
-	@Override
-	public FederationEntity saveFederation(FederationEntity federation) {
-		federation.setCreatedAt(new Date());
-		this.save(federation);
-		return federation;
-	}
+        @Override
+        public FederationEntity saveFederation(FederationEntity federation) {
+		//short short0 = 0;
+		//federation.setId(new Short(short0));
+		federation.setId((short) 0);
+                federation.setCreatedAt(new Date());
+
+                federation.setGuest("");
+                federation.setHosts("");
+                federation.setStatus(new Integer(0));
+                this.save(federation);
+                return federation;
+        }
 }

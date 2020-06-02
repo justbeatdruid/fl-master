@@ -33,7 +33,7 @@ public class FederationEntity implements Serializable {
      * 联邦ID
      */
     @TableId
-    private Long id;
+    private Short id;
 
     /**
      * 联邦名称
@@ -75,7 +75,7 @@ public class FederationEntity implements Serializable {
     /**
      * 联邦状态(0:等待，1:就绪，2:运行中，3:成功，4:失败)
      */
-    private Boolean status;
+    private Integer status;
 
     /**
      * 数据格式
