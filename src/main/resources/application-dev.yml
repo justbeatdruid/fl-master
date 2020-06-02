@@ -11,11 +11,11 @@ dbserver:
   mysql:
     driver: com.mysql.cj.jdbc.Driver
     type: mysql
-    host: 192.168.108.27
+    host: 192.168.108.66
     port: 3306
     username: root
-    password: ChaoNao@2020
-    dbname: data_fusion
+    password: 123456
+    dbname: federated_learning
 
 spring:
   profiles: dev

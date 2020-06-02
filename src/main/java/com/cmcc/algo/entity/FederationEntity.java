@@ -60,7 +60,7 @@ public class FederationEntity implements Serializable {
     /**
      * 联邦描述
      */
-    private String desc;
+    private String description;
 
     /**
      * 联邦所有者
@@ -80,7 +80,7 @@ public class FederationEntity implements Serializable {
     /**
      * 数据格式
      */
-    private String dataDesc;
+    private String dataFormat;
 
     /**
      * 算法ID
