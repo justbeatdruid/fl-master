@@ -82,6 +82,10 @@ public class FederationController {
     @SysLog("delete federation")
     @DeleteMapping("/{id}")
     public R delete(@PathVariable(name = "id") long id){
+        FederationEntity oldFederation = federationService.getById(id);
+        if (oldFederation == null) {
+            return R.error(String.format("bad request: federation with id %d not exits", id));
+        }
         federationService.removeById(id);
         return R.ok();
     }
@@ -92,16 +96,22 @@ public class FederationController {
     @PutMapping("")
     public R update(@RequestBody FederationEntity federation) throws Exception {
         if (federation == null) {
-          throw new Exception("federation entity is null");
+            return R.error("bad request: entity is null");
         }
         long id = federation.getId();
         FederationEntity newFederation = federationService.getById(id);
         if (newFederation == null) {
-          throw new Exception("get from database federation entity is null");
+            throw new Exception("get from database federation entity is null");
         }
 	if (federation.getName() != null) {
 	    newFederation.setName(federation.getName());
 	}
+        List<FederationEntity> list = federationService.list(new QueryWrapper<FederationEntity>()
+                        .eq("name", federation.getName()));
+        if(CollectionUtils.isNotEmpty(list)){
+            //throw new Exception("名字重复，请重试。");
+            return R.error("名字重复，请重试。");
+        }
         federationService.saveFederation(newFederation);
 	return R.ok();
     }
