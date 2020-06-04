@@ -40,15 +40,10 @@ public class FederationServiceImpl extends ServiceImpl<FederationMapper, Federat
         }
 
         @Override
-        public FederationEntity queryFederationById(String id) {
-                return federationMapper.queryById(id);
-        }
-
-        @Override
         public FederationEntity saveFederation(FederationEntity federation) {
-		//short short0 = 0;
-		//federation.setId(new Short(short0));
-		federation.setId((short) 0);
+                //short short0 = 0;
+                //federation.setId(new Short(short0));
+                federation.setId((short) 0);
                 federation.setCreatedAt(new Date());
 
                 federation.setGuest("");

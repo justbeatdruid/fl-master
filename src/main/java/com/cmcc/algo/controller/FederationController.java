@@ -2,8 +2,8 @@ package com.cmcc.algo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cmcc.algo.common.annotation.SysLog;
-import com.cmcc.algo.common.utils.R;
-import com.cmcc.algo.common.validator.ValidatorUtils;
+import com.cmcc.algo.common.APIException;
+//import com.cmcc.algo.common.validator.ValidatorUtils;
 import com.cmcc.algo.entity.FederationEntity;
 import com.cmcc.algo.service.IFederationService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,20 +37,20 @@ public class FederationController {
      * list federations
      */
     @GetMapping("")
-    public R federations(@RequestParam Map<String, Object> params) {
+    public List<Map<String, Object>> federations(@RequestParam Map<String, Object> params) {
 
         List<Map<String, Object>> page = federationService.queryFederations(params);
 
-        return R.ok().put("data", page);
+        return page;
     }
 
     @GetMapping("/{id}")
-    public R get(@PathVariable("id") String id) {
+    public FederationEntity get(@PathVariable("id") String id) {
 
         //FederationEntity data = federationService.queryFederationById(id);
         FederationEntity data = federationService.getById(id);
 
-        return R.ok().put("data", data);
+        return data;
     }
 
     /**
@@ -58,9 +58,9 @@ public class FederationController {
       */
     @SysLog("save federation")
     @PostMapping("")
-    public R save(@RequestBody FederationEntity federation){
+    public FederationEntity save(@RequestBody FederationEntity federation){
         if (federation==null) {
-            return R.error("bad request: entity is null");
+            throw new APIException("请求数据为空");
         }
         //ValidatorUtils.validateEntity(federation, AddGroup.class);
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
@@ -69,11 +69,11 @@ public class FederationController {
                         .eq("name", federation.getName())
                         .or().eq("uuid", federation.getUuid()));
         if(CollectionUtils.isNotEmpty(list)){
-            return R.error("名字重复，请重试。");
+            throw new APIException("名字重复，请重试。");
         }
 
         federationService.saveFederation(federation);
-        return R.ok();
+        return federation;
     }
 
     /**
@@ -81,28 +81,38 @@ public class FederationController {
      */
     @SysLog("delete federation")
     @DeleteMapping("/{id}")
-    public R delete(@PathVariable(name = "id") long id){
+    public void delete(@PathVariable(name = "id") long id){
+        FederationEntity removedFederation = federationService.getById(id);
+        if (removedFederation == null) {
+            throw new APIException(String.format("联邦ID%d不存在", id));
+        }
         federationService.removeById(id);
-        return R.ok();
+        return;
     }
 
     /**
      * update a federation
      */
     @PutMapping("")
-    public R update(@RequestBody FederationEntity federation) throws Exception {
+    public FederationEntity update(@RequestBody FederationEntity federation) throws Exception {
         if (federation == null) {
-          throw new Exception("federation entity is null");
+            throw new APIException("请求数据为空");
         }
         long id = federation.getId();
-        FederationEntity newFederation = federationService.getById(id);
-        if (newFederation == null) {
-          throw new Exception("get from database federation entity is null");
+        FederationEntity updatedFederation = federationService.getById(id);
+        if (updatedFederation == null) {
+            throw new APIException(String.format("联邦ID%d不存在", id));
         }
-	if (federation.getName() != null) {
-	    newFederation.setName(federation.getName());
-	}
-        federationService.saveFederation(newFederation);
-	return R.ok();
+        // attributes update permitted
+        if (federation.getName() != null) {
+            updatedFederation.setName(federation.getName());
+        }
+        List<FederationEntity> list = federationService.list(new QueryWrapper<FederationEntity>()
+                        .eq("name", federation.getName()));
+        if(CollectionUtils.isNotEmpty(list)){
+            throw new APIException("名字重复，请重试。");
+        }
+        federationService.saveFederation(updatedFederation);
+        return updatedFederation;
     }
 }
