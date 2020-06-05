@@ -1,7 +1,7 @@
 # Tomcat
 server:
   servlet:
-    context-path: /api/v1
+    context-path: /com/cmcc/algo/datafusion/api/v1
 
 spring:
   #环境dev/pro

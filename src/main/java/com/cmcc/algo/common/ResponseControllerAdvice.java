@@ -35,10 +35,10 @@ public class ResponseControllerAdvice implements ResponseBodyAdvice<Object> {
                 throw new APIException("返回String类型错误");
             }
         }
-        if (returnType.getGenericParameterType().equals(IPage.class)) {
-            IPage result = Convert.convert(IPage.class, data);
-            CommonResult.success(result.getRecords(), result.getTotal(), result.getCurrent(), result.getSize());
-        }
+//        if (returnType.getGenericParameterType().equals(IPage.class)) {
+//            IPage result = Convert.convert(IPage.class, data);
+//            CommonResult.success(result.getRecords(), result.getTotal(), result.getCurrent(), result.getSize());
+//        }
         // 将原本的数据包装在CommonResult里
         return CommonResult.success(data);
     }
