@@ -84,7 +84,7 @@ public class CommonResult<T> implements Serializable {
         this.data = data;
     }
 
-    public CommonResult(boolean success, int code, String message, T data, long total, int pageNum, int step) {
+    public CommonResult(boolean success, int code, String message, T data, long total, long pageNum, long step) {
         PageInfo pageInfo = new PageInfo(total, pageNum, step);
         this.success = success;
         this.code = code;
@@ -94,7 +94,7 @@ public class CommonResult<T> implements Serializable {
     }
 
     public CommonResult(boolean success, int code, String message, T data, Map<String, Object> ext, long total,
-                        int pageNum, int step) {
+                        long pageNum, long step) {
         this.success = success;
         PageInfo pageInfo = new PageInfo(total, pageNum, step);
         this.code = code;
@@ -124,31 +124,31 @@ public class CommonResult<T> implements Serializable {
     }
 
     public static <T> CommonResult<T> success(T data, long total, long pageNum, long step) {
-        PageInfo pageInfo = new PageInfo(total, (int)pageNum, (int)step);
+        PageInfo pageInfo = new PageInfo(total, pageNum, step);
         return new CommonResult<T>(true, ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data, pageInfo);
     }
 
     public static <T> CommonResult<T> success(T data, Page page) {
         long total = page.getTotal();
-        int pageNum = page.getPageNum();
-        int step = page.getPageSize();
+        long pageNum = page.getPageNum();
+        long step = page.getPageSize();
         PageInfo pageInfo = new PageInfo(total, pageNum, step);
         return new CommonResult<T>(true, ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data, pageInfo);
     }
 
-    public static <T> CommonResult<T> success(T data, Map<String, Object> ext, long total, int pageNum, int step) {
+    public static <T> CommonResult<T> success(T data, Map<String, Object> ext, long total, long pageNum, long step) {
         PageInfo pageInfo = new PageInfo(total, pageNum, step);
         return new CommonResult<T>(true, ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data, ext,
                 pageInfo);
     }
 
-    public static <T> CommonResult<T> success(String message, T data, long total, int pageNum, int step) {
+    public static <T> CommonResult<T> success(String message, T data, long total, long pageNum, long step) {
         PageInfo pageInfo = new PageInfo(total, pageNum, step);
         return new CommonResult<T>(true, ResultCode.SUCCESS.getCode(), message, data, pageInfo);
     }
 
     public static <T> CommonResult<T> success(String message, T data, Map<String, Object> ext, long total,
-                                              int pageNum, int step) {
+                                              long pageNum, long step) {
         PageInfo pageInfo = new PageInfo(total, pageNum, step);
         return new CommonResult<T>(true, ResultCode.SUCCESS.getCode(), message, data, ext, pageInfo);
     }
@@ -206,13 +206,13 @@ public class CommonResult<T> implements Serializable {
     }
 
     public static <T> CommonResult<T> result(boolean success, int code, String message, T data, long total,
-                                             int pageNum, int step) {
+                                             long pageNum, long step) {
         PageInfo pageInfo = new PageInfo(total, pageNum, step);
         return new CommonResult<T>(success, code, message, data, pageInfo);
     }
 
     public static <T> CommonResult<T> result(boolean success, int code, String message, T data,
-                                             Map<String, Object> ext, long total, int pageNum, int step) {
+                                             Map<String, Object> ext, long total, long pageNum, long step) {
         PageInfo pageInfo = new PageInfo(total, pageNum, step);
         return new CommonResult<T>(success, code, message, data, ext, pageInfo);
     }
@@ -234,12 +234,12 @@ public class CommonResult<T> implements Serializable {
     }
 
     public static <T> CommonResult<T> httpStatus(boolean success, HttpStatus httpStatus, String message, T data,
-                                                 long total, int pageNum, int step) {
+                                                 long total, long pageNum, long step) {
         return result(success, httpStatus.value(), message, data, total, pageNum, step);
     }
 
     public static <T> CommonResult<T> httpStatus(boolean success, HttpStatus httpStatus, String message, T data,
-                                                 Map<String, Object> ext, long total, int pageNum, int step) {
+                                                 Map<String, Object> ext, long total, long pageNum, long step) {
         // PageUtil pageUtil = new PageUtil(total, pageNum, step);
         return result(success, httpStatus.value(), message, data, ext, total, pageNum, step);
     }

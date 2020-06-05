@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -28,6 +29,7 @@ public class Train implements Serializable {
     /**
      * 训练任务ID
      */
+    @NotNull
     private Integer id;
 
     /**

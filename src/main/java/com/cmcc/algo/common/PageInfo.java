@@ -11,16 +11,16 @@ public class PageInfo implements Serializable {
     /** 总记录数 */
     private long total;
     /** 查询数据的当前页 */
-    protected int pageNum;
+    protected long pageNum;
     /** 查询时每页的数据条数 */
-    protected int step;
+    protected long step;
 
 
     public PageInfo(long total) {
         this.total = total;
     }
 
-    public PageInfo(long total, int pageNum, int step) {
+    public PageInfo(long total, long pageNum, long step) {
         this.total = total;
         this.pageNum = pageNum;
         this.step = step;
@@ -31,7 +31,7 @@ public class PageInfo implements Serializable {
         return new PageInfo(total);
     }
 
-    public static PageInfo page(long total, int pageNum, int step) {
+    public static PageInfo page(long total, long pageNum, long step) {
         return new PageInfo(total, pageNum, step);
     }
 
@@ -51,19 +51,19 @@ public class PageInfo implements Serializable {
         this.total = total;
     }
 
-    public int getPageNum() {
+    public long getPageNum() {
         return pageNum;
     }
 
-    public void setPageNum(int pageNum) {
+    public void setPageNum(long pageNum) {
         this.pageNum = pageNum;
     }
 
-    public int getStep() {
+    public long getStep() {
         return step;
     }
 
-    public void setStep(int step) {
+    public void setStep(long step) {
         this.step = step;
     }
 }

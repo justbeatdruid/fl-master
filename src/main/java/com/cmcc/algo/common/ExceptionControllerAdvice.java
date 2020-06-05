@@ -1,5 +1,6 @@
 package com.cmcc.algo.common;
 
+import cn.hutool.json.JSONException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,6 +15,11 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public CommonResult handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
         return CommonResult.fail(ResultCode.NOT_FOUND, "参数校验失败", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    }
+
+    @ExceptionHandler(JSONException.class)
+    public CommonResult handleJSONException(JSONException e){
+        return CommonResult.fail(ResultCode.NOT_FOUND, "参数转换失败", e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

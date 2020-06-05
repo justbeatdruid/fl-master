@@ -1,8 +1,13 @@
 package com.cmcc.algo.common;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ClassUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.MethodParameter;
+import org.springframework.data.util.CastUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -29,6 +34,10 @@ public class ResponseControllerAdvice implements ResponseBodyAdvice<Object> {
             } catch (JsonProcessingException e) {
                 throw new APIException("返回String类型错误");
             }
+        }
+        if (returnType.getGenericParameterType().equals(IPage.class)) {
+            IPage result = Convert.convert(IPage.class, data);
+            CommonResult.success(result.getRecords(), result.getTotal(), result.getCurrent(), result.getSize());
         }
         // 将原本的数据包装在CommonResult里
         return CommonResult.success(data);
