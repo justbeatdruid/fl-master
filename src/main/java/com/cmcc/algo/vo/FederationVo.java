@@ -1,51 +1,31 @@
-package com.cmcc.algo.entity;
+package com.cmcc.algo.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.cmcc.algo.common.annotation.CheckRange;
-import com.cmcc.algo.common.validator.group.AddGroup;
-import com.cmcc.algo.common.validator.group.UpdateGroup;
 import lombok.Data;
-//import lombok.EqualsAndHashCode;
-//import lombok.experimental.Accessors;
-
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Date;
 /**
  * <p>
- * 联邦信息表
+ * 联邦信息类
  * </p>
  *
  * @author hjy
  * @since 2020-05-25
  */
-//@EqualsAndHashCode(callSuper = false)
-//@Accessors(chain = true)
 @Data
-@TableName("tb_federation")
-public class FederationEntity implements Serializable {
+public class FederationVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 联邦ID
-     */
-    @TableId
-    private Short id;
-
-    /**
      * 联邦名称
      */
-    @NotBlank(message="名字不能为空", groups = {AddGroup.class, UpdateGroup.class})
     private String name;
 
     /**
      *联邦唯一ID
      */
-    @NotBlank(message="uuid不能为空")
     private String uuid;
 
     /**
@@ -71,13 +51,12 @@ public class FederationEntity implements Serializable {
     /**
      * 联邦参与者列表
      */
-    private String hosts;
+    private String[] hosts;
 
     /**
      * 联邦状态(0:等待，1:就绪，2:运行中，3:成功，4:失败)
      */
-    @CheckRange(values = {0,1,2,3,4})
-    private Integer status;
+    private String status;
 
     /**
      * 数据格式
