@@ -15,7 +15,7 @@ import java.util.Map;
  * @since 2020-05-25
  */
 public interface IFederationService extends IService<FederationEntity> {
-        List<Map<String, Object>> queryFederations(Map<String, Object> params);
+        List<FederationEntity> queryFederations(Map<String, Object> params);
 
         FederationEntity saveFederation(FederationEntity federation);
 }

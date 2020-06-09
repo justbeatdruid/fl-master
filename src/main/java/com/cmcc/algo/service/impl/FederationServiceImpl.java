@@ -30,13 +30,13 @@ public class FederationServiceImpl extends ServiceImpl<FederationMapper, Federat
         @Autowired
         private FederationMapper federationMapper;
         @Override
-        public List<Map<String, Object>> queryFederations(Map<String, Object> params) {
+        public List<FederationEntity> queryFederations(Map<String, Object> params) {
                 String name = (String)params.get("name");
 
                 //List<Map<String, Object>> maps = this.listMaps(new QueryWrapper<FederationEntity>());
-                List<Map<String, Object>> maps = this.listMaps(
+                List<FederationEntity> maps = this.list(
                         new QueryWrapper<FederationEntity>()
-                                .eq(StringUtils.isNotBlank(name), "name", name)
+                                .like(StringUtils.isNotBlank(name), "name", name)
                 );
 
                 return maps;

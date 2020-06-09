@@ -37,8 +37,6 @@ public class FederationDto implements Serializable {
      */
     private String description;
 
-    private String status;
-
     /**
      * 数据格式
      */
