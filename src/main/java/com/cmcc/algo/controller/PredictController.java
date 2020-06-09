@@ -1,7 +1,5 @@
 package com.cmcc.algo.controller;
 
-
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpUtil;
@@ -9,11 +7,11 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.Builder;
 import com.cmcc.algo.common.CommonResult;
 import com.cmcc.algo.common.ResultCode;
-import com.cmcc.algo.common.utils.PageUtil;
 import com.cmcc.algo.config.AgentConfig;
 import com.cmcc.algo.entity.Predict;
 import com.cmcc.algo.entity.Train;
@@ -23,12 +21,17 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Optional;
 
+import static com.cmcc.algo.constant.PageConstant.PAGENUM;
+import static com.cmcc.algo.constant.PageConstant.STEP;
+import static com.cmcc.algo.constant.URLConstant.EXPORT_DATA_URL;
 import static com.cmcc.algo.constant.URLConstant.SUBMIT_PREDICT_TASK_URL;
 import static com.cmcc.algo.constant.CommonConstant.DATE_FORMAT;
 
@@ -57,15 +60,19 @@ public class PredictController {
     @ApiOperation(value = "查询预测记录", notes = "查询预测记录")
     @PostMapping("/list")
     public CommonResult getPredictTaskList(@RequestBody String request){
-        Predict condition = Convert.convert(Predict.class, JSONUtil.parseObj(request));
-        IPage result = predictService.page(PageUtil.getPageByRequest(request), Wrappers.<Predict>lambdaQuery()
-                .eq(Predict::getFederationUuid, condition.getFederationUuid())
+        long pageNum = Optional.ofNullable(JSONUtil.parseObj(request).getLong(PAGENUM)).orElse(1L);
+        long step = Optional.ofNullable(JSONUtil.parseObj(request).getLong(STEP)).orElse(10L);
+        String federationUuid = Optional.ofNullable(JSONUtil.parseObj(request).getStr("federationUuid")).orElseThrow(() -> new APIException(ResultCode.NOT_FOUND, "联邦UUID为空"));
+
+        IPage result = predictService.page(new Page(pageNum, step), Wrappers.<Predict>lambdaQuery()
+                .eq(Predict::getFederationUuid, federationUuid)
                 .orderByDesc(Predict::getStartTime));
         return CommonResult.success(result.getRecords(), result.getTotal(), result.getCurrent(), result.getSize());
     }
 
     @ApiOperation(value = "开始预测", notes = "开始预测")
-    @GetMapping("/predict/submit")
+    @PostMapping("/submit")
+    @Transactional(rollbackFor = Exception.class)
     public boolean submitPredictTask(@RequestBody String federationUuid){
         // 向Agent提交训练任务
         String submitUrl = agentConfig.getAgentUrl()+SUBMIT_PREDICT_TASK_URL;
@@ -107,5 +114,22 @@ public class PredictController {
             throw new APIException(ResultCode.NOT_FOUND, "提交agent失败");
         }
         return true;
+    }
+
+    @ApiOperation(value = "导出结果", notes = "导出结果")
+    @PostMapping("/export")
+    public String exportResult(@RequestBody String predictUuid){
+        String exportUrl = agentConfig.getAgentUrl() + EXPORT_DATA_URL;
+
+        Predict predict = predictService.getOne(Wrappers.<Predict>lambdaQuery().eq(Predict::getUuid, predictUuid));
+
+        JSONObject request = new JSONObject().putOnce("jobId", predict.getJobId()).putOnce("outputPath", predict.getOutputPath());
+        String responseBody = HttpUtil.post(exportUrl, JSONUtil.toJsonStr(request));
+
+        if (!(boolean) JSONUtil.parseObj(responseBody).get("success")) {
+            log.warn("export data is failed, the error detail is in agent log");
+            throw new APIException(ResultCode.NOT_FOUND, "数据导出失败");
+        }
+        return JSONUtil.parseObj(responseBody).get("data").toString();
     }
 }

@@ -6,11 +6,11 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.Builder;
 import com.cmcc.algo.common.CommonResult;
 import com.cmcc.algo.common.ResultCode;
-import com.cmcc.algo.common.utils.PageUtil;
 import com.cmcc.algo.config.AgentConfig;
 import com.cmcc.algo.entity.FederationEntity;
 import com.cmcc.algo.entity.Train;
@@ -28,7 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
+import static com.cmcc.algo.constant.PageConstant.PAGENUM;
+import static com.cmcc.algo.constant.PageConstant.STEP;
 import static com.cmcc.algo.constant.URLConstant.SUBMIT_TRAIN_TASK_URL;
 import static com.cmcc.algo.constant.CommonConstant.DATE_FORMAT;
 
@@ -57,9 +60,12 @@ public class TrainController {
     @ApiOperation(value = "查询训练记录", notes = "查询训练记录")
     @PostMapping("/list")
     public CommonResult getTrainTaskList(@RequestBody String request){
-        Train condition = Convert.convert(Train.class, JSONUtil.parseObj(request));
-        IPage result = trainService.page(PageUtil.getPageByRequest(request), Wrappers.<Train>lambdaQuery()
-                .eq(Train::getFederationUuid, condition.getFederationUuid())
+        long pageNum = Optional.ofNullable(JSONUtil.parseObj(request).getLong(PAGENUM)).orElse(1L);
+        long step = Optional.ofNullable(JSONUtil.parseObj(request).getLong(STEP)).orElse(10L);
+        String federationUuid = Optional.ofNullable(JSONUtil.parseObj(request).getStr("federationUuid")).orElseThrow(() -> new APIException(ResultCode.NOT_FOUND, "联邦UUID为空"));
+
+        IPage result = trainService.page(new Page(pageNum, step), Wrappers.<Train>lambdaQuery()
+                .eq(Train::getFederationUuid, federationUuid)
                 .orderByDesc(Train::getStartTime));
         return CommonResult.success(result.getRecords(), result.getTotal(), result.getCurrent(), result.getSize());
     }
