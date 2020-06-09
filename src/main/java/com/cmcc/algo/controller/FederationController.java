@@ -3,8 +3,9 @@ package com.cmcc.algo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cmcc.algo.common.annotation.SysLog;
 import com.cmcc.algo.common.APIException;
-//import com.cmcc.algo.common.validator.ValidatorUtils;
+import com.cmcc.algo.dto.FederationDto;
 import com.cmcc.algo.entity.FederationEntity;
+import com.cmcc.algo.vo.FederationVo;
 import com.cmcc.algo.service.IFederationService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -62,7 +63,6 @@ public class FederationController {
         if (federation==null) {
             throw new APIException("请求数据为空");
         }
-        //ValidatorUtils.validateEntity(federation, AddGroup.class);
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         federation.setUuid(uuid);
         List<FederationEntity> list = federationService.list(new QueryWrapper<FederationEntity>()
