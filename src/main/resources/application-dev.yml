@@ -55,3 +55,7 @@ mybatis-plus:
 
 requesturls:
   url: www.baidu.com
+
+fl-agent:
+  ip: localhost
+  port: 10087

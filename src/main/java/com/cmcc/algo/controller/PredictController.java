@@ -1,8 +1,36 @@
 package com.cmcc.algo.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.cmcc.algo.common.APIException;
+import com.cmcc.algo.common.Builder;
+import com.cmcc.algo.common.CommonResult;
+import com.cmcc.algo.common.ResultCode;
+import com.cmcc.algo.common.utils.PageUtil;
+import com.cmcc.algo.config.AgentConfig;
+import com.cmcc.algo.entity.Predict;
+import com.cmcc.algo.entity.Train;
+import com.cmcc.algo.service.IPredictService;
+import com.cmcc.algo.service.ITrainService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+
+import static com.cmcc.algo.constant.URLConstant.SUBMIT_PREDICT_TASK_URL;
+import static com.cmcc.algo.constant.CommonConstant.DATE_FORMAT;
 
 /**
  * <p>
@@ -12,8 +40,72 @@ import org.springframework.web.bind.annotation.RestController;
  * @author hjy
  * @since 2020-05-25
  */
+@Api(tags = "预测任务接口")
+@Slf4j
 @RestController
 @RequestMapping("/predict")
 public class PredictController {
+    @Autowired
+    IPredictService predictService;
 
+    @Autowired
+    ITrainService trainService;
+
+    @Autowired
+    AgentConfig agentConfig;
+
+    @ApiOperation(value = "查询预测记录", notes = "查询预测记录")
+    @PostMapping("/list")
+    public CommonResult getPredictTaskList(@RequestBody String request){
+        Predict condition = Convert.convert(Predict.class, JSONUtil.parseObj(request));
+        IPage result = predictService.page(PageUtil.getPageByRequest(request), Wrappers.<Predict>lambdaQuery()
+                .eq(Predict::getFederationUuid, condition.getFederationUuid())
+                .orderByDesc(Predict::getStartTime));
+        return CommonResult.success(result.getRecords(), result.getTotal(), result.getCurrent(), result.getSize());
+    }
+
+    @ApiOperation(value = "开始预测", notes = "开始预测")
+    @GetMapping("/predict/submit")
+    public boolean submitPredictTask(@RequestBody String federationUuid){
+        // 向Agent提交训练任务
+        String submitUrl = agentConfig.getAgentUrl()+SUBMIT_PREDICT_TASK_URL;
+
+        Train train = trainService.getOne(Wrappers.<Train>lambdaQuery()
+                .eq(Train::getFederationUuid, federationUuid)
+                .orderByDesc(Train::getStartTime)
+                .last("limit 1"));
+
+        //TODO 添加数据参数
+        Map<String, Object> paramMap = MapUtil.newHashMap();
+        JSONObject model = JSONUtil.parseObj(train.getModel());
+        if (ObjectUtil.isEmpty(model.get("modelId")) || ObjectUtil.isEmpty(model.get("modelVersion"))) {
+            log.warn("model doesn't exists, perhaps you didn't finish this training job");
+            throw new APIException(ResultCode.NOT_FOUND, "训练任务未执行成功，模型未生成");
+        }
+        paramMap.put("conf", train.getTrainParam());
+        paramMap.put("model", model);
+
+        Predict predict = Builder.of(Predict::new)
+                .with(Predict::setFederationUuid, federationUuid)
+                .with(Predict::setTrainUuid, train.getUuid())
+                .with(Predict::setStatus, 0)
+                .with(Predict::setAlgorithmId, train.getAlgorithmId())
+                .with(Predict::setStartTime, LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))
+                .with(Predict::setPredictParam, JSONUtil.toJsonStr(paramMap))
+                .build();
+
+        if (!predictService.save(predict)) {
+            log.warn("predict record is failed to save, probably because db connection error");
+            throw new APIException(ResultCode.NOT_FOUND, "保存失败");
+        }
+
+        String str = JSONUtil.toJsonStr(predict);
+        String responseBody = HttpUtil.post(submitUrl, str);
+
+        if (!(boolean) JSONUtil.parseObj(responseBody).get("success")) {
+            log.warn("predict task is failed to submit, the error detail is in agent log");
+            throw new APIException(ResultCode.NOT_FOUND, "提交agent失败");
+        }
+        return true;
+    }
 }

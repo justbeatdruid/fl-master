@@ -1,7 +1,7 @@
 package com.cmcc.algo.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cmcc.algo.entity.Predict;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * <p>
@@ -9,7 +9,7 @@ import com.cmcc.algo.entity.Predict;
  * </p>
  *
  * @author hjy
- * @since 2020-05-25
+ * @since 2020-06-09
  */
 public interface PredictMapper extends BaseMapper<Predict> {
 

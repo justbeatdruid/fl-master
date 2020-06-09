@@ -10,7 +10,7 @@ dbserver:
   mysql:
     driver: com.mysql.cj.jdbc.Driver
     type: mysql
-    host: 192.168.7.247
+    host: localhost
     port: 3306
     username: root
     password: Pass1234
@@ -51,3 +51,10 @@ mybatis-plus:
   typeAliasesPackage: com.cmcc.algo.entity
   configuration:
     map-underscore-to-camel-case: true
+
+requesturls:
+  url: www.baidu.com
+
+fl-agent:
+  ip: localhost
+  port: 10087

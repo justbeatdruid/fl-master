@@ -1,9 +1,9 @@
 package com.cmcc.algo.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cmcc.algo.entity.User;
 import com.cmcc.algo.mapper.UserMapper;
 import com.cmcc.algo.service.IUserService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
