@@ -56,7 +56,12 @@ public class FederationVo implements Serializable {
     /**
      * 联邦状态(0:等待，1:就绪，2:运行中，3:成功，4:失败)
      */
-    private String status;
+    private Integer status;
+
+    /**
+     * 联邦显示状态(0:等待，1:就绪，2:运行中，3:成功，4:失败)
+     */
+    private String displayStatus;
 
     /**
      * 数据格式
