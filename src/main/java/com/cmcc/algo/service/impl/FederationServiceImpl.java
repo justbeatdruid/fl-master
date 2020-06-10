@@ -1,15 +1,13 @@
 package com.cmcc.algo.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cmcc.algo.entity.FederationEntity;
-import com.cmcc.algo.mapper.FederationMapper;
+import com.cmcc.algo.mapper.FederationRepository;
 import com.cmcc.algo.service.IFederationService;
-import org.apache.commons.lang.StringUtils;
+//import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,36 +21,23 @@ import java.util.Map;
  * @author hjy
  * @since 2020-05-25
  */
-@Service("federationService")
-public class FederationServiceImpl extends ServiceImpl<FederationMapper, FederationEntity> implements IFederationService {
+//@Service("federationService")
+@Service
+public class FederationServiceImpl implements IFederationService {
         @Autowired
-        private IFederationService federationService;
-        @Autowired
-        private FederationMapper federationMapper;
+        private FederationRepository federationRepository;
         @Override
         public List<FederationEntity> queryFederations(Map<String, Object> params) {
                 String name = (String)params.get("name");
 
                 //List<Map<String, Object>> maps = this.listMaps(new QueryWrapper<FederationEntity>());
-                List<FederationEntity> maps = this.list(
-                        new QueryWrapper<FederationEntity>()
-                                .like(StringUtils.isNotBlank(name), "name", name)
-                );
-
-                return maps;
-        }
-
-        @Override
-        public FederationEntity saveFederation(FederationEntity federation) {
-                //short short0 = 0;
-                //federation.setId(new Short(short0));
-                federation.setId((short) 0);
-                federation.setCreatedAt(new Date());
-
-                federation.setGuest("");
-                federation.setHosts("");
-                federation.setStatus(new Integer(0));
-                this.save(federation);
-                return federation;
+                //List<FederationEntity> maps = this.list(
+                //        new QueryWrapper<FederationEntity>()
+                //                .like(StringUtils.isNotBlank(name), "name", name)
+                //);
+                if ( name != null && name != "" ) {
+                    return federationRepository.findByNameLike(name);
+                }
+                return federationRepository.findAll();
         }
 }

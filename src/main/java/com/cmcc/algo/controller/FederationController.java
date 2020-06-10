@@ -1,10 +1,11 @@
 package com.cmcc.algo.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+//import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cmcc.algo.common.annotation.SysLog;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.dto.FederationDto;
 import com.cmcc.algo.entity.FederationEntity;
+import com.cmcc.algo.mapper.FederationRepository;
 import com.cmcc.algo.vo.FederationVo;
 import com.cmcc.algo.service.IFederationService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +14,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Date;
 
 import javax.validation.Valid; 
 
@@ -37,6 +40,8 @@ public class FederationController {
 
     @Autowired
     private IFederationService federationService;
+    @Autowired
+    private FederationRepository federationRepository;
 
     /**
      * list federations
@@ -59,7 +64,10 @@ public class FederationController {
     public FederationVo get(@PathVariable("id") String id) {
 
         //FederationEntity data = federationService.queryFederationById(id);
-        FederationEntity federation = federationService.getById(id);
+        FederationEntity federation = federationRepository.findByUuid(id);
+        if (federation == null) {
+            throw new APIException(String.format("联邦UUID%s不存在", id));
+        }
 
         return getFederationVo(federation);
     }
@@ -69,6 +77,7 @@ public class FederationController {
       */
     @SysLog("save federation")
     @PostMapping("")
+    @Transactional
     public FederationVo save(@Valid @RequestBody FederationDto federationDto){
         if (federationDto==null) {
             throw new APIException("请求数据为空");
@@ -77,14 +86,22 @@ public class FederationController {
         BeanUtils.copyProperties(federationDto, federation);
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         federation.setUuid(uuid);
+        /*
         List<FederationEntity> list = federationService.list(new QueryWrapper<FederationEntity>()
                         .eq("name", federation.getName())
                         .or().eq("uuid", federation.getUuid()));
+        */
+        List<FederationEntity> list = federationRepository.findByName(federation.getName());
         if(CollectionUtils.isNotEmpty(list)){
             throw new APIException("名字重复，请重试。");
         }
 
-        federationService.saveFederation(federation);
+        federation.setId((short) 0);
+        federation.setCreatedAt(new Date());
+        federation.setGuest("");
+        federation.setHosts("");
+        federation.setStatus(new Integer(0));
+        federationRepository.save(federation);
 
         return getFederationVo(federation);
     }
@@ -94,45 +111,53 @@ public class FederationController {
      */
     @SysLog("delete federation")
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable(name = "id") long id){
-        FederationEntity removedFederation = federationService.getById(id);
+    @Transactional
+    public void delete(@PathVariable(name = "id") String id){
+        FederationEntity removedFederation = federationRepository.findByUuid(id);
         if (removedFederation == null) {
-            throw new APIException(String.format("联邦ID%d不存在", id));
+            throw new APIException(String.format("联邦UUID%s不存在", id));
         }
-        federationService.removeById(id);
+        federationRepository.deleteByUuid(id);
         return;
     }
 
     /**
      * update a federation
      */
-    @PutMapping("")
-    public FederationVo update(@RequestBody FederationEntity federation) throws Exception {
+    @PutMapping("/{id}")
+    @SysLog("update federation")
+    @Transactional
+    public FederationVo update(@PathVariable(name = "id") String id, @RequestBody FederationDto federation) throws Exception {
         if (federation == null) {
             throw new APIException("请求数据为空");
         }
-        long id = federation.getId();
-        FederationEntity updatedFederation = federationService.getById(id);
+        FederationEntity updatedFederation = federationRepository.findByUuid(id);
         if (updatedFederation == null) {
-            throw new APIException(String.format("联邦ID%d不存在", id));
+            throw new APIException(String.format("联邦UUID%s不存在", id));
         }
         // attributes update permitted
         if (federation.getName() != null) {
             updatedFederation.setName(federation.getName());
         }
-        List<FederationEntity> list = federationService.list(new QueryWrapper<FederationEntity>()
-                        .eq("name", federation.getName()));
+        List<FederationEntity> list = federationRepository.findByName(federation.getName());
         if(CollectionUtils.isNotEmpty(list)){
             throw new APIException("名字重复，请重试。");
         }
-        federationService.saveFederation(updatedFederation);
+        federationRepository.save(updatedFederation);
         return getFederationVo(updatedFederation);
     }
 
     public static FederationVo getFederationVo(FederationEntity federation) {
         FederationVo federationVo = new FederationVo();
+        if (federation == null) {
+            return federationVo;
+        }
         BeanUtils.copyProperties(federation, federationVo);
-        switch(federation.getStatus()) {
+        Integer status = federation.getStatus();
+        if (status == null) {
+          status = -1;
+        }
+        switch(status) {
         case 0:
             federationVo.setDisplayStatus("等待");
             break;
