@@ -27,14 +27,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      private UserMapper userMapper;
 
 
-
      @Override
      public User userLogin(String username, String password) {
           User user = userMapper.findByUserName(username);
           if (null == user.getUsername() || !password.equals(user.getPassword())) {
-               throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "用户名或者密码异常！");
+               throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "用户名或者密码无效！");
           }
-          String token = TokenManager.createJWT(user.getId().toString(), username, true);
+          String token = TokenManager.createJWT(user.getId() + "", username, true);
           user.setToken(token);
           return user;
      }

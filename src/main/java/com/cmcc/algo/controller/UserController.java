@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
      @Autowired
      IUserService userService;
 
@@ -35,7 +36,7 @@ public class UserController {
                return CommonResult.fail(new CustomException(CustomExceptionType.USER_INPUT_ERROR, "用户名或者密码不能为空"));
           }
           User user = userService.userLogin(loginUser.getUsername(), loginUser.getPassword());
-          return CommonResult.success("登陆成功！",user);
+          return CommonResult.success("登陆成功！", user);
      }
 
 }

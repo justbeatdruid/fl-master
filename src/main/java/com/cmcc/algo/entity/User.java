@@ -59,13 +59,13 @@ public class User implements Serializable {
      private String email;
 
      /**
-      * token
-      */
-     private String token;
-
-     /**
       * 对应角色集合
       */
      private Set<Role> roles = new HashSet<>(0);
+
+     /**
+      * token
+      */
+     private String token;
 
 }

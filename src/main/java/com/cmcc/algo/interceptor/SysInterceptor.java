@@ -25,8 +25,8 @@ public class SysInterceptor extends HandlerInterceptorAdapter {
      private final static Set<String> DO_NOT_URI_SET = new HashSet<>();
 
      static {
-          DO_NOT_URI_SET.add("/api/v1/user/login");
-          //System.out.println("-------------->加载拦截器");
+          DO_NOT_URI_SET.add("/com/cmcc/algo/datafusion/api/v1/user/login");
+//          System.out.println("-------------->加载拦截器");
      }
 
      private boolean errorReturn(HttpServletResponse response, String errMsg, int errCode) throws IOException {
@@ -45,7 +45,7 @@ public class SysInterceptor extends HandlerInterceptorAdapter {
 
           String requestUrl = request.getRequestURI();
           String token = request.getHeader("token");
-          //System.out.println("-------------->" + token);
+//          System.out.println("-------------->" + token);
           if (!DO_NOT_URI_SET.contains(requestUrl)) {
                if (StringUtils.isEmpty(token)) {
                     return this.errorReturn(response, "无效的token", 401);

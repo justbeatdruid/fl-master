@@ -58,11 +58,11 @@ public class TokenManager {
                Date expDate = new Date(expMillis);
                builder.setExpiration(expDate);
           }
-/*          if (ttlMillis >= 0) {
-               long expMillis = nowMillis + ttlMillis;
-               Date expDate = new Date(expMillis);
-               builder.setExpiration(expDate);
-          }*/
+//          if (ttlMillis >= 0) {
+//               long expMillis = nowMillis + ttlMillis;
+//               Date expDate = new Date(expMillis);
+//               builder.setExpiration(expDate);
+//          }
           return builder.compact();
      }
 
