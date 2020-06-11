@@ -33,7 +33,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
           if (null == user.getUsername() || !password.equals(user.getPassword())) {
                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "用户名或者密码无效！");
           }
-          String token = TokenManager.createJWT(user.getId() + "", username, true);
+          String token = TokenManager.createJWT(String.valueOf(user.getUserId()), username, true);
           user.setToken(token);
           return user;
      }
