@@ -1,12 +1,15 @@
 package com.cmcc.algo.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <p>
@@ -22,43 +25,47 @@ import lombok.experimental.Accessors;
 @TableName("tb_user")
 public class User implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+     private static final long serialVersionUID = 1L;
 
-    /**
-     * 用户ID
-     */
-    @TableId(value = "user_id", type = IdType.AUTO)
-    private Integer userId;
+     /**
+      * 用户ID
+      */
+     @TableId(value = "id", type = IdType.AUTO)
+     private Integer id;
 
-    /**
-     * 物理机ID
-     */
-    private Integer partyId;
+     /**
+      * 物理机ID
+      */
+     private Integer partyId;
 
-    /**
-     * 用户名
-     */
-    private String username;
+     /**
+      * 用户名
+      */
+     private String username;
 
-    /**
-     * 用户密码
-     */
-    private String password;
+     /**
+      * 用户密码
+      */
+     private String password;
 
-    /**
-     * 用户电话
-     */
-    private String phone;
+     /**
+      * 用户电话
+      */
+     private String phone;
 
-    /**
-     * 用户邮箱
-     */
-    private String email;
+     /**
+      * 用户邮箱
+      */
+     private String email;
 
-    /**
-     * 用户角色
-     */
-    private String role;
+     /**
+      * token
+      */
+     private String token;
 
+     /**
+      * 对应角色集合
+      */
+     private Set<Role> roles = new HashSet<>(0);
 
 }

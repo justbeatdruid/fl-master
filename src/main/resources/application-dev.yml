@@ -4,19 +4,27 @@ server:
     uri-encoding: UTF-8
     max-threads: 1000
     min-spare-threads: 30
-  port: 10086
+  port: 10088
 
 
+#dbserver:
+#  mysql:
+#    driver: com.mysql.cj.jdbc.Driver
+#    type: mysql
+#    host: 10.160.32.17
+#    port: 3306
+#    username: fate
+#    password: Fate@10086
+#    dbname: federated_learning
 dbserver:
   mysql:
     driver: com.mysql.cj.jdbc.Driver
     type: mysql
-    host: 10.160.32.17
+    host: 127.0.0.1
     port: 3306
-    username: fate
-    password: Fate@10086
-    dbname: federated_learning
-
+    username: root
+    password: root
+    dbname: datafusion
 spring:
   profiles: dev
 
