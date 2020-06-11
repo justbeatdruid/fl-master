@@ -14,7 +14,8 @@ import com.cmcc.algo.common.ResultCode;
 import com.cmcc.algo.config.AgentConfig;
 import com.cmcc.algo.entity.FederationEntity;
 import com.cmcc.algo.entity.Train;
-import com.cmcc.algo.service.IFederationService;
+//import com.cmcc.algo.service.IFederationService;
+import com.cmcc.algo.mapper.FederationRepository;
 import com.cmcc.algo.service.ITrainService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,8 +52,11 @@ public class TrainController {
     @Autowired
     ITrainService trainService;
 
+    //@Autowired
+    //IFederationService federationService;
+
     @Autowired
-    IFederationService federationService;
+    FederationRepository federationRepository;
 
     @Autowired
     AgentConfig agentConfig;
@@ -77,8 +81,9 @@ public class TrainController {
         // 向Agent提交训练任务
         String submitUrl = agentConfig.getAgentUrl()+SUBMIT_TRAIN_TASK_URL;
 
-        FederationEntity federationEntity = federationService.getOne(Wrappers.<FederationEntity>lambdaQuery()
-                .eq(FederationEntity::getUuid, federationUuid));
+        //FederationEntity federationEntity = federationService.getOne(Wrappers.<FederationEntity>lambdaQuery()
+        //        .eq(FederationEntity::getUuid, federationUuid));
+        FederationEntity federationEntity = federationRepository.findByUuid(federationUuid);
 
         //TODO 数据集参数和训练参数放在一个map中
 

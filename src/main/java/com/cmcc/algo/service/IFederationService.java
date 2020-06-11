@@ -1,6 +1,5 @@
 package com.cmcc.algo.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.cmcc.algo.entity.FederationEntity;
 
 import java.util.List;
@@ -14,8 +13,6 @@ import java.util.Map;
  * @author hjy
  * @since 2020-05-25
  */
-public interface IFederationService extends IService<FederationEntity> {
-        List<FederationEntity> queryFederations(Map<String, Object> params);
-
-        FederationEntity saveFederation(FederationEntity federation);
+public interface IFederationService {
+        public List<FederationEntity> queryFederations(Map<String, Object> params);
 }
