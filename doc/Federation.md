@@ -110,7 +110,12 @@ uuid | string | 联邦uuid
 1. 请求方法：PUT
 2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/{uuid}
 3. 请求Header：Content-Type:application/json
-4. 请求Body：
+4. 请求参数：
+
+| 字段 | 类型 | 说明 |
+| ---- | ---- | ---- |
+uuid | string | 联邦uuid 
+5. 请求Body：
 body参数：
 ```json
 {
@@ -122,3 +127,13 @@ body参数：
   "param": "？？？" //联邦训练参数
 }
 ```
+
+
+#### 将联邦状态转为就绪
+1. 请求方法：PUT
+2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/{uuid}/ready
+3. 请求参数：
+
+| 字段 | 类型 | 说明 |
+| ---- | ---- | ---- |
+uuid | string | 联邦uuid 
