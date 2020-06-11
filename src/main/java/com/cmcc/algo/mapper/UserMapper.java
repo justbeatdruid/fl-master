@@ -12,7 +12,5 @@ import com.cmcc.algo.entity.User;
  * @since 2020-05-25
  */
 public interface UserMapper extends BaseMapper<User> {
-
      User findByUserName(String username);
-
 }
