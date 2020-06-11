@@ -1,5 +1,8 @@
 package com.cmcc.algo.common.exception;
 
+/**
+ * 异常类
+ */
 
 public class CustomException extends RuntimeException {
     //异常错误编码

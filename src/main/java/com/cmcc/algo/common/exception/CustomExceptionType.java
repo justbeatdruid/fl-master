@@ -1,5 +1,8 @@
 package com.cmcc.algo.common.exception;
 
+/**
+ * 异常类类型
+ */
 public enum CustomExceptionType {
     USER_INPUT_ERROR(400,"用户输入异常"),
     USER_EMPTY_ERROR(400,"用户不存在"),

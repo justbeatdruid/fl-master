@@ -7,10 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * @PackageName: com.cmcc.algo.config
- * @ClassName: WebMvcConfig
- * @Author: lc
- * @Description: //TODO
+ * 拦截器配置类
  */
 @Configuration
 public class InterceptorConfig implements WebMvcConfigurer {

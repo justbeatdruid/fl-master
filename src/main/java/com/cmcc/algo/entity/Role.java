@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * 角色
+ * 角色实体类
  */
 @Data
 @TableName("tb_role")

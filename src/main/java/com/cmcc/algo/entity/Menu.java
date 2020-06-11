@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 菜单
+ * 菜单实体类
  */
 @Data
 @TableName("tb_menu")
