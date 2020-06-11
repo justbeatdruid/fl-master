@@ -147,6 +147,26 @@ public class FederationController {
         return getFederationVo(updatedFederation);
     }
 
+    /**
+     * update a federation
+     */
+    @PutMapping("/{uuid}/ready")
+    @SysLog("update federation status to ready")
+    @Transactional
+    public FederationVo update(@PathVariable(name = "uuid") String uuid) throws Exception {
+        FederationEntity updatedFederation = federationRepository.findByUuid(uuid);
+        if (updatedFederation == null) {
+            throw new APIException(String.format("联邦UUID%s不存在", uuid));
+        }
+        if (updatedFederation.getStatus() != 0) {
+            throw new APIException(String.format("不能就绪状态%s的联邦", getReadableStatusFromCode(updatedFederation.getStatus())));
+        }
+        // attributes update permitted
+        updatedFederation.setStatus(1);
+        federationRepository.save(updatedFederation);
+        return getFederationVo(updatedFederation);
+    }
+
     public static FederationVo getFederationVo(FederationEntity federation) {
         FederationVo federationVo = new FederationVo();
         if (federation == null) {
@@ -157,26 +177,24 @@ public class FederationController {
         if (status == null) {
           status = -1;
         }
+        federationVo.setDisplayStatus(getReadableStatusFromCode(status));
+        return federationVo;
+    }
+
+    public static String getReadableStatusFromCode(Integer status) {
         switch(status) {
         case 0:
-            federationVo.setDisplayStatus("等待");
-            break;
+            return new String("等待");
         case 1:
-            federationVo.setDisplayStatus("就绪");
-            break;
+            return new String("就绪");
         case 2:
-            federationVo.setDisplayStatus("运行中");
-            break;
+            return new String("运行中");
         case 3:
-            federationVo.setDisplayStatus("成功");
-            break;
+            return new String("成功");
         case 4:
-            federationVo.setDisplayStatus("失败");
-            break;
+            return new String("失败");
         default:
-            federationVo.setDisplayStatus("未知");
-            break;
+            return new String("未知");
         }
-        return federationVo;
     }
 }
