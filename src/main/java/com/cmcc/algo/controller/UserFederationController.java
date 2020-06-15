@@ -4,15 +4,20 @@ package com.cmcc.algo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.CommonResult;
+import com.cmcc.algo.common.utils.TokenManager;
 import com.cmcc.algo.entity.User;
 import com.cmcc.algo.entity.UserFederation;
 import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
-import io.swagger.annotations.ApiOperation;
+import io.jsonwebtoken.Claims;
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.hql.internal.ast.util.SessionFactoryHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -34,12 +39,14 @@ public class UserFederationController {
      /**
       * 申请加入联邦
       *
-      * @param userId
+      * @param
       * @param federationId
       * @return
       */
      @PostMapping("/apply")
-     public CommonResult apply(String userId, String federationId) {
+     public CommonResult apply(@RequestHeader String token, String federationId) throws Exception {
+          Claims claims = TokenManager.parseJWT(token);
+          String userId = claims.getId();
           QueryWrapper queryWrapper = new QueryWrapper();
           queryWrapper.eq("user_id", userId);
           queryWrapper.eq("federation_id", federationId);
@@ -87,7 +94,6 @@ public class UserFederationController {
                     break;
                default:
                     throw new APIException("参数异常");
-
           }
           userFederationService.updateById(userFederationList.get(0));
           return CommonResult.success("加入成功");

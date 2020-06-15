@@ -96,7 +96,7 @@ public class FederationController {
             throw new APIException("名字重复，请重试。");
         }
 
-        federation.setId(0L);
+        federation.setId((short) 0);
         federation.setCreatedAt(new Date());
         federation.setGuest("");
         federation.setHosts("");

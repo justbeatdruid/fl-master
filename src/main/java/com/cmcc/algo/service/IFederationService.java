@@ -20,4 +20,5 @@ public interface IFederationService {
      List<FederationEntity> findListByGuest(String guest);
 
      FederationEntity getOne(Long id);
+
 }

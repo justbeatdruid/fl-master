@@ -53,4 +53,5 @@ public class FederationServiceImpl implements IFederationService {
      public FederationEntity getOne(Long id) {
           return federationRepository.getOne(id);
      }
+
 }

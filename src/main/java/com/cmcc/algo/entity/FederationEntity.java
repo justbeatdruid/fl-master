@@ -39,7 +39,7 @@ public class FederationEntity implements Serializable {
      */
     @Id
     @GeneratedValue
-    private Long id;
+    private Short id;
 
     /**
      * 联邦名称

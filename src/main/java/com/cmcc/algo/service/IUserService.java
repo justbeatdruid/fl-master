@@ -17,4 +17,5 @@ public interface IUserService extends IService<User> {
      User userLogin(String username, String password);
 
      User findById(String userId);
+
 }
