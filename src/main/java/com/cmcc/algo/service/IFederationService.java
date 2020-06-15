@@ -14,5 +14,11 @@ import java.util.Map;
  * @since 2020-05-25
  */
 public interface IFederationService {
-        public List<FederationEntity> queryFederations(Map<String, Object> params);
+
+     List<FederationEntity> queryFederations(Map<String, Object> params);
+
+     List<FederationEntity> findListByGuest(String guest);
+
+     FederationEntity getOne(Long id);
+
 }

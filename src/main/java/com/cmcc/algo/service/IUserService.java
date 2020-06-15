@@ -3,6 +3,7 @@ package com.cmcc.algo.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cmcc.algo.entity.User;
 
+
 /**
  * <p>
  * 用户信息表 服务类
@@ -14,5 +15,7 @@ import com.cmcc.algo.entity.User;
 public interface IUserService extends IService<User> {
 
      User userLogin(String username, String password);
+
+     User findById(String userId);
 
 }
