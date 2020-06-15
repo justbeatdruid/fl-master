@@ -40,7 +40,7 @@ public class FederationDto implements Serializable {
     /**
      * 数据格式
      */
-    private String dataFormat;
+    private DataFormatDto dataFormat;
 
     /**
      * 算法ID
