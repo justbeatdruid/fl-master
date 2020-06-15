@@ -1,10 +1,18 @@
 package com.cmcc.algo.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+//import lombok.EqualsAndHashCode;
+//import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -14,10 +22,11 @@ import lombok.experimental.Accessors;
  * @author hjy
  * @since 2020-05-25
  */
+//@EqualsAndHashCode(callSuper = false)
+//@Accessors(chain = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@TableName("tb_dataset")
+@Entity
+@Table(name = "tb_dataset")
 public class Dataset implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,27 +34,19 @@ public class Dataset implements Serializable {
     /**
      * 数据ID
      */
-    private Integer id;
-
-    /**
-     * 联邦ID
-     */
-    private String federationId;
-
-    /**
-     * 数据类型（0:训练，1:预测）
-     */
-    private Boolean type;
-
-    /**
-     * 用户名
-     */
-    private String username;
+    @Id
+    @GeneratedValue
+    private Short id;
 
     /**
      * 上传文件路径
      */
-    private String uploadPath;
+    private String name;
+
+    /**
+     * 文件更新时间
+     */
+    private Date updatedAt;
 
     /**
      * 数据大小
@@ -53,14 +54,7 @@ public class Dataset implements Serializable {
     private String size;
 
     /**
-     * 数据状态（0:未完成，1:完成）
+     * 数据party
      */
-    private Boolean status;
-
-    /**
-     * 数据标识（table_name和namespace）
-     */
-    private String dataIndicator;
-
-
+    private String partyId;
 }
