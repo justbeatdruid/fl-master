@@ -1,4 +1,4 @@
-package com.cmcc.algo.dto;
+package com.cmcc.algo.vo;
 
 import lombok.Data;
 
@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @since 2020-05-25
  */
 @Data
-public class DataFormat implements Serializable {
+public class DataFormatVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

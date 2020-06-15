@@ -66,7 +66,7 @@ public class FederationVo implements Serializable {
     /**
      * 数据格式
      */
-    private String dataFormat;
+    private DataFormatVo dataFormat;
 
     /**
      * 算法ID

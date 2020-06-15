@@ -1,12 +1,14 @@
 package com.cmcc.algo.controller;
 
 //import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.alibaba.fastjson.JSON;
 import com.cmcc.algo.common.annotation.SysLog;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.dto.FederationDto;
 import com.cmcc.algo.entity.FederationEntity;
 import com.cmcc.algo.mapper.FederationRepository;
 import com.cmcc.algo.vo.FederationVo;
+import com.cmcc.algo.vo.DataFormatVo;
 import com.cmcc.algo.service.IFederationService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -84,6 +86,7 @@ public class FederationController {
         }
         FederationEntity federation = new FederationEntity();
         BeanUtils.copyProperties(federationDto, federation);
+        federation.setDataFormat(JSON.toJSONString(federationDto.getDataFormat()));
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         federation.setUuid(uuid);
         /*
@@ -178,6 +181,7 @@ public class FederationController {
           status = -1;
         }
         federationVo.setDisplayStatus(getReadableStatusFromCode(status));
+        federationVo.setDataFormat(JSON.parseObject(federation.getDataFormat(), DataFormatVo.class));
         return federationVo;
     }
 
