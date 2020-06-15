@@ -19,6 +19,7 @@ public enum ResultCode implements IErrorCode {
     NOT_SUPPORT(505, "不支持的HTTP协议版本"),
     AUTH_VALID_ERROR(701, "用户权限不足");
 
+
     final private Integer code;
     final private String message;
 

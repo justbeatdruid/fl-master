@@ -3,6 +3,7 @@ package com.cmcc.algo.mapper;
 import com.cmcc.algo.entity.FederationEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,8 +18,14 @@ import java.util.List;
  */
 @Repository
 public interface FederationRepository extends JpaRepository<FederationEntity, Long> {
-    FederationEntity findByUuid(String uuid);
-    void deleteByUuid(String uuid);
-    List<FederationEntity> findByName(String name);
-    List<FederationEntity> findByNameLike(String name);
+     FederationEntity findByUuid(String uuid);
+
+     void deleteByUuid(String uuid);
+
+     List<FederationEntity> findByNameLike(String name);
+
+     List<FederationEntity> findByName(String name);
+
+     List<FederationEntity> findListByGuest(String guest);
+
 }
