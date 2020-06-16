@@ -11,7 +11,11 @@ body参数：
   "name": "联邦名字",
   "description": "", //联邦描述
   "type": 0,  //0表示横向联邦，1表示纵向联邦
-  "data_format": "？？？", //数据格式
+  "dataFormat": {   //数据格式
+    "identity": "test",  //数据标识
+    "label": "mylabel",  //数据标签
+    "feature": "1;2;3;4;5"  //数据特征
+  },
   "algorithm_id": 1,  //算法ID
   "param": "？？？" //联邦训练参数
 }
@@ -42,7 +46,11 @@ body参数：
     "hosts": [],  //hosts用户列表
     "status": 0, //联邦状态
     "displayStatus": "等待", //联邦状态中文显示
-    "dataFormat": "",  //联邦数据格式
+    "dataFormat": {   //数据格式
+    "identity": "test",  //数据标识
+    "label": "mylabel",  //数据标签
+    "feature": "1;2;3;4;5"  //数据特征
+     }, 
     "algorithmId": 1,  //联邦关联算法ID
     "param": "" //联邦训练参数
   }
@@ -74,7 +82,11 @@ body参数：
     "hosts": null,
     "status": 0,
     "displayStatus": "等待",
-    "dataFormat": null,
+    "dataFormat": {   //数据格式
+      "identity": "test",  //数据标识
+      "label": "mylabel",  //数据标签
+      "feature": "1;2;3;4;5"  //数据特征
+     },
     "algorithmId": null,
     "param": null
   }, {
@@ -122,7 +134,11 @@ body参数：
   "name": "联邦名字",
   "description": "", //联邦描述
   "type": 0,  //0表示横向联邦，1表示纵向联邦
-  "data_format": "？？？", //数据格式
+  "data_format": {   //数据格式
+    "identity": "test",  //数据标识
+    "label": "mylabel",  //数据标签
+    "feature": "1;2;3;4;5"  //数据特征
+   }, //数据格式
   "algorithm_id": 1,  //算法ID
   "param": "？？？" //联邦训练参数
 }
