@@ -6,7 +6,7 @@ token=$(cat ${path}/token)
 curl localhost:10086/com/cmcc/algo/datafusion/api/v1/federations -H'content-type:application/json' -vvv \
   -H"token: ${token}" -d'
 {
-  "name": "hello world",
+  "name": "hello world again",
   "description": "hello",
   "dataFormat": {
     "identity": "test",
