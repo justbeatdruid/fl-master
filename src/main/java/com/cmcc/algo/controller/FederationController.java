@@ -7,11 +7,13 @@ import com.cmcc.algo.common.annotation.SysLog;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.utils.TokenManager;
 import com.cmcc.algo.dto.FederationDto;
+import com.cmcc.algo.dto.Statistic;
 import com.cmcc.algo.entity.FederationEntity;
 import com.cmcc.algo.mapper.FederationRepository;
 import com.cmcc.algo.vo.FederationVo;
 import com.cmcc.algo.vo.DataFormatVo;
 import com.cmcc.algo.service.IFederationService;
+import com.cmcc.algo.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -20,11 +22,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.UUID;
 
 import javax.validation.Valid; 
@@ -46,6 +50,8 @@ public class FederationController {
 
     @Autowired
     private IFederationService federationService;
+    @Autowired
+    private IUserService userService;
     @Autowired
     private FederationRepository federationRepository;
 
@@ -269,7 +275,36 @@ public class FederationController {
         return getFederationVo(updatedFederation, userId);
     }
 
-    public static FederationEntity fromFederationDto(FederationDto federationDto) {
+    /**
+     * update a federation
+     */
+    @GetMapping("/statistic")
+    @SysLog("get federations statistic")
+    public List<Statistic> statistic() throws Exception {
+        Map<Integer, Short> statistic = new HashMap<Integer, Short>();
+        List<FederationEntity> page = federationRepository.findAll();
+        Integer[] statusList = {0,1,2,3,4};
+        for(Integer s : statusList) {
+            statistic.put(s, new Short((short) 0));
+        }
+        for (FederationEntity federation : page) {
+            Integer status = federation.getStatus();
+            if(statistic.get(status) == null) {
+                statistic.put(status, new Short((short) 1));
+            }else{
+                statistic.put(status, new Short((short) (statistic.get(status) + 1)));
+            }
+        }
+
+        List<Statistic> result = new ArrayList<Statistic>(statistic.size());
+        for(Integer s : statusList) {
+            result.add(new Statistic(getReadableStatusFromCode(s), statistic.get(s)));
+        }
+        result.add(new Statistic("所有", new Short((short) page.size())));
+        return result;
+    }
+
+    public FederationEntity fromFederationDto(FederationDto federationDto) {
         FederationEntity federation = new FederationEntity();
         BeanUtils.copyProperties(federationDto, federation);
         federation.setDataFormat(JSON.toJSONString(federationDto.getDataFormat()));
@@ -277,7 +312,7 @@ public class FederationController {
         return federation;
     }
 
-    public static FederationVo getFederationVo(FederationEntity federation, String userId) {
+    public FederationVo getFederationVo(FederationEntity federation, String userId) {
         FederationVo federationVo = new FederationVo();
         if (federation == null) {
             return federationVo;
@@ -290,11 +325,23 @@ public class FederationController {
         federationVo.setDisplayStatus(getReadableStatusFromCode(status));
         federationVo.setDataFormat(JSON.parseObject(federation.getDataFormat(), DataFormatVo.class));
         federationVo.setParam(JSON.parseObject(federation.getParam(), new TypeReference<LinkedHashMap<String, Double>>(){}));
+
+        federationVo.setEnterable(new Boolean(false));
         if (federation.getGuest().equals(userId)) {
             federationVo.setRole("创建者");
         } else {
             federationVo.setRole("参与者");
+            // TODO current user is permitted to enter if not in federation hosts list
+            boolean inHostsList = false;
+            if (!inHostsList) {
+                federationVo.setEnterable(new Boolean(true));
+            }
         }
+
+        // TODO get federation hosts count
+        short count = (short) 0 + (short) 1;
+        federationVo.setUserCount(new Short(count));
+        federationVo.setGuestName(userService.findById(userId).getUsername());
         return federationVo;
     }
 
