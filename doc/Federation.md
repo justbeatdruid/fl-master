@@ -60,7 +60,8 @@ body参数：
         "param1": 0.1,
         "param2": 100,
         "param3": -12345.6789
-      } //联邦训练参数
+    }, //联邦训练参数
+    "role": "创建者"
   }
 }
 ```
@@ -101,7 +102,8 @@ body参数：
         "param1": 0.1,
         "param2": 100,
         "param3": -12345.6789
-      }
+    },
+    "role": "创建者"
   }, {
     "name": "testtest1225",
     "uuid": "50bae40e9fe341a09c166305af7dae86",
@@ -118,7 +120,8 @@ body参数：
         "param1": 0.1,
         "param2": 100,
         "param3": -12345.6789
-      }
+    },
+    "role": "参与者"
   }],
   "pageInfo": null,
   "ext": null
