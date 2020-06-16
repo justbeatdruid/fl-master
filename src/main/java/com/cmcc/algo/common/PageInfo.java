@@ -1,18 +1,26 @@
 package com.cmcc.algo.common;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 
+@ApiModel
 public class PageInfo implements Serializable {
 
     private static final long serialVersionUID = -3168245848375551671L;
 
     /** 总页数 */
+    @ApiModelProperty(value = "总页数")
     private long pages;
     /** 总记录数 */
+    @ApiModelProperty(value = "总记录数")
     private long total;
     /** 查询数据的当前页 */
+    @ApiModelProperty(value = "当前页")
     protected long pageNum;
     /** 查询时每页的数据条数 */
+    @ApiModelProperty(value = "每页展示条数")
     protected long step;
 
 

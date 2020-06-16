@@ -1,6 +1,8 @@
 package com.cmcc.algo.common;
 
 import com.github.pagehelper.Page;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
@@ -10,34 +12,40 @@ import java.util.Map;
  * 通用返回对象
  *
  */
+@ApiModel
 public class CommonResult<T> implements Serializable {
     private static final long serialVersionUID = 7459014710469828196L;
 
     /**
      * 是否成功
      */
+    @ApiModelProperty(value = "成功标志")
     private boolean success;
     /**
      * 返回状态码
      */
+    @ApiModelProperty(value = "状态码")
     private int code;
     /**
      * 返回消息
      */
+    @ApiModelProperty(value = "返回消息")
     private String message;
     /**
      * 返回内容
      */
+    @ApiModelProperty(value = "返回内容")
     private T data;
     /**
      * 分页信息
      */
+    @ApiModelProperty(value = "分页信息")
     private PageInfo pageInfo;
     /**
      * 其他信息
      */
 
-
+    @ApiModelProperty(value = "其他信息")
     private Map<String, Object> ext;
 
     public CommonResult() {

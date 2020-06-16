@@ -12,12 +12,15 @@ import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.Builder;
 import com.cmcc.algo.common.CommonResult;
 import com.cmcc.algo.common.ResultCode;
+import com.cmcc.algo.common.utils.TokenManager;
 import com.cmcc.algo.config.AgentConfig;
 import com.cmcc.algo.entity.Predict;
 import com.cmcc.algo.entity.Train;
 import com.cmcc.algo.service.IPredictService;
 import com.cmcc.algo.service.ITrainService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +61,19 @@ public class PredictController {
     AgentConfig agentConfig;
 
     @ApiOperation(value = "查询预测记录", notes = "查询预测记录")
+    @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
+                        @ApiImplicitParam(name = "request", value = "请求jsonStr，包括'federationUuid'和分页参数（可选）'pageNum','step'")})
     @PostMapping("/list")
-    public CommonResult getPredictTaskList(@RequestBody String request){
+    public CommonResult getPredictTaskList(@RequestHeader String token, @RequestBody String request){
+        String userId = "";
+        try {
+            userId = TokenManager.parseJWT(token).getId();
+            log.info("get user id", userId);
+        }catch(Exception e) {
+            log.error("cannot parse token", e.getMessage(), e);
+            throw new APIException("token无效");
+        }
+
         long pageNum = Optional.ofNullable(JSONUtil.parseObj(request).getLong(PAGENUM)).orElse(1L);
         long step = Optional.ofNullable(JSONUtil.parseObj(request).getLong(STEP)).orElse(10L);
         String federationUuid = Optional.ofNullable(JSONUtil.parseObj(request).getStr("federationUuid")).orElseThrow(() -> new APIException(ResultCode.NOT_FOUND, "联邦UUID为空"));
@@ -71,9 +85,20 @@ public class PredictController {
     }
 
     @ApiOperation(value = "开始预测", notes = "开始预测")
+    @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
+                        @ApiImplicitParam(name = "federationUuid", value = "联邦UUID")})
     @PostMapping("/submit")
     @Transactional(rollbackFor = Exception.class)
-    public boolean submitPredictTask(@RequestBody String federationUuid){
+    public boolean submitPredictTask(@RequestHeader String token, @RequestBody String federationUuid){
+        String userId = "";
+        try {
+            userId = TokenManager.parseJWT(token).getId();
+            log.info("get user id", userId);
+        }catch(Exception e) {
+            log.error("cannot parse token", e.getMessage(), e);
+            throw new APIException("token无效");
+        }
+
         // 向Agent提交训练任务
         String submitUrl = agentConfig.getAgentUrl()+SUBMIT_PREDICT_TASK_URL;
 
@@ -117,8 +142,19 @@ public class PredictController {
     }
 
     @ApiOperation(value = "导出结果", notes = "导出结果")
+    @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
+                        @ApiImplicitParam(name = "predictUuid", value = "预测记录UUID")})
     @PostMapping("/export")
-    public String exportResult(@RequestBody String predictUuid){
+    public String exportResult(@RequestHeader String token, @RequestBody String predictUuid){
+        String userId = "";
+        try {
+            userId = TokenManager.parseJWT(token).getId();
+            log.info("get user id", userId);
+        }catch(Exception e) {
+            log.error("cannot parse token", e.getMessage(), e);
+            throw new APIException("token无效");
+        }
+
         String exportUrl = agentConfig.getAgentUrl() + EXPORT_DATA_URL;
 
         Predict predict = predictService.getOne(Wrappers.<Predict>lambdaQuery().eq(Predict::getUuid, predictUuid));
