@@ -19,6 +19,8 @@ import com.cmcc.algo.entity.Train;
 import com.cmcc.algo.mapper.FederationRepository;
 import com.cmcc.algo.service.ITrainService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +52,6 @@ public class TrainController {
     @Autowired
     ITrainService trainService;
 
-    //@Autowired
-    //IFederationService federationService;
-
     @Autowired
     FederationRepository federationRepository;
 
@@ -60,6 +59,8 @@ public class TrainController {
     AgentConfig agentConfig;
 
     @ApiOperation(value = "查询训练记录", notes = "查询训练记录")
+    @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
+                        @ApiImplicitParam(name = "request", value = "请求jsonStr，包括'federationUuid'和分页参数（可选）'pageNum','step'")})
     @PostMapping("/list")
     public CommonResult getTrainTaskList(@RequestHeader String token,  @RequestBody String request){
         String userId = "";
@@ -82,14 +83,23 @@ public class TrainController {
     }
 
     @ApiOperation(value = "开始训练", notes = "开始训练")
+    @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
+                        @ApiImplicitParam(name = "federationUuid", value = "联邦UUID")})
     @PostMapping("/submit")
     @Transactional(rollbackFor = Exception.class)
     public Boolean submitTrainTask(@RequestHeader String token, @RequestBody String federationUuid){
+        String userId = "";
+        try {
+            userId = TokenManager.parseJWT(token).getId();
+            log.info("get user id", userId);
+        }catch(Exception e) {
+            log.error("cannot parse token", e.getMessage(), e);
+            throw new APIException("token无效");
+        }
+
         // 向Agent提交训练任务
         String submitUrl = agentConfig.getAgentUrl()+SUBMIT_TRAIN_TASK_URL;
 
-        //FederationEntity federationEntity = federationService.getOne(Wrappers.<FederationEntity>lambdaQuery()
-        //        .eq(FederationEntity::getUuid, federationUuid));
         FederationEntity federationEntity = federationRepository.findByUuid(federationUuid);
 
         //TODO 数据集参数和训练参数放在一个map中
