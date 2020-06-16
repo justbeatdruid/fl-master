@@ -71,7 +71,7 @@ public class FederationController {
         //    federations.set(i, getFederationVo(page.get(i)));
         //}
         for ( FederationEntity federation : page) {
-            federations.add(getFederationVo(federation));
+            federations.add(getFederationVo(federation, userId));
         }
         return federations;
     }
@@ -100,7 +100,7 @@ public class FederationController {
             throw new APIException("没有操作权限");
         }
 
-        return getFederationVo(federation);
+        return getFederationVo(federation, userId);
     }
 
     /**
@@ -146,7 +146,7 @@ public class FederationController {
         }
         federationRepository.save(federation);
 
-        FederationVo federationVo = getFederationVo(federation);
+        FederationVo federationVo = getFederationVo(federation, userId);
         return federationVo;
     }
 
@@ -233,7 +233,7 @@ public class FederationController {
         }
 
         federationRepository.save(updatedFederation);
-        return getFederationVo(updatedFederation);
+        return getFederationVo(updatedFederation, userId);
     }
 
     /**
@@ -266,7 +266,7 @@ public class FederationController {
         // attributes update permitted
         updatedFederation.setStatus(1);
         federationRepository.save(updatedFederation);
-        return getFederationVo(updatedFederation);
+        return getFederationVo(updatedFederation, userId);
     }
 
     public static FederationEntity fromFederationDto(FederationDto federationDto) {
@@ -277,7 +277,7 @@ public class FederationController {
         return federation;
     }
 
-    public static FederationVo getFederationVo(FederationEntity federation) {
+    public static FederationVo getFederationVo(FederationEntity federation, String userId) {
         FederationVo federationVo = new FederationVo();
         if (federation == null) {
             return federationVo;
@@ -290,6 +290,11 @@ public class FederationController {
         federationVo.setDisplayStatus(getReadableStatusFromCode(status));
         federationVo.setDataFormat(JSON.parseObject(federation.getDataFormat(), DataFormatVo.class));
         federationVo.setParam(JSON.parseObject(federation.getParam(), new TypeReference<LinkedHashMap<String, Double>>(){}));
+        if (federation.getGuest().equals(userId)) {
+            federationVo.setRole("创建者");
+        } else {
+            federationVo.setRole("参与者");
+        }
         return federationVo;
     }
 

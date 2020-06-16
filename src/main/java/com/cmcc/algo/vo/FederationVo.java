@@ -79,5 +79,8 @@ public class FederationVo implements Serializable {
      */
     private Map<String, Double> param;
 
-
+    /**
+     * 当前用户在联邦中的角色
+     */
+    private String role;
 }
