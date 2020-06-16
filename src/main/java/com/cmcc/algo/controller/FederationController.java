@@ -300,6 +300,7 @@ public class FederationController {
         for(Integer s : statusList) {
             result.add(new Statistic(getReadableStatusFromCode(s), statistic.get(s)));
         }
+        result.add(new Statistic("所有", new Short((short) page.size())));
         return result;
     }
 
