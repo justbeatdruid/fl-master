@@ -67,12 +67,13 @@ body参数：
 
 #### 查询联邦列表
 1. 请求方法：GET
-2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations?name=xxx
+2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations?name=xxx&private=true
 3. 请求参数
 
 | 字段 | 类型 | 说明 |
 | ---- | ---- | ---- |
 | name | string | 联邦名字模糊查询，可为空 |
+| private | bool | 查询我的联邦列表 |
 
 4. 返回body:
 ```json
