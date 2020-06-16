@@ -17,7 +17,11 @@ body参数：
     "feature": "1;2;3;4;5"  //数据特征
   },
   "algorithm_id": 1,  //算法ID
-  "param": "？？？" //联邦训练参数
+  "param": {
+        "param1": 0.1,
+        "param2": 100,
+        "param3": -12345.6789
+      } //联邦训练参数
 }
 ```
 
@@ -52,7 +56,11 @@ body参数：
     "feature": "1;2;3;4;5"  //数据特征
      }, 
     "algorithmId": 1,  //联邦关联算法ID
-    "param": "" //联邦训练参数
+    "param": {
+        "param1": 0.1,
+        "param2": 100,
+        "param3": -12345.6789
+      } //联邦训练参数
   }
 }
 ```
@@ -88,7 +96,11 @@ body参数：
       "feature": "1;2;3;4;5"  //数据特征
      },
     "algorithmId": null,
-    "param": null
+    "param": {
+        "param1": 0.1,
+        "param2": 100,
+        "param3": -12345.6789
+      }
   }, {
     "name": "testtest1225",
     "uuid": "50bae40e9fe341a09c166305af7dae86",
@@ -101,7 +113,11 @@ body参数：
     "displayStatus": "等待",
     "dataFormat": null,
     "algorithmId": null,
-    "param": null
+    "param": {
+        "param1": 0.1,
+        "param2": 100,
+        "param3": -12345.6789
+      }
   }],
   "pageInfo": null,
   "ext": null
@@ -140,7 +156,11 @@ body参数：
     "feature": "1;2;3;4;5"  //数据特征
    }, //数据格式
   "algorithm_id": 1,  //算法ID
-  "param": "？？？" //联邦训练参数
+  "param": {
+        "param1": 0.1,
+        "param2": 100,
+        "param3": -12345.6789
+      } //联邦训练参数
 }
 ```
 
