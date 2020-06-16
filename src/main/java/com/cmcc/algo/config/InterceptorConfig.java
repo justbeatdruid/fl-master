@@ -16,9 +16,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
      private SysInterceptor sysInterceptor;
 
 
-//     @Override
-//     public void addInterceptors(InterceptorRegistry registry) {
-//          registry.addInterceptor(sysInterceptor).addPathPatterns("/**");// 添加需要拦截请求的路径
-//          //.excludePathPatterns("/*") // 去除拦截请求的路径
-//     }
+     @Override
+     public void addInterceptors(InterceptorRegistry registry) {
+          registry.addInterceptor(sysInterceptor).addPathPatterns("/**");// 添加需要拦截请求的路径
+          //.excludePathPatterns("/*") // 去除拦截请求的路径
+     }
 }
