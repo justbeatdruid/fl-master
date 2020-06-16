@@ -80,7 +80,22 @@ public class FederationVo implements Serializable {
     private Map<String, Double> param;
 
     /**
+     * 联邦创建者名字
+     */
+    private String guestName;
+
+    /**
+     * 联邦成员数
+     */
+    private Short userCount;
+
+    /**
      * 当前用户在联邦中的角色
      */
     private String role;
+
+    /**
+     * 当前用户是否可加入联邦
+     */
+    private Boolean enterable;
 }
