@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 /**
  * <p>
  * 联邦信息类
@@ -50,7 +51,7 @@ public class FederationDto implements Serializable {
     /**
      * 联邦参数（同训练参数）
      */
-    private String param;
+    private Map<String, Double> param;
 
 
 }

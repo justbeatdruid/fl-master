@@ -2,6 +2,7 @@ package com.cmcc.algo.controller;
 
 //import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.cmcc.algo.common.annotation.SysLog;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.dto.FederationDto;
@@ -18,11 +19,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.Date;
 
 import javax.validation.Valid; 
 
@@ -34,6 +36,7 @@ import javax.validation.Valid;
  * @author hjy
  * @since 2020-05-25
  */
+@Slf4j
 @RestController
 @RequestMapping("/federations")
 public class FederationController {
@@ -84,9 +87,8 @@ public class FederationController {
         if (federationDto==null) {
             throw new APIException("请求数据为空");
         }
-        FederationEntity federation = new FederationEntity();
-        BeanUtils.copyProperties(federationDto, federation);
-        federation.setDataFormat(JSON.toJSONString(federationDto.getDataFormat()));
+        log.info("federation dto=", federationDto.toString());
+        FederationEntity federation = fromFederationDto(federationDto);
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         federation.setUuid(uuid);
         /*
@@ -104,9 +106,12 @@ public class FederationController {
         federation.setGuest("");
         federation.setHosts("");
         federation.setStatus(new Integer(0));
+        log.info("federation entity=", federation.toString());
         federationRepository.save(federation);
 
-        return getFederationVo(federation);
+        FederationVo federationVo = getFederationVo(federation);
+        log.info("federation vo=", federationVo.toString());
+        return federationVo;
     }
 
     /**
@@ -130,10 +135,11 @@ public class FederationController {
     @PutMapping("/{id}")
     @SysLog("update federation")
     @Transactional
-    public FederationVo update(@PathVariable(name = "id") String id, @RequestBody FederationDto federation) throws Exception {
-        if (federation == null) {
+    public FederationVo update(@PathVariable(name = "id") String id, @RequestBody FederationDto federationDto) throws Exception {
+        if (federationDto == null) {
             throw new APIException("请求数据为空");
         }
+        FederationEntity federation = fromFederationDto(federationDto);
         FederationEntity updatedFederation = federationRepository.findByUuid(id);
         if (updatedFederation == null) {
             throw new APIException(String.format("联邦UUID%s不存在", id));
@@ -141,6 +147,18 @@ public class FederationController {
         // attributes update permitted
         if (federation.getName() != null) {
             updatedFederation.setName(federation.getName());
+        }
+        if (federation.getDescription() != null) {
+            updatedFederation.setDescription(federation.getDescription());
+        }
+        if (federation.getDataFormat() != null) {
+            updatedFederation.setDataFormat(federation.getDataFormat());
+        }
+        if (federation.getAlgorithmId() != null) {
+            updatedFederation.setAlgorithmId(federation.getAlgorithmId());
+        }
+        if (federation.getParam() != null) {
+            updatedFederation.setParam(federation.getParam());
         }
         List<FederationEntity> list = federationRepository.findByName(federation.getName());
         if(CollectionUtils.isNotEmpty(list)){
@@ -170,6 +188,14 @@ public class FederationController {
         return getFederationVo(updatedFederation);
     }
 
+    public static FederationEntity fromFederationDto(FederationDto federationDto) {
+        FederationEntity federation = new FederationEntity();
+        BeanUtils.copyProperties(federationDto, federation);
+        federation.setDataFormat(JSON.toJSONString(federationDto.getDataFormat()));
+        federation.setParam(JSON.toJSONString(federationDto.getParam()));
+        return federation;
+    }
+
     public static FederationVo getFederationVo(FederationEntity federation) {
         FederationVo federationVo = new FederationVo();
         if (federation == null) {
@@ -182,6 +208,7 @@ public class FederationController {
         }
         federationVo.setDisplayStatus(getReadableStatusFromCode(status));
         federationVo.setDataFormat(JSON.parseObject(federation.getDataFormat(), DataFormatVo.class));
+        federationVo.setParam(JSON.parseObject(federation.getParam(), new TypeReference<LinkedHashMap<String, Double>>(){}));
         return federationVo;
     }
 
