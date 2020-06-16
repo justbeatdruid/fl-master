@@ -32,13 +32,21 @@ public class Algorithm implements Serializable {
      */
     private String name;
 
+    private String displayName;
+
+    private Integer federationType;
+
+    private Integer algorithmType;
+
+    private String param;
+
     /**
      * 算法描述
      */
     private String desc;
 
     /**
-     * 算法模板
+     * 算法模板名
      */
     private String template;
 
