@@ -61,7 +61,10 @@ body参数：
         "param2": 100,
         "param3": -12345.6789
     }, //联邦训练参数
-    "role": "创建者"
+    "guestName": "admin",
+    "userCount": 1,
+    "role": "创建者",
+    "enterable": false
   }
 }
 ```
@@ -103,7 +106,10 @@ body参数：
         "param2": 100,
         "param3": -12345.6789
     },
-    "role": "创建者"
+    "guestName": "admin",
+    "userCount": 1,
+    "role": "创建者",
+    "enterable": false
   }, {
     "name": "testtest1225",
     "uuid": "50bae40e9fe341a09c166305af7dae86",
@@ -121,7 +127,10 @@ body参数：
         "param2": 100,
         "param3": -12345.6789
     },
-    "role": "参与者"
+    "guestName": "admin",
+    "userCount": 1,
+    "role": "创建者",
+    "enterable": false
   }],
   "pageInfo": null,
   "ext": null
@@ -177,3 +186,39 @@ body参数：
 | 字段 | 类型 | 说明 |
 | ---- | ---- | ---- |
 uuid | string | 联邦uuid 
+
+#### 联邦统计信息
+1. 请求方法：GET
+2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/statistic
+3. 返回Body：
+```json
+{
+  "success": true,
+  "code": 200,
+  "message": "请求成功",
+  "data": [
+    {
+      "name": "等待",
+      "value": 2
+    },
+    {
+      "name": "就绪",
+      "value": 0
+    },
+    {
+      "name": "运行中",
+      "value": 0
+    },
+    {
+      "name": "成功",
+      "value": 0
+    },
+    {
+      "name": "失败",
+      "value": 0
+    }
+  ],
+  "pageInfo": null,
+  "ext": null
+}
+```
