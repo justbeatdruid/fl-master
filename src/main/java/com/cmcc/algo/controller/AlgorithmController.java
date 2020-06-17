@@ -59,4 +59,25 @@ public class AlgorithmController {
 
         return CommonResult.success(algorithms);
     }
+
+    @ApiOperation(value = "根据ID查询算法", notes = "根据ID查询算法")
+    @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
+                        @ApiImplicitParam(name = "algorithmId", value = "算法ID")})
+    @PostMapping("/one")
+    public CommonResult getAlgorithmById(@RequestHeader String token,  @RequestBody int algorithmId){
+        String userId = "";
+        try {
+            userId = TokenManager.parseJWT(token).getId();
+            log.info("get user id", userId);
+        }catch(Exception e) {
+            log.error("cannot parse token", e.getMessage(), e);
+            throw new APIException("token无效");
+        }
+
+
+        Algorithm algorithm = Optional.ofNullable(algorithmService.getOne(Wrappers.<Algorithm>lambdaQuery().eq(Algorithm::getId, algorithmId)))
+                .orElseThrow(()->new APIException(ResultCode.NOT_FOUND, "查询无此算法"));
+
+        return CommonResult.success(algorithm);
+    }
 }
