@@ -16,7 +16,7 @@ body参数：
     "label": "mylabel",  //数据标签
     "feature": "1;2;3;4;5"  //数据特征
   },
-  "algorithm_id": 1,  //算法ID
+  "algorithmId": 1,  //算法ID
   "param": {
         "param1": 0.1,
         "param2": 100,
