@@ -54,7 +54,7 @@
             "displayName": "纵向逻辑回归",
             "federationType": 0,
             "algorithmType": 0,
-            "param": "[{\"paramName\":\"learning_rate\",\"displayName\":\"学习率\"},{\"paramName\":\"loss\",\"displayName\":\"最终损失\"},{\"paramName\":\"iteration\",\"displayName\":\"迭代次数\"}]",
+            "param": "[{"paramName":"learning_rate","displayName":"学习率","defaultValue":0.015,"validRule":{"min":0.001,"max":100}},{"paramName":"loss","displayName":"最终损失","defaultValue":0.00001,"validRule":{"min":0,"max":1}},{"paramName":"iteration","displayName":"迭代次数","defaultValue":100,"validRule":{"min":10,"max":1000}}]",
             "algorithmDesc": null,
             "template": "HeteroLR.ftl"
         }

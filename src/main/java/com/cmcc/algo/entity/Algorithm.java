@@ -42,10 +42,10 @@ public class Algorithm implements Serializable {
     private String displayName;
 
     @ApiModelProperty(value = "联邦学习类型（0：纵向，1：横向）")
-    private Integer federationType;
+    private Boolean federationType;
 
     @ApiModelProperty(value = "算法类型（0：分类，1：回归）")
-    private Integer algorithmType;
+    private Boolean algorithmType;
 
     @ApiModelProperty(value = "算法参数")
     private String param;
