@@ -29,7 +29,7 @@ public class FederationServiceImpl implements IFederationService {
      @Override
      public List<FederationEntity> queryFederations(Map<String, Object> params) {
           String name = (String) params.get("name");
-          Boolean pri = (Boolean) params.get("private");
+          Boolean pri = Boolean.parseBoolean((String) params.get("private"));
 
           //List<Map<String, Object>> maps = this.listMaps(new QueryWrapper<FederationEntity>());
           //List<FederationEntity> maps = this.list(
