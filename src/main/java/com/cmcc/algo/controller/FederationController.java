@@ -101,10 +101,12 @@ public class FederationController {
         }
 
         // TODO
+        /*
         boolean isHosts = true;
         if (federation.getGuest() != userId || !isHosts) {
             throw new APIException("没有操作权限");
         }
+        */
 
         return getFederationVo(federation, userId);
     }
