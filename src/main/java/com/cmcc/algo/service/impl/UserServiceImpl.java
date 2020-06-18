@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -48,6 +49,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      @Override
      public User findById(String userId) {
           return userMapper.findById(userId);
+     }
+
+
+     @Override
+     public User userRegister(String username, String password) {
+          if (userMapper.findByUserName(username) != null) {
+               throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "用户已存在！");
+          }
+          User user = new User();
+          user.setUuid(UUID.randomUUID().toString().replaceAll("-",""));
+          user.setUsername(username);
+          user.setPassword(password);
+          return user;
      }
 
 }

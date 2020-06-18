@@ -18,4 +18,5 @@ public interface IUserService extends IService<User> {
 
      User findById(String userId);
 
+     User userRegister(String username, String password);
 }

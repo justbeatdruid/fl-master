@@ -61,13 +61,30 @@ public class UserController {
      }
 
      /**
+      * 用户注册
+      *
+      * @param registerUser
+      * @return
+      */
+     @PostMapping("/register")
+     public CommonResult register(@RequestBody User registerUser) {
+
+          if (StringUtils.isEmpty(registerUser.getUsername()) || StringUtils.isEmpty(registerUser.getPassword())) {
+               return CommonResult.fail("用户名或者密码不能为空");
+          }
+          User user = userService.userRegister(registerUser.getUsername(), registerUser.getPassword());
+          userService.save(user);
+          return CommonResult.success("注册成功！", user);
+     }
+
+     /**
       * 查询用户列表展示
       *
       * @param user
       * @return
       */
      @GetMapping("/list")
-     @Transactional
+		
      public CommonResult List(User user) {
           QueryWrapper queryWrapper = new QueryWrapper();
           if (org.apache.commons.lang.StringUtils.isNotBlank(user.getUsername())) {
@@ -76,13 +93,13 @@ public class UserController {
           queryWrapper.eq("del_flag", 0);
           IPage<User> page = userService.page(new Page<>(), queryWrapper);
           for (User guestUser : page.getRecords()) {
-               List<FederationEntity> list = federationService.findListByGuest(guestUser.getId().toString());
+               List<FederationEntity> list = federationService.findListByGuest(guestUser.getUuid());
                guestUser.setFederationList(list);
 
                List<UserFederation> list1 = userFederationService.list(new QueryWrapper<UserFederation>().eq("user_id", guestUser.getId().toString()));
                List<FederationEntity> list2 = new ArrayList<>();
                for (UserFederation userFederation : list1) {
-                    FederationEntity federationEntity = federationService.getOne(Long.valueOf(userFederation.getFederationId()));
+                    FederationEntity federationEntity = federationService.getOne(userFederation.getFederationUUid());
                     list2.add(federationEntity);
                }
                guestUser.setJoinFederation(list2);
@@ -97,15 +114,19 @@ public class UserController {
       * @return
       */
      @DeleteMapping("/del/{userId}")
-     @Transactional
+     @Transactional(rollbackFor = Exception.class)
      public CommonResult delFlag(@PathVariable(name = "userId") String userId) {
           User user = userService.findById(userId);
           if (user == null) {
                return CommonResult.fail("参数有误,请核对");
           }
+          if (user.getDelFlag().equals(1)) {
+               return CommonResult.fail("用户已注销", user);
+          }
+          //0:默认,1:注销
           user.setDelFlag(1);
           userService.updateById(user);
-          return CommonResult.success("注销成功");
+          return CommonResult.success("注销成功", user);
      }
 
      /**

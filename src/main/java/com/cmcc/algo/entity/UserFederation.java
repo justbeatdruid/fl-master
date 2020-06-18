@@ -22,8 +22,8 @@ public class UserFederation {
      @TableField(value = "user_id")
      private Integer userId;
 
-     @TableField(value = "federation_id")
-     private String federationId;
+     @TableField(value = "federation_uuid")
+     private String federationUUid;
 
      @TableField(value = "status")
      private String status;

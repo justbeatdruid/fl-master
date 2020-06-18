@@ -2,6 +2,7 @@ package com.cmcc.algo.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cmcc.algo.common.CommonResult;
+import com.cmcc.algo.common.CommonResultMessage;
 import com.cmcc.algo.common.utils.TokenManager;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.lang.StringUtils;
@@ -26,11 +27,12 @@ public class SysInterceptor extends HandlerInterceptorAdapter {
 
      static {
           DO_NOT_URI_SET.add("/com/cmcc/algo/datafusion/api/v1/user/login");
+          DO_NOT_URI_SET.add("/com/cmcc/algo/datafusion/api/v1/user/register");
 //          System.out.println("-------------->加载拦截器");
      }
 
      private boolean errorReturn(HttpServletResponse response, String errMsg, int errCode) throws IOException {
-          CommonResult rd = CommonResult.fail(errMsg, errCode);
+          CommonResult rd = CommonResultMessage.fail(errMsg, errCode);
           response.setContentType("application/json;charset=utf-8");
           PrintWriter pw = response.getWriter();
           pw.write(JSONObject.toJSONString(rd));
