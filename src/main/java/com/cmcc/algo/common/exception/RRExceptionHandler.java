@@ -3,13 +3,15 @@
 package com.cmcc.algo.common.exception;
 
 import com.cmcc.algo.common.utils.R;
-import org.apache.shiro.authz.AuthorizationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+/*
+import org.apache.shiro.authz.AuthorizationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+*/
 
 /**
  * 异常处理器
@@ -32,6 +34,7 @@ public class RRExceptionHandler {
 		return r;
 	}
 
+        /*
 	@ExceptionHandler(NoHandlerFoundException.class)
 	public R handlerNoFoundException(Exception e) {
 		logger.error(e.getMessage(), e);
@@ -55,4 +58,5 @@ public class RRExceptionHandler {
 		logger.error(e.getMessage(), e);
 		return R.error();
 	}
+        */
 }
