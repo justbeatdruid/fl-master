@@ -31,4 +31,9 @@ public class DatasetVo implements Serializable {
      * 数据大小
      */
     private String size;
+
+    /**
+     * 数据行数
+     */
+    private Integer rows;
 }

@@ -196,7 +196,7 @@ public class FederationController {
     @Transactional
     public FederationVo update(@RequestHeader String token,
                                @PathVariable(name = "id") String id,
-                               @RequestBody FederationDto federationDto) throws Exception {
+                               @RequestBody FederationDto federationDto) throws APIException {
         if (federationDto == null) {
             throw new APIException("请求数据为空");
         }
@@ -255,7 +255,7 @@ public class FederationController {
     @SysLog("update federation status to ready")
     @Transactional
     public FederationVo update(@RequestHeader String token,
-                               @PathVariable(name = "uuid") String uuid) throws Exception {
+                               @PathVariable(name = "uuid") String uuid) throws APIException {
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
@@ -274,7 +274,8 @@ public class FederationController {
             throw new APIException("没有操作权限");
         }
         */
-        if (updatedFederation.getStatus() != 0) {
+        Integer status = updatedFederation.getStatus();
+        if (status != 0 || status != 3 || status != 4) {
             throw new APIException(String.format("不能就绪状态%s的联邦", getReadableStatusFromCode(updatedFederation.getStatus())));
         }
         // attributes update permitted
