@@ -138,7 +138,7 @@ body参数：
 ```
 
 #### 删除联邦
-1. 请求方法：GET
+1. 请求方法：DELETE
 2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/{uuid}
 3. 请求参数：
 
