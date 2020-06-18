@@ -39,6 +39,7 @@ public class FederationEntity implements Serializable {
      */
     @Id
     @GeneratedValue
+    @Column
     private Short id;
 
     /**

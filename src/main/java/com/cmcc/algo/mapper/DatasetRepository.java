@@ -17,5 +17,5 @@ import java.util.List;
  */
 @Repository
 public interface DatasetRepository extends JpaRepository<Dataset, Long> {
-    List<Dataset> findByPartyId(String partyId);
+    List<Dataset> findByPartyId(Integer partyId);
 }
