@@ -51,8 +51,8 @@ public class FederationServiceImpl implements IFederationService {
      }
 
      @Override
-     public FederationEntity getOne(Long id) {
-          return federationRepository.getOne(id);
+     public FederationEntity getOne(String uuid) {
+          return federationRepository.findByUuid(uuid);
      }
 
 }

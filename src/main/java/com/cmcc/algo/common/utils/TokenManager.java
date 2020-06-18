@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.postgresql.copy.CopyOut;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -15,12 +16,11 @@ public class TokenManager {
 
      static class Constant {
           public static final String JWT_ID = "5236A";        //jwtid
-          public static final String JWT_SECERT = "vbrd0000df7adsab41r1asv413c0005d";    //密匙
-//          public static final long JWT_TTL = 5 * 1000;     //token有效时间
+          public static final String JWT_SECRET = "vbrd0000df7adsab41r1asv413c0005d";  //密匙
      }
 
      private static SecretKey generalKey() {
-          byte[] encodedKey = Base64.decode(Constant.JWT_SECERT);
+          byte[] encodedKey = Base64.decode(Constant.JWT_SECRET);
           SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
           return key;
      }
@@ -58,11 +58,6 @@ public class TokenManager {
                Date expDate = new Date(expMillis);
                builder.setExpiration(expDate);
           }
-//          if (ttlMillis >= 0) {
-//               long expMillis = nowMillis + ttlMillis;
-//               Date expDate = new Date(expMillis);
-//               builder.setExpiration(expDate);
-//          }
           return builder.compact();
      }
 

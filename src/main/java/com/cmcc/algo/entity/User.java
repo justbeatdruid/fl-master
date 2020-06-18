@@ -36,10 +36,14 @@ public class User implements Serializable {
      @TableId(value = "id", type = IdType.AUTO)
      private Integer id;
 
+     /**`
+      * 用户唯一ID
+      */
+     private String uuid;
+
      /**
       * 物理机ID
       */
-     @Column(name = "party_id")
      private Integer partyId;
 
      /**
