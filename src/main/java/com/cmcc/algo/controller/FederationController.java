@@ -103,7 +103,7 @@ public class FederationController {
         // TODO
         /*
         boolean isHosts = true;
-        if (federation.getGuest() != userId || !isHosts) {
+        if (federation.getGuest().equals( userId) || !isHosts) {
             throw new APIException("没有操作权限");
         }
         */
@@ -179,9 +179,11 @@ public class FederationController {
             throw new APIException(String.format("联邦UUID%s不存在", id));
         }
 
-        if (removedFederation.getGuest() != userId) {
+        /*
+        if (!removedFederation.getGuest().equals(userId)) {
             throw new APIException("没有操作权限");
         }
+        */
         federationRepository.deleteByUuid(id);
         return;
     }
@@ -215,9 +217,11 @@ public class FederationController {
             throw new APIException(String.format("联邦UUID%s不存在", id));
         }
 
-        if (updatedFederation.getGuest() != userId) {
+        /*
+        if (!updatedFederation.getGuest().equals(userId)) {
             throw new APIException("没有操作权限");
         }
+        */
 
         List<FederationEntity> list = federationRepository.findByName(federation.getName());
         if(CollectionUtils.isNotEmpty(list)){
@@ -265,9 +269,11 @@ public class FederationController {
         if (updatedFederation == null) {
             throw new APIException(String.format("联邦UUID%s不存在", uuid));
         }
-        if (updatedFederation.getGuest() != userId) {
+        /*
+        if (!updatedFederation.getGuest().equals(userId)) {
             throw new APIException("没有操作权限");
         }
+        */
         if (updatedFederation.getStatus() != 0) {
             throw new APIException(String.format("不能就绪状态%s的联邦", getReadableStatusFromCode(updatedFederation.getStatus())));
         }
