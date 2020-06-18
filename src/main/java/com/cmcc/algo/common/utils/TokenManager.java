@@ -21,7 +21,7 @@ public class TokenManager {
 
      private static SecretKey generalKey() {
           byte[] encodedKey = Base64.decode(Constant.JWT_SECRET);
-          SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AEC");
+          SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
           return key;
      }
 
