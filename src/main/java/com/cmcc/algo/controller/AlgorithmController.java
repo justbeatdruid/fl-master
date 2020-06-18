@@ -64,7 +64,7 @@ public class AlgorithmController {
     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
                         @ApiImplicitParam(name = "algorithmId", value = "算法ID")})
     @PostMapping("/one")
-    public CommonResult getAlgorithmById(@RequestHeader String token,  @RequestBody int algorithmId){
+    public CommonResult getAlgorithmById(@RequestHeader String token,  @RequestBody String request){
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
@@ -74,6 +74,7 @@ public class AlgorithmController {
             throw new APIException("token无效");
         }
 
+        int algorithmId = Optional.ofNullable(JSONUtil.parseObj(request).getInt("algorithmId")).orElseThrow(()->new APIException(ResultCode.PARAMETER_CHECK_ERROR, "算法ID为空"));
 
         Algorithm algorithm = Optional.ofNullable(algorithmService.getOne(Wrappers.<Algorithm>lambdaQuery().eq(Algorithm::getId, algorithmId)))
                 .orElseThrow(()->new APIException(ResultCode.NOT_FOUND, "查询无此算法"));
