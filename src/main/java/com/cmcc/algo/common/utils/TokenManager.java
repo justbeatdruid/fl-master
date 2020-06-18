@@ -16,13 +16,12 @@ public class TokenManager {
 
      static class Constant {
           public static final String JWT_ID = "5236A";        //jwtid
-          public static final String JWT_SECERT = "vbrd0000df7adsab41r1asv413c0005d";    //密匙
-//          public static final long JWT_TTL = 5 * 1000;     //token有效时间
+          public static final String JWT_SECRET = "vbrd0000df7adsab41r1asv413c0005d";  //密匙
      }
 
      private static SecretKey generalKey() {
-          byte[] encodedKey = Base64.decode(Constant.JWT_SECERT);
-          SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
+          byte[] encodedKey = Base64.decode(Constant.JWT_SECRET);
+          SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AEC");
           return key;
      }
 
@@ -59,11 +58,6 @@ public class TokenManager {
                Date expDate = new Date(expMillis);
                builder.setExpiration(expDate);
           }
-//          if (ttlMillis >= 0) {
-//               long expMillis = nowMillis + ttlMillis;
-//               Date expDate = new Date(expMillis);
-//               builder.setExpiration(expDate);
-//          }
           return builder.compact();
      }
 

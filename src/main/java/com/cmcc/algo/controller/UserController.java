@@ -84,7 +84,6 @@ public class UserController {
       * @return
       */
      @GetMapping("/list")
-		
      public CommonResult List(User user) {
           QueryWrapper queryWrapper = new QueryWrapper();
           if (org.apache.commons.lang.StringUtils.isNotBlank(user.getUsername())) {

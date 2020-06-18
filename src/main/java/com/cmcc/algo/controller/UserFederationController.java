@@ -10,9 +10,11 @@ import com.cmcc.algo.entity.UserFederation;
 import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.hql.internal.ast.util.SessionFactoryHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -41,7 +43,7 @@ public class UserFederationController {
       * 申请加入联邦
       *
       * @param
-      * @param federationId
+      * @param federationUUid
       * @return
       */
      @PostMapping("/apply")
@@ -73,8 +75,8 @@ public class UserFederationController {
      /**
       * 审批操作
       *
-      * @param userId
-      * @param federationId
+      * @param
+      * @param federationUUid
       * @param type
       * @return
       */
