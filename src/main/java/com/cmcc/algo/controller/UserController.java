@@ -5,13 +5,17 @@ package com.cmcc.algo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.CommonResult;
+import com.cmcc.algo.common.ResultCode;
+import com.cmcc.algo.common.utils.TokenManager;
 import com.cmcc.algo.entity.FederationEntity;
 import com.cmcc.algo.entity.User;
 import com.cmcc.algo.entity.UserFederation;
 import com.cmcc.algo.service.IFederationService;
 import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -30,6 +35,7 @@ import java.util.List;
  * @author hjy
  * @since 2020-05-25
  */
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -57,6 +63,9 @@ public class UserController {
                return CommonResult.fail("用户名或者密码不能为空");
           }
           User user = userService.userLogin(loginUser.getUsername(), loginUser.getPassword());
+          if (user.getDelFlag().equals(3)) {
+               throw new APIException(ResultCode.FORBIDDEN, "已注销,不可登录!!!");
+          }
           return CommonResult.success("登陆成功！", user);
      }
 
@@ -84,12 +93,36 @@ public class UserController {
       * @return
       */
      @GetMapping("/list")
-     public CommonResult List(User user) {
+     public CommonResult list() {
           QueryWrapper queryWrapper = new QueryWrapper();
-          if (org.apache.commons.lang.StringUtils.isNotBlank(user.getUsername())) {
-               queryWrapper.eq("username", user.getUsername());
-          }
           queryWrapper.eq("del_flag", 0);
+          IPage<User> page = userService.page(new Page<>(), queryWrapper);
+          for (User guestUser : page.getRecords()) {
+               List<FederationEntity> list = federationService.findListByGuest(guestUser.getUuid());
+               guestUser.setFederationList(list);
+
+               List<UserFederation> list1 = userFederationService.list(new QueryWrapper<UserFederation>().eq("user_id", guestUser.getId().toString()));
+               List<FederationEntity> list2 = new ArrayList<>();
+               for (UserFederation userFederation : list1) {
+                    FederationEntity federationEntity = federationService.getOne(userFederation.getFederationUUid());
+                    list2.add(federationEntity);
+               }
+               guestUser.setJoinFederation(list2);
+          }
+          return CommonResult.success("查询成功", page);
+     }
+
+     /**
+      * 用户搜索
+      *
+      * @return
+      */
+     @GetMapping("/select")
+     public CommonResult searchUser(@RequestParam String username) {
+          QueryWrapper queryWrapper = new QueryWrapper();
+          if (org.apache.commons.lang.StringUtils.isNotBlank(username)) {
+               queryWrapper.like("username", username);
+          }
           IPage<User> page = userService.page(new Page<>(), queryWrapper);
           for (User guestUser : page.getRecords()) {
                List<FederationEntity> list = federationService.findListByGuest(guestUser.getUuid());
@@ -114,18 +147,18 @@ public class UserController {
       */
      @DeleteMapping("/del/{userId}")
      @Transactional(rollbackFor = Exception.class)
-     public CommonResult delFlag(@PathVariable(name = "userId") String userId) {
+     public CommonResult delFlag(@PathVariable("userId") String userId) {
           User user = userService.findById(userId);
           if (user == null) {
                return CommonResult.fail("参数有误,请核对");
           }
-          if (user.getDelFlag().equals(1)) {
-               return CommonResult.fail("用户已注销", user);
+          if (user.getDelFlag().equals(3)) {
+               throw new APIException(ResultCode.REQUEST_ERROR, "用户已注销");
           }
-          //0:默认,1:注销
-          user.setDelFlag(1);
+          //0:默认,3:注销
+          user.setDelFlag(3);
           userService.updateById(user);
-          return CommonResult.success("注销成功", user);
+          return CommonResult.success("注销成功");
      }
 
      /**

@@ -14,6 +14,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -43,29 +44,29 @@ public class SysInterceptor extends HandlerInterceptorAdapter {
      }
 
      @Override
-     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-             throws Exception {
+     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
           String requestUrl = request.getRequestURI();
           String token = request.getHeader("token");
           if (!DO_NOT_URI_SET.contains(requestUrl)) {
                if (StringUtils.isEmpty(token)) {
-                    return this.errorReturn(response, "无效的token", 401);
-//                    throw new APIException(ResultCode.NOT_FOUND, "无效token");
+                    throw new APIException(ResultCode.FORBIDDEN, "无效token");
                }
-               Claims cla = TokenManager.parseJWT(token);
+               Claims cla = null;
+               try {
+                    cla = TokenManager.parseJWT(token);
+               } catch (Exception e) {
+                    throw new APIException(ResultCode.FORBIDDEN,"token失效,请重新登录！");
+               }
                String openId = cla.getSubject();
                if (StringUtils.isEmpty(openId)) {
-                    return this.errorReturn(response, "无效的token", 401);
-//                    throw new APIException(ResultCode.NOT_FOUND, "无效token");
+                    throw new APIException(ResultCode.FORBIDDEN, "无效token");
                }
                Date d = cla.getExpiration();
                Date now = new Date();
                if (d == null) {
-                    return this.errorReturn(response, "无效的token", 401);
-//                    throw new APIException(ResultCode.NOT_FOUND, "无效token");
+                    throw new APIException(ResultCode.FORBIDDEN, "无效token");
                } else if (now.getTime() > d.getTime()) {
-                    return this.errorReturn(response, "Token超时,请重新登录", 401);
-//                    throw new APIException(ResultCode.NOT_FOUND, "Token超时,请重新登录");
+                    throw new APIException(ResultCode.FORBIDDEN, "Token超时,请重新登录");
                }
           }
           return true;

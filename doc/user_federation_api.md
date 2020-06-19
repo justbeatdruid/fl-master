@@ -1,4 +1,4 @@
-**数据融合API接口文档**
+数据融合API接口文档**
 
 
 **简介**：后台API接口
@@ -37,24 +37,8 @@
 {
     "success": true,
     "code": 200,
-    "message": "注销成功",
-    "data": {
-        "id": 1,
-        "uuid": "5e95e56cd6c8421ca26a28582d4ec6fd",
-        "partyId": 0,
-        "username": "admin",
-        "password": "123",
-        "phone": null,
-        "email": null,
-        "companyPhone": null,
-        "companyName": null,
-        "address": null,
-        "roles": [],
-        "token": null,
-        "delFlag": 1,
-        "federationList": null,
-        "joinFederation": null
-    },
+    "message": "请求成功",
+    "data": "注销成功",
     "pageInfo": null,
     "ext": null
 }
@@ -207,7 +191,8 @@
 
 | 参数名称 | 参数说明 | in   | 是否必须 | 数据类型 |      |
 | -------- | -------- | ---- | -------- | -------- | ---- |
-| user     | 用户列表 |      | false    | string   |      |
+|          |          |      |          |          |      |
+|          |          |      |          |          |      |
 
 **响应示例**:
 
@@ -447,6 +432,20 @@
 | 401    | Unauthorized |              |
 | 403    | Forbidden    |              |
 | 404    | Not Found    |              |
+## 按用户名搜索
+
+**接口描述**:用户名搜索
+
+**接口地址**:`/com/cmcc/algo/datafusion/api/v1/user/select`
+
+**请求方式**：`GET`
+
+| 参数名   | 描述                 |      |
+| -------- | -------------------- | ---- |
+| username | 只针对中文名模糊查询 |      |
+
+
+
 # user-federation-controller
 
 ## 审批申请中成员
@@ -471,7 +470,7 @@
 | 参数名称       | 参数说明       | in    | 是否必须 | 数据类型 | schema |
 | -------------- | -------------- | ----- | -------- | -------- | ------ |
 | federationUUid | federationUUid | query | true     | string   |        |
-|                |                |       |          |          |        |
+| type           | 同意:1,拒绝:2  |       |          |          |        |
 
 **响应示例**:
 
@@ -543,11 +542,10 @@
 
 **请求参数**：
 
-| 参数名称       | 参数说明       | in     | 是否必须 | 数据类型 | schema |
-| -------------- | -------------- | ------ | -------- | -------- | ------ |
-| federationUUid | federationUUid | query  | true     | string   |        |
-| federationUuid | 联邦UUID       |        | false    | string   |        |
-| token          | 头部token信息  | header | false    | string   |        |
+| 参数名称       | 参数说明 | in     | 是否必须 | 数据类型 | schema |
+| -------------- | -------- | ------ | -------- | -------- | ------ |
+| federationUUid | 联邦UUid | query  | true     | string   |        |
+| token          | 头部信息 | header | false    | string   |        |
 
 **响应示例**:
 
@@ -618,9 +616,9 @@
 
 **请求参数**：
 
-| 参数名称 | 参数说明 | in     | 是否必须 | 数据类型 | schema |
-| -------- | -------- | ------ | -------- | -------- | ------ |
-| token    | 联邦UUID | header | false    | string   |        |
+| 参数名称 | 参数说明 | in   | 是否必须 | 数据类型 | schema |
+| -------- | -------- | ---- | -------- | -------- | ------ |
+| userId   | 用户id   |      |          | integer  |        |
 
 **响应示例**:
 
@@ -694,8 +692,7 @@
 
 **接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/list`
 
-
-**请求方式**：`POST`
+**请求方式**：`GET`
 
 
 **consumes**:`["application/json"]`
@@ -707,10 +704,10 @@
 
 **请求参数**：
 
-| 参数名称       | 参数说明       | in    | 是否必须 | 数据类型 | schema |
-| -------------- | -------------- | ----- | -------- | -------- | ------ |
-| federationUUid | federationUUid | query | true     | string   |        |
-| federationUuid | 联邦UUID       |       | false    | string   |        |
+| 参数名称 | 参数说明                   | in   | 是否必须 | 数据类型 | schema |
+| -------- | -------------------------- | ---- | -------- | -------- | ------ |
+| satatus  | 0：申请中成员，1：现有成员 |      | true     | string   |        |
+|          |                            |      |          |          |        |
 
 **响应示例**:
 
@@ -718,24 +715,32 @@
 {
     "success": true,
     "code": 200,
-    "message": "查询成功",
-    "data": {
-        "id": 1,
-        "uuid": "5e95e56cd6c8421ca26a28582d4ec6fd",
-        "partyId": 0,
-        "username": "admin",
-        "password": "123",
-        "phone": null,
-        "email": null,
-        "companyPhone": null,
-        "companyName": null,
-        "address": null,
-        "roles": [],
-        "token": null,
-        "delFlag": 0,
-        "federationList": null,
-        "joinFederation": null
-    },
+    "message": "请求成功",
+    "data": [
+        {
+            "id": 31,
+            "userId": 1,
+            "federationUUid": "365a8fec7fd24c48b43af5c8c7d37383",
+            "status": "1",
+            "user": {
+                "id": 1,
+                "uuid": "5e95e56cd6c8421ca26a28582d4ec6fd",
+                "partyId": 0,
+                "username": "admin",
+                "password": "123",
+                "phone": null,
+                "email": null,
+                "companyPhone": null,
+                "companyName": null,
+                "address": null,
+                "roles": [],
+                "token": null,
+                "delFlag": 0,
+                "federationList": null,
+                "joinFederation": null
+            }
+        }
+    ],
     "pageInfo": null,
     "ext": null
 }
