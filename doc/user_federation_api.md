@@ -555,7 +555,7 @@
     "success": true,
     "code": 200,
     "message": "请求成功",
-    "data": "申请加入成功，待审批！",
+    "data": "申请加入成功！",
     "pageInfo": null,
     "ext": null
 }
@@ -619,8 +619,8 @@
 
 | 参数名称       | 参数说明 | in   | 是否必须 | 数据类型 | schema |
 | -------------- | -------- | ---- | -------- | -------- | ------ |
-| userId         | 用户id   |      |          | integer  |        |
-| federationUUid | 联邦id   |      |          |          |        |
+| userId         | 用户id   |      |          | string   |        |
+| federationUUid | 联邦id   |      |          | string   |        |
 
 **响应示例**:
 
@@ -628,26 +628,10 @@
 {
     "success": true,
     "code": 200,
-    "message": "删除成功",
-    "data": {
-        "id": 1,
-        "uuid": "5e95e56cd6c8421ca26a28582d4ec6fd",
-        "partyId": 0,
-        "username": "admin",
-        "password": "123",
-        "phone": null,
-        "email": null,
-        "companyPhone": null,
-        "companyName": null,
-        "address": null,
-        "roles": [],
-        "token": null,
-        "delFlag": 4,
-        "federationList": null,
-        "joinFederation": null
-    },
-    "pageInfo": null,
-    "ext": null
+    "message": "请求成功",
+    "data": "删除成功",
+    "pageInfo": "",
+    "ext": ""
 }
 ```
 
@@ -706,10 +690,10 @@
 
 **请求参数**：
 
-| 参数名称       | 参数说明                   | in   | 是否必须 | 数据类型 | schema |
-| -------------- | -------------------------- | ---- | -------- | -------- | ------ |
-| status         | 0：申请中成员，1：现有成员 |      | true     | string   |        |
-| federationUUid | 联邦id                     |      |          | string   |        |
+| 参数名称       | 参数说明    | in   | 是否必须 | 数据类型 | schema |
+| -------------- | ----------- | ---- | -------- | -------- | ------ |
+| status         | 0：现有成员 |      | true     | string   |        |
+| federationUUid | 联邦id      |      |          | string   |        |
 
 **响应示例**:
 
@@ -718,31 +702,7 @@
     "success": true,
     "code": 200,
     "message": "请求成功",
-    "data": [
-        {
-            "id": 31,
-            "userId": 1,
-            "federationUUid": "365a8fec7fd24c48b43af5c8c7d37383",
-            "status": "1",
-            "user": {
-                "id": 1,
-                "uuid": "5e95e56cd6c8421ca26a28582d4ec6fd",
-                "partyId": 0,
-                "username": "admin",
-                "password": "123",
-                "phone": null,
-                "email": null,
-                "companyPhone": null,
-                "companyName": null,
-                "address": null,
-                "roles": [],
-                "token": null,
-                "delFlag": 0,
-                "federationList": null,
-                "joinFederation": null
-            }
-        }
-    ],
+    "data": [],
     "pageInfo": null,
     "ext": null
 }
