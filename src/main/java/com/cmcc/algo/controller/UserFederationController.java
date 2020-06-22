@@ -10,19 +10,13 @@ import com.cmcc.algo.entity.User;
 import com.cmcc.algo.entity.UserFederation;
 import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
-import jodd.madvoc.meta.method.GET;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.hql.internal.ast.util.SessionFactoryHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @PackageName: com.cmcc.algo.controller
@@ -87,7 +81,10 @@ public class UserFederationController {
       */
      @PutMapping("/access")
      @Transactional(rollbackFor = Exception.class)
-     public CommonResult access(@RequestParam Integer userId, @RequestParam String federationUUid, @RequestParam String type) {
+     public CommonResult access(@RequestBody Map<String, String> params) {
+          String userId = params.get("userId");
+          String federationUUid = params.get("federationUUid");
+          String type = params.get("type");
           QueryWrapper queryWrapper = new QueryWrapper();
           queryWrapper.eq("user_id", userId);
           queryWrapper.eq("federation_uuid", federationUUid);
