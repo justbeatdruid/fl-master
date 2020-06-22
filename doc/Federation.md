@@ -225,7 +225,7 @@ uuid | string | 联邦uuid
 
 #### 数据集接口
 1. 请求方法：GET
-2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/datasets
+2. 请求路径：/com/cmcc/algo/datafusion/api/v1/datasets
 3. 返回Body：
 ```json
 {
@@ -284,7 +284,8 @@ type | string | 类型，0表示训练数据，1表示预测数据
       "rows": 100000,
       "userId": 1,
       "federationUuid": "cb68ca3fe5b8420c9bf940af9db047e1",
-      "type": 0 // 
+      "type": 0,
+      "editable": true //是否可编辑（是否显示删除按钮）
     }
   ],
   "pageInfo": "",
@@ -307,3 +308,13 @@ type | string | 类型，0表示训练数据，1表示预测数据
     "id": 4 //数据集ID
 }
 ```
+
+#### 删除联邦数据集
+1. 请求方法：DELETE
+2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/{uuid}/datasets?type=0
+3. 请求参数：
+
+| 字段 | 类型 | 说明 |
+| ---- | ---- | ---- |
+uuid | string | 联邦uuid
+type | string | 类型，0表示训练数据，1表示预测数据 
