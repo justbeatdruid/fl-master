@@ -97,4 +97,7 @@ public class FederationDataset implements Serializable {
         this.federationUuid = federationUuid;
         this.userId = userId;
     }
+
+    public FederationDataset() {
+    }
 }
