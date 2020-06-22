@@ -59,14 +59,14 @@ public class UserFederationController {
           queryWrapper.eq("federation_uuid", federationUUid);
           List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
           if (userFederationList.size() > 0) {
-               throw new APIException(ResultCode.FORBIDDEN, "重复申请或已被拒绝加入联邦！");
+               throw new APIException(ResultCode.FORBIDDEN, "重复申请!");
           }
           UserFederation userFederation = new UserFederation();
           userFederation.setUserId(Integer.parseInt(userId));
           userFederation.setFederationUUid(federationUUid);
           userFederation.setStatus("0");
           userFederationService.save(userFederation);
-          return CommonResult.success("申请加入成功，待审批！");
+          return CommonResult.success("申请加入成功");
      }
 
      /**
@@ -76,7 +76,7 @@ public class UserFederationController {
       * @param federationUUid
       * @param type
       * @return
-      */
+      *//*
      @PutMapping("/access")
      @Transactional(rollbackFor = Exception.class)
      public CommonResult access(@RequestBody Map<String, String> params) {
@@ -106,7 +106,7 @@ public class UserFederationController {
                default:
                     throw new APIException(ResultCode.FORBIDDEN, "参数异常！！！");
           }
-     }
+     }*/
 
 
      /**
@@ -117,7 +117,7 @@ public class UserFederationController {
       */
      @GetMapping("/list")
      public CommonResult list(@RequestParam String federationUUid, @RequestParam String status) {
-          if (status.equals("0") || status.equals("1")) {
+          if (status.equals("0")) {
                QueryWrapper queryWrapper = new QueryWrapper();
                queryWrapper.eq("status", status);
                queryWrapper.eq("federation_uuid", federationUUid);
@@ -132,7 +132,7 @@ public class UserFederationController {
                }
                return CommonResult.success(userFederationList);
           }
-          return CommonResult.fail(ResultCode.NOT_FOUND);
+          return CommonResult.fail(ResultCode.PARAMETER_CHECK_ERROR);
      }
 
      /**
