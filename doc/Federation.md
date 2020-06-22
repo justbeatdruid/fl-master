@@ -222,3 +222,69 @@ uuid | string | 联邦uuid
   "ext": null
 }
 ```
+
+#### 数据集接口
+1. 请求方法：GET
+2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/datasets
+3. 返回Body：
+```json
+{
+  "success": true,
+  "code": 200,
+  "message": "请求成功",
+  "data": [
+    {
+      "name": "aaaaa.csv",
+      "updatedAt": 1592454896000,
+      "size": "20MB",
+      "rows": 100000
+    },
+    {
+      "name": "ddddd.csv",
+      "updatedAt": 1592454896000,
+      "size": "20MB",
+      "rows": 100000
+    },
+    {
+      "name": "ddddd.csv",
+      "updatedAt": 1592627696000,
+      "size": "5KB",
+      "rows": 100
+    }
+  ],
+  "pageInfo": "",
+  "ext": ""
+}
+```
+
+#### 联邦数据集接口
+1. 请求方法：GET
+2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/{uuid}/datasets?type=0
+3. 请求参数：
+
+| 字段 | 类型 | 说明 |
+| ---- | ---- | ---- |
+uuid | string | 联邦uuid
+type | string | 类型，0表示训练数据，1表示预测数据 
+4. 返回Body：
+```json
+{
+  "success": true,
+  "code": 200,
+  "message": "请求成功",
+  "data": [
+    {
+      "id": 1,
+      "name": "aaaaa.csv",
+      "updatedAt": 1592454896000,
+      "size": "20MB",
+      "rows": 100000,
+      "userId": 1,
+      "federationUuid": "cb68ca3fe5b8420c9bf940af9db047e1",
+      "type": 0 // 
+    }
+  ],
+  "pageInfo": "",
+  "ext": ""
+}
+```
