@@ -36,8 +36,8 @@ public class FederationServiceImpl implements IFederationService {
           //        new QueryWrapper<FederationEntity>()
           //                .like(StringUtils.isNotBlank(name), "name", name)
           //);
-          if (name != null && name != "") {
-               return federationRepository.findByNameLike(name);
+          if (name != null && name.length() > 0) {
+               return federationRepository.findByNameLike('%' + name + '%');
           }
           return federationRepository.findAll();
      }

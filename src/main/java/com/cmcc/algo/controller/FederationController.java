@@ -81,6 +81,9 @@ public class FederationController {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
+        if (userId == null) {
+            throw new APIException("获取用户ID异常");
+        }
 
         params.put("userId", userId);
         List<FederationEntity> page = federationService.queryFederations(params);
