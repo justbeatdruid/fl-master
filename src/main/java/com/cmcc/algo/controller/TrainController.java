@@ -98,28 +98,29 @@ public class TrainController {
         }
 
         // 向Agent提交训练任务
-        String submitUrl = agentConfig.getAgentUrl()+SUBMIT_TRAIN_TASK_URL;
-
-        FederationEntity federationEntity = federationRepository.findByUuid(federationUuid);
-
-        //TODO 数据集参数和训练参数放在一个map中
-
-        Train train = Builder.of(Train::new)
-                .with(Train::setFederationUuid, federationUuid)
-                .with(Train::setUuid, IdUtil.randomUUID())
-                .with(Train::setAlgorithmId, federationEntity.getAlgorithmId())
-                .with(Train::setStatus, 0)
-                .with(Train::setStartTime, LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))
-                .with(Train::setTrainParam, federationEntity.getParam())
-                .build();
-
-        if (!trainService.save(train)) {
-            log.warn("train record is failed to save, probably because db connection error");
-            throw new APIException(ResultCode.NOT_FOUND, "保存失败");
-        }
-
-        String str = JSONUtil.toJsonStr(train);
-        String responseBody = HttpUtil.post(submitUrl,str);
+//        String submitUrl = agentConfig.getAgentUrl()+SUBMIT_TRAIN_TASK_URL;
+//
+//        FederationEntity federationEntity = federationRepository.findByUuid(federationUuid);
+//
+//        //TODO 数据集参数和训练参数放在一个map中
+//
+//        Train train = Builder.of(Train::new)
+//                .with(Train::setFederationUuid, federationUuid)
+//                .with(Train::setUuid, IdUtil.randomUUID())
+//                .with(Train::setAlgorithmId, federationEntity.getAlgorithmId())
+//                .with(Train::setStatus, 0)
+//                .with(Train::setStartTime, LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))
+//                .with(Train::setTrainParam, federationEntity.getParam())
+//                .build();
+//
+//        if (!trainService.save(train)) {
+//            log.warn("train record is failed to save, probably because db connection error");
+//            throw new APIException(ResultCode.NOT_FOUND, "保存失败");
+//        }
+//
+//        String str = JSONUtil.toJsonStr(train);
+//        String responseBody = HttpUtil.post(submitUrl,str);
+        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
 
         if (!(boolean) JSONUtil.parseObj(responseBody).get("success")) {
             log.warn("train task is failed to submit, the error detail is in agent log");
