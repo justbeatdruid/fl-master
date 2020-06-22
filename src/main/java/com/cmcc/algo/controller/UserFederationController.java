@@ -131,6 +131,8 @@ public class UserFederationController {
                     userFederation.setUser(user);
                }
                return CommonResult.success(userFederationList);
+          } else if (status.equals("1")) {
+               return CommonResult.success(new int[0]);
           }
           return CommonResult.fail(ResultCode.PARAMETER_CHECK_ERROR);
      }
