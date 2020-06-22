@@ -76,8 +76,8 @@ public class FederationDataset implements Serializable {
      * 数据party
      */
     @Column
-    @ApiModelProperty(value = "userId")
-    private Integer userId;
+    @ApiModelProperty(value = "partyId")
+    private Integer partyId;
 
     /**
      * 联邦ID
@@ -93,9 +93,9 @@ public class FederationDataset implements Serializable {
     @ApiModelProperty(value = "数据类别")
     private Short type;
 
-    public FederationDataset(String federationUuid, Integer userId) {
+    public FederationDataset(String federationUuid, Integer partyId) {
         this.federationUuid = federationUuid;
-        this.userId = userId;
+        this.partyId = partyId;
     }
 
     public FederationDataset() {

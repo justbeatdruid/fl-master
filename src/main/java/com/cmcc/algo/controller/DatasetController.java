@@ -71,6 +71,7 @@ public class DatasetController {
 
     public DatasetVo getDatasetVo(Dataset dataset) {
         DatasetVo datasetVo = new DatasetVo();
+        datasetVo.setId(dataset.getId());
         datasetVo.setName(dataset.getName());
         datasetVo.setUpdatedAt(dataset.getUpdatedAt());
         datasetVo.setSize(dataset.getSize());
