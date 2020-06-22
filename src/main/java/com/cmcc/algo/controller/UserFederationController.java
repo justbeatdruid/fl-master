@@ -13,6 +13,7 @@ import com.cmcc.algo.service.IUserService;
 import jodd.madvoc.meta.method.GET;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.hql.internal.ast.util.SessionFactoryHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +66,9 @@ public class UserFederationController {
           if (userFederationList.size() > 0) {
                throw new APIException("重复申请！");
           }
+          if (userFederationList.get(0).getStatus().equals("2")) {
+               throw new APIException(ResultCode.FORBIDDEN, "禁止加入联邦!");
+          }
           UserFederation userFederation = new UserFederation();
           userFederation.setUserId(Integer.parseInt(userId));
           userFederation.setFederationUUid(federationUUid);
@@ -83,40 +87,29 @@ public class UserFederationController {
       */
      @PostMapping("/access")
      @Transactional(rollbackFor = Exception.class)
-     public CommonResult access(@RequestHeader String token, @RequestParam String federationUUid, @RequestParam String type) {
-          String userId = "";
-          try {
-               userId = TokenManager.parseJWT(token).getId();
-               log.info("get user id", userId);
-          } catch (Exception e) {
-               log.error("cannot parse token", e.getMessage(), e);
-               throw new APIException("token无效");
-          }
+     public CommonResult access(@RequestParam String userId, @RequestParam String federationUUid, @RequestParam String type) {
           QueryWrapper queryWrapper = new QueryWrapper();
           queryWrapper.eq("user_id", userId);
           queryWrapper.eq("federation_uuid", federationUUid);
           List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
           if (CollectionUtils.isEmpty(userFederationList)) {
-               throw new APIException("数据异常");
+               throw new APIException(ResultCode.NOT_FOUND, "数据异常");
           }
-          if (userFederationList.size() > 1) {
-               throw new APIException("重复申请");
+          if (userFederationList.get(0).getStatus().equals("1") || userFederationList.get(0).getStatus().equals("2")) {
+               throw new APIException(ResultCode.REQUEST_ERROR, "已审批,重复操作!");
           }
           //默认:0,同意:1,拒绝:2
           switch (type) {
                case "1":
-                    if ("1".equals(userFederationList.get(0).getStatus())) {
-                         throw new APIException("您已加入！");
-                    }
                     userFederationList.get(0).setStatus("1");
                     userFederationService.updateById(userFederationList.get(0));
-                    return CommonResult.success("加入成功");
+                    return CommonResult.success("审批成功,已加入");
                case "2":
                     userFederationList.get(0).setStatus("2");
                     userFederationService.updateById(userFederationList.get(0));
-                    return CommonResult.success("拒绝加入");
+                    return CommonResult.success("已拒绝加入！");
                default:
-                    throw new APIException("参数异常！！！");
+                    throw new APIException(ResultCode.FORBIDDEN, "参数异常！！！");
           }
      }
 
@@ -134,7 +127,8 @@ public class UserFederationController {
                queryWrapper.eq("status", status);
                List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
                if (CollectionUtils.isEmpty(userFederationList)) {
-                    throw new APIException("数据为空");
+                    int[] zero = new int[0];
+                    return CommonResult.success("数据为空", zero);
                }
                for (UserFederation userFederation : userFederationList) {
                     User user = userService.findById(userFederation.getUserId().toString());
@@ -142,7 +136,7 @@ public class UserFederationController {
                }
                return CommonResult.success(userFederationList);
           }
-          return CommonResult.fail("参数异常");
+          return CommonResult.fail(ResultCode.NOT_FOUND);
      }
 
      /**
@@ -151,16 +145,19 @@ public class UserFederationController {
       * @param token
       * @return
       */
-     @DeleteMapping("/delete/{userId}")
+     @DeleteMapping("/delete")
      @Transactional(rollbackFor = Exception.class)
-     public CommonResult delUser(@PathVariable("userId") String userId) {
-          User user = userService.findById(userId);
-          if (user == null || user.getDelFlag().equals(4)) {
-               throw new APIException(ResultCode.NOT_FOUND, "数据异常");
+     public CommonResult delUser(@RequestParam String userId, @RequestParam String federationUUid) {
+          QueryWrapper queryWrapper = new QueryWrapper();
+          queryWrapper.eq("user_id", userId);
+          queryWrapper.eq("federation_uuid", federationUUid);
+          List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
+          if (userFederationList.get(0).getStatus().equals("4")) {
+               throw new APIException(ResultCode.FORBIDDEN, "参数异常,请核对");
           }
           //4:删除退出联邦
-          user.setDelFlag(4);
-          userService.updateById(user);
+          userFederationList.get(0).setStatus("4");
+          userFederationService.updateById(userFederationList.get(0));
           return CommonResult.success("删除成功");
      }
 

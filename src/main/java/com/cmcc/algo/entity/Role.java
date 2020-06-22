@@ -1,5 +1,8 @@
 package com.cmcc.algo.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -15,10 +18,17 @@ import java.util.Set;
 @TableName("tb_role")
 public class Role implements Serializable {
      private static final long serialVersionUID = 1L;
+
+     @TableId(value = "id", type = IdType.AUTO)
      private Integer id;
-     private String name; // 角色名称
-     private String keyword; // 角色关键字，用于权限控制
-     private String description; // 描述
-     private Set<User> users = new HashSet<>(0);
-     private LinkedHashSet<Menu> menus = new LinkedHashSet<>(0);
+
+     @TableField(value = "rolename")
+     private String roleName;
+
+     @TableField(value = "keyword")
+     private String keyword;
+
+     @TableField(value = "description")
+     private String description;
+
 }
