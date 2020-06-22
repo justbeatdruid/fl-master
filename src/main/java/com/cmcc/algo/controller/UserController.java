@@ -5,27 +5,26 @@ package com.cmcc.algo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.additional.query.impl.QueryChainWrapper;
+import com.cmcc.algo.aop.bean.PermissionCode;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.CommonResult;
 import com.cmcc.algo.common.ResultCode;
 import com.cmcc.algo.common.utils.TokenManager;
-import com.cmcc.algo.entity.FederationEntity;
-import com.cmcc.algo.entity.User;
-import com.cmcc.algo.entity.UserFederation;
-import com.cmcc.algo.service.IFederationService;
-import com.cmcc.algo.service.IUserFederationService;
-import com.cmcc.algo.service.IUserService;
+import com.cmcc.algo.constant.LoginConstant;
+import com.cmcc.algo.entity.*;
+import com.cmcc.algo.service.*;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.relation.RoleResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -49,6 +48,14 @@ public class UserController {
      @Autowired
      IUserFederationService userFederationService;
 
+     @Autowired
+     IRoleService roleService;
+
+     @Autowired
+     IRoleMenuService roleMenuService;
+
+     @Autowired
+     IMenuService menuService;
 
      /**
       * 登录
@@ -57,15 +64,34 @@ public class UserController {
       * @return
       */
      @PostMapping("/login")
-     public CommonResult login(@RequestBody User loginUser) {
+     public CommonResult login(@RequestBody User loginUser, HttpSession session) {
 
           if (StringUtils.isEmpty(loginUser.getUsername()) || StringUtils.isEmpty(loginUser.getPassword())) {
                return CommonResult.fail("用户名或者密码不能为空");
           }
           User user = userService.userLogin(loginUser.getUsername(), loginUser.getPassword());
           if (user.getDelFlag().equals(3)) {
-               throw new APIException(ResultCode.FORBIDDEN, "已注销,不可登录!!!");
+               int[] zero = new int[0];
+               throw new APIException(ResultCode.FORBIDDEN, "已注销,不可登录!!!", zero);
           }
+          //查询用户权限列表
+          Set permissionSet = new HashSet();
+          List<Role> roleList = roleService.list(new QueryWrapper<Role>().eq("rolename", user.getRole()));
+          for (Role role : roleList) {
+               List<RoleMenu> roleMenuList = roleMenuService.list(
+                       new QueryWrapper<RoleMenu>().eq("role_id", role.getId()));
+               for (RoleMenu roleMenu : roleMenuList) {
+                    Menu menu = menuService.getById(roleMenu.getMenuId());
+                    if (menu == null) {
+                         return CommonResult.success("资源不存在");
+                    }
+                    if (StringUtils.isNotEmpty(menu.getPermissionCode())) {
+                         permissionSet.add(menu.getPermissionCode());
+                    }
+               }
+          }
+          user.setPermissionCode(permissionSet);
+          session.setAttribute(LoginConstant.SESSION_USER, user);
           return CommonResult.success("登陆成功！", user);
      }
 
@@ -92,22 +118,23 @@ public class UserController {
       * @param user
       * @return
       */
+//     @PermissionCode("user:list")
      @GetMapping("/list")
      public CommonResult list() {
           QueryWrapper queryWrapper = new QueryWrapper();
           queryWrapper.eq("del_flag", 0);
           IPage<User> page = userService.page(new Page<>(), queryWrapper);
-          for (User guestUser : page.getRecords()) {
-               List<FederationEntity> list = federationService.findListByGuest(guestUser.getUuid());
-               guestUser.setFederationList(list);
-
-               List<UserFederation> list1 = userFederationService.list(new QueryWrapper<UserFederation>().eq("user_id", guestUser.getId().toString()));
-               List<FederationEntity> list2 = new ArrayList<>();
-               for (UserFederation userFederation : list1) {
+          for (User user : page.getRecords()) {
+               List<FederationEntity> guestList = federationService.findListByGuest(String.valueOf(user.getId()));
+               user.setCreatedFederation(guestList);
+               List<UserFederation> hostList = userFederationService.list(
+                       new QueryWrapper<UserFederation>().eq("user_id", String.valueOf(user.getId())));
+               List list = new ArrayList<>();
+               for (UserFederation userFederation : hostList) {
                     FederationEntity federationEntity = federationService.getOne(userFederation.getFederationUUid());
-                    list2.add(federationEntity);
+                    list.add(federationEntity);
                }
-               guestUser.setJoinFederation(list2);
+               user.setPartakeFederation(list);
           }
           return CommonResult.success("查询成功", page);
      }
@@ -125,16 +152,16 @@ public class UserController {
           }
           IPage<User> page = userService.page(new Page<>(), queryWrapper);
           for (User guestUser : page.getRecords()) {
-               List<FederationEntity> list = federationService.findListByGuest(guestUser.getUuid());
-               guestUser.setFederationList(list);
+               List<FederationEntity> createList = federationService.findListByGuest(String.valueOf(guestUser.getId()));
+               guestUser.setCreatedFederation(createList);
 
-               List<UserFederation> list1 = userFederationService.list(new QueryWrapper<UserFederation>().eq("user_id", guestUser.getId().toString()));
-               List<FederationEntity> list2 = new ArrayList<>();
-               for (UserFederation userFederation : list1) {
+               List<UserFederation> partakeList = userFederationService.list(new QueryWrapper<UserFederation>().eq("user_id", guestUser.getId().toString()));
+               List<FederationEntity> list = new ArrayList<>();
+               for (UserFederation userFederation : partakeList) {
                     FederationEntity federationEntity = federationService.getOne(userFederation.getFederationUUid());
-                    list2.add(federationEntity);
+                    list.add(federationEntity);
                }
-               guestUser.setJoinFederation(list2);
+               guestUser.setPartakeFederation(list);
           }
           return CommonResult.success("查询成功", page);
      }
@@ -150,15 +177,15 @@ public class UserController {
      public CommonResult delFlag(@PathVariable("userId") String userId) {
           User user = userService.findById(userId);
           if (user == null) {
-               return CommonResult.fail("参数有误,请核对");
+               return CommonResult.fail(ResultCode.NOT_FOUND, new int[0]);
           }
           if (user.getDelFlag().equals(3)) {
-               throw new APIException(ResultCode.REQUEST_ERROR, "用户已注销");
+               throw new APIException(ResultCode.REQUEST_ERROR, "用户已注销", new int[0]);
           }
           //0:默认,3:注销
           user.setDelFlag(3);
           userService.updateById(user);
-          return CommonResult.success("注销成功");
+          return CommonResult.success("注销成功", new int[0]);
      }
 
      /**

@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.Column;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,7 @@ public class User implements Serializable {
      /**
       * 物理机ID
       */
+     @TableField(exist = false)
      private Integer partyId;
 
      /**
@@ -85,13 +87,19 @@ public class User implements Serializable {
       * 对应角色集合
       */
      @TableField(exist = false)
-     private Set<Role> roles = new HashSet<>(0);
+     private String role;
 
      /**
       * token
       */
      @TableField(exist = false)
      private String token;
+
+     /**
+      * 角色
+      */
+     @TableField(exist = false)
+     private Set permissionCode = new HashSet();
 
      /**
       * 删除标志位，0为正常，1为注销状态
@@ -102,12 +110,12 @@ public class User implements Serializable {
       * 创建的联邦
       */
      @TableField(exist = false)
-     private List<FederationEntity> federationList;
+     private List<FederationEntity> createdFederation = new ArrayList<>();
 
      /**
       * 参与的联邦
       */
      @TableField(exist = false)
-     private List<FederationEntity> joinFederation;
+     private List<FederationEntity> partakeFederation = new ArrayList<>();
 
 }
