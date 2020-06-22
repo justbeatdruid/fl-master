@@ -48,11 +48,14 @@ public class DatasetController {
         Integer partyId = -1;
         try {
             String userId = TokenManager.parseJWT(token).getId();
-            User user = userService.findById(userId);
-            partyId = user.getPartyId();
+            //User user = userService.findById(userId);
+            partyId = Integer.valueOf(userId);;
         }catch(Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
+        }
+        if (partyId == -1) {
+            throw new APIException("无法获取partyId");
         }
 
         List<Dataset> page = datasetRepository.findByPartyId(partyId);

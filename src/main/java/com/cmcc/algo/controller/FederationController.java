@@ -312,7 +312,11 @@ public class FederationController {
             throw new APIException("token无效");
         }
         */
-        Short type = Short.parseShort((String) params.get("type"));
+        String typeParam = (String) params.get("type");
+        if ( !typeParam.equals("0") && !typeParam.equals("1") ){
+            throw new APIException("错误的联邦类型参数");
+        }
+        Short type = Short.parseShort(typeParam);
         // Step 1: get all federation parties
         FederationEntity federation = federationRepository.findByUuid(uuid);
         if (federation == null) {
