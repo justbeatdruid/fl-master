@@ -80,14 +80,14 @@ public class UserFederationController {
      /**
       * 审批操作
       *
-      * @param
+      * @param userId
       * @param federationUUid
       * @param type
       * @return
       */
-     @PostMapping("/access")
+     @PutMapping("/access")
      @Transactional(rollbackFor = Exception.class)
-     public CommonResult access(@RequestParam String userId, @RequestParam String federationUUid, @RequestParam String type) {
+     public CommonResult access(@RequestParam Integer userId, @RequestParam String federationUUid, @RequestParam String type) {
           QueryWrapper queryWrapper = new QueryWrapper();
           queryWrapper.eq("user_id", userId);
           queryWrapper.eq("federation_uuid", federationUUid);
@@ -117,7 +117,7 @@ public class UserFederationController {
      /**
       * 我的联邦成员列表
       *
-      * @param federationUUid
+      * @param status
       * @return
       */
      @GetMapping("/list")
@@ -142,12 +142,12 @@ public class UserFederationController {
      /**
       * 删除联邦现有用户
       *
-      * @param token
+      * @param
       * @return
       */
      @DeleteMapping("/delete")
      @Transactional(rollbackFor = Exception.class)
-     public CommonResult delUser(@RequestParam String userId, @RequestParam String federationUUid) {
+     public CommonResult delUser(@RequestParam Integer userId, @RequestParam String federationUUid) {
           QueryWrapper queryWrapper = new QueryWrapper();
           queryWrapper.eq("user_id", userId);
           queryWrapper.eq("federation_uuid", federationUUid);
