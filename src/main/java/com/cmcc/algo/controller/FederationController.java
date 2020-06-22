@@ -1,6 +1,6 @@
 package com.cmcc.algo.controller;
 
-//import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.cmcc.algo.common.annotation.SysLog;
@@ -9,10 +9,14 @@ import com.cmcc.algo.common.utils.TokenManager;
 import com.cmcc.algo.dto.FederationDto;
 import com.cmcc.algo.dto.Statistic;
 import com.cmcc.algo.entity.FederationEntity;
+import com.cmcc.algo.entity.FederationDataset;
+import com.cmcc.algo.entity.UserFederation;
 import com.cmcc.algo.mapper.FederationRepository;
+import com.cmcc.algo.mapper.FederationDatasetRepository;
 import com.cmcc.algo.vo.FederationVo;
 import com.cmcc.algo.vo.DataFormatVo;
 import com.cmcc.algo.service.IFederationService;
+import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -54,6 +58,10 @@ public class FederationController {
     private IUserService userService;
     @Autowired
     private FederationRepository federationRepository;
+    @Autowired
+    private FederationDatasetRepository federationDatasetRepository;
+    @Autowired
+    private IUserFederationService userFederationService;
 
     /**
      * list federations
@@ -222,10 +230,11 @@ public class FederationController {
             throw new APIException("没有操作权限");
         }
         */
-
-        List<FederationEntity> list = federationRepository.findByName(federation.getName());
-        if(CollectionUtils.isNotEmpty(list)){
-            throw new APIException("名字重复，请重试。");
+        if (federation.getName() != null && !federation.getName().equals(updatedFederation.getName())) {
+            List<FederationEntity> list = federationRepository.findByName(federation.getName());
+            if(CollectionUtils.isNotEmpty(list)){
+                throw new APIException("名字重复，请重试。");
+            }
         }
         // attributes update permitted
         if (federation.getName() != null) {
@@ -282,6 +291,52 @@ public class FederationController {
         updatedFederation.setStatus(1);
         federationRepository.save(updatedFederation);
         return getFederationVo(updatedFederation, userId);
+    }
+
+    /**
+     * update a federation
+     */
+    @GetMapping("/{uuid}/datasets")
+    @SysLog("query datasets")
+    @Transactional
+    public List<FederationDataset> trainDataset(@RequestHeader String token,
+                                                @RequestParam Map<String, Object> params,
+                                                @PathVariable(name = "uuid") String uuid) throws APIException {
+        /*
+        String userId = "";
+        try {
+            userId = TokenManager.parseJWT(token).getId();
+            log.info("get user id", userId);
+        }catch(Exception e) {
+            log.error("cannot parse token", e.getMessage(), e);
+            throw new APIException("token无效");
+        }
+        */
+        Short type = Short.parseShort((String) params.get("type"));
+        // Step 1: get all federation parties
+        FederationEntity federation = federationRepository.findByUuid(uuid);
+        if (federation == null) {
+            throw new APIException(String.format("联邦UUID%s不存在", uuid));
+        }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("federation_uuid", uuid);
+        List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
+        Map<Integer, Boolean> datasetMap = new HashMap<Integer, Boolean>();
+        for (UserFederation uf : userFederationList) {
+            datasetMap.put(uf.getUserId(), new Boolean(false));
+        }
+
+        // Step 2: get all existed federation datasets
+        List<FederationDataset> federationDatasets = federationDatasetRepository.findByFederationUuidAndType(uuid, type);
+
+        //Step 3: merge dataset with parties
+        for (FederationDataset fd : federationDatasets) {
+            datasetMap.remove(fd.getUserId());
+        }
+        for(Integer datasetUserId : datasetMap.keySet()){
+            federationDatasets.add(new FederationDataset(uuid, datasetUserId));
+        }
+        return federationDatasets;
     }
 
     /**
