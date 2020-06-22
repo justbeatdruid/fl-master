@@ -116,10 +116,11 @@ public class UserFederationController {
       * @return
       */
      @GetMapping("/list")
-     public CommonResult list(@RequestParam String status) {
+     public CommonResult list(@RequestParam String federationUUid, @RequestParam String status) {
           if (status.equals("0") || status.equals("1")) {
                QueryWrapper queryWrapper = new QueryWrapper();
                queryWrapper.eq("status", status);
+               queryWrapper.eq("federation_uuid", federationUUid);
                List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
                if (CollectionUtils.isEmpty(userFederationList)) {
                     int[] zero = new int[0];
