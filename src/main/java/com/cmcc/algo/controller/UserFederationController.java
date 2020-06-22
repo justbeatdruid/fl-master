@@ -44,7 +44,7 @@ public class UserFederationController {
       */
      @PostMapping("/apply")
      @Transactional(rollbackFor = Exception.class)
-     public CommonResult apply(@RequestHeader String token, @RequestParam String federationUUid) {
+     public CommonResult apply(@RequestHeader String token, @RequestBody Map<String, String> params) {
           String userId = "";
           try {
                userId = TokenManager.parseJWT(token).getId();
@@ -53,15 +53,13 @@ public class UserFederationController {
                log.error("cannot parse token", e.getMessage(), e);
                throw new APIException("token无效");
           }
+          String federationUUid = params.get("federationUUid");
           QueryWrapper queryWrapper = new QueryWrapper();
           queryWrapper.eq("user_id", userId);
           queryWrapper.eq("federation_uuid", federationUUid);
           List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
           if (userFederationList.size() > 0) {
-               throw new APIException("重复申请！");
-          }
-          if (userFederationList.get(0).getStatus().equals("2")) {
-               throw new APIException(ResultCode.FORBIDDEN, "禁止加入联邦!");
+               throw new APIException(ResultCode.FORBIDDEN, "重复申请或已被拒绝加入联邦！");
           }
           UserFederation userFederation = new UserFederation();
           userFederation.setUserId(Integer.parseInt(userId));
@@ -118,10 +116,11 @@ public class UserFederationController {
       * @return
       */
      @GetMapping("/list")
-     public CommonResult list(@RequestParam String status) {
+     public CommonResult list(@RequestParam String federationUUid, @RequestParam String status) {
           if (status.equals("0") || status.equals("1")) {
                QueryWrapper queryWrapper = new QueryWrapper();
                queryWrapper.eq("status", status);
+               queryWrapper.eq("federation_uuid", federationUUid);
                List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
                if (CollectionUtils.isEmpty(userFederationList)) {
                     int[] zero = new int[0];
@@ -144,7 +143,9 @@ public class UserFederationController {
       */
      @DeleteMapping("/delete")
      @Transactional(rollbackFor = Exception.class)
-     public CommonResult delUser(@RequestParam Integer userId, @RequestParam String federationUUid) {
+     public CommonResult delUser(@RequestBody Map<String, String> params) {
+          String userId = params.get("userId");
+          String federationUUid = params.get("federationUUid");
           QueryWrapper queryWrapper = new QueryWrapper();
           queryWrapper.eq("user_id", userId);
           queryWrapper.eq("federation_uuid", federationUUid);
