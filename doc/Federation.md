@@ -234,19 +234,22 @@ uuid | string | 联邦uuid
   "message": "请求成功",
   "data": [
     {
+      "id": 1,
       "name": "aaaaa.csv",
       "updatedAt": 1592454896000,
       "size": "20MB",
       "rows": 100000
     },
     {
+      "id": 2,
       "name": "ddddd.csv",
       "updatedAt": 1592454896000,
       "size": "20MB",
       "rows": 100000
     },
     {
-      "name": "ddddd.csv",
+      "id": 3,
+      "name": "dddddd.csv",
       "updatedAt": 1592627696000,
       "size": "5KB",
       "rows": 100
@@ -286,5 +289,21 @@ type | string | 类型，0表示训练数据，1表示预测数据
   ],
   "pageInfo": "",
   "ext": ""
+}
+```
+
+#### 在联邦添加训练/预测数据
+1. 请求方法：POST
+2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/{uuid}/datasets?type=0
+3. 请求参数：
+
+| 字段 | 类型 | 说明 |
+| ---- | ---- | ---- |
+uuid | string | 联邦uuid
+type | string | 类型，0表示训练数据，1表示预测数据 
+4. 请求body
+```json:
+{
+    "id": 4 //数据集ID
 }
 ```
