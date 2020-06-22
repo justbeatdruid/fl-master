@@ -17,6 +17,7 @@ public class DatasetVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Short Id;
     /**
      * 上传文件路径
      */

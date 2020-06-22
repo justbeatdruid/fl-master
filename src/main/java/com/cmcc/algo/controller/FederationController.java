@@ -8,9 +8,11 @@ import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.utils.TokenManager;
 import com.cmcc.algo.dto.FederationDto;
 import com.cmcc.algo.dto.Statistic;
+import com.cmcc.algo.entity.Dataset;
 import com.cmcc.algo.entity.FederationEntity;
 import com.cmcc.algo.entity.FederationDataset;
 import com.cmcc.algo.entity.UserFederation;
+import com.cmcc.algo.mapper.DatasetRepository;
 import com.cmcc.algo.mapper.FederationRepository;
 import com.cmcc.algo.mapper.FederationDatasetRepository;
 import com.cmcc.algo.vo.FederationVo;
@@ -58,6 +60,8 @@ public class FederationController {
     private IUserService userService;
     @Autowired
     private FederationRepository federationRepository;
+    @Autowired
+    private DatasetRepository datasetRepository;
     @Autowired
     private FederationDatasetRepository federationDatasetRepository;
     @Autowired
@@ -298,8 +302,7 @@ public class FederationController {
      */
     @GetMapping("/{uuid}/datasets")
     @SysLog("query datasets")
-    @Transactional
-    public List<FederationDataset> trainDataset(@RequestHeader String token,
+    public List<FederationDataset> datasets(@RequestHeader String token,
                                                 @RequestParam Map<String, Object> params,
                                                 @PathVariable(name = "uuid") String uuid) throws APIException {
         /*
@@ -335,12 +338,65 @@ public class FederationController {
 
         //Step 3: merge dataset with parties
         for (FederationDataset fd : federationDatasets) {
-            datasetMap.remove(fd.getUserId());
+            datasetMap.remove(fd.getPartyId());
         }
-        for(Integer datasetUserId : datasetMap.keySet()){
-            federationDatasets.add(new FederationDataset(uuid, datasetUserId));
+        for(Integer datasetPartyId : datasetMap.keySet()){
+            federationDatasets.add(new FederationDataset(uuid, datasetPartyId));
         }
         return federationDatasets;
+    }
+
+    /**
+     * update a federation
+     */
+    @PostMapping("/{uuid}/datasets")
+    @SysLog("update federation dataset")
+    @Transactional
+    public FederationDataset updateDataset(@RequestHeader String token,
+                                                @RequestParam Map<String, Object> params,
+                                                @RequestBody Dataset inputDataset,
+                                                @PathVariable(name = "uuid") String uuid) throws APIException {
+        Integer partyId = -1;
+        try {
+            String userId = TokenManager.parseJWT(token).getId();
+            log.info("get user id", userId);
+            partyId = Integer.valueOf(userId);;
+        }catch(Exception e) {
+            log.error("cannot parse token", e.getMessage(), e);
+            throw new APIException("token无效");
+        }
+        if (partyId == -1) {
+            throw new APIException("无法获取partyId");
+        }
+
+        String typeParam = (String) params.get("type");
+        if ( !typeParam.equals("0") && !typeParam.equals("1") ){
+            throw new APIException("错误的联邦类型参数");
+        }
+        Short type = Short.parseShort(typeParam);
+
+        FederationEntity federation = federationRepository.findByUuid(uuid);
+        if (federation == null) {
+            throw new APIException(String.format("联邦UUID%s不存在", uuid));
+        }
+
+        Dataset dataset = datasetRepository.findById(inputDataset.getId());
+        if (dataset == null) {
+            throw new APIException(String.format(String.format("数据集%s不存在", inputDataset.getName())));
+        }
+        if (dataset.getPartyId() != partyId ) {
+            throw new APIException(String.format(String.format("数据集不属于当前用户")));
+        }
+        
+        FederationDataset federationDataset = new FederationDataset(uuid, partyId);
+        federationDataset.setName(dataset.getName());
+        federationDataset.setUpdatedAt(dataset.getUpdatedAt());
+        federationDataset.setSize(dataset.getSize());
+        federationDataset.setRows(dataset.getRows());
+        federationDataset.setType(type);
+        federationDatasetRepository.removeByFederationUuidAndPartyId(uuid, partyId);
+        federationDataset = federationDatasetRepository.save(federationDataset);
+        return federationDataset;
     }
 
     /**
