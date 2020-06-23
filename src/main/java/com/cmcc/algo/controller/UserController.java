@@ -83,7 +83,7 @@ public class UserController {
                for (RoleMenu roleMenu : roleMenuList) {
                     Menu menu = menuService.getById(roleMenu.getMenuId());
                     if (menu == null) {
-                         return CommonResult.success("资源不存在");
+                         return CommonResult.success("资源不存在", new int[0]);
                     }
                     if (StringUtils.isNotEmpty(menu.getPermissionCode())) {
                          permissionSet.add(menu.getPermissionCode());
@@ -129,10 +129,12 @@ public class UserController {
                user.setCreatedFederation(guestList);
                List<UserFederation> hostList = userFederationService.list(
                        new QueryWrapper<UserFederation>().eq("user_id", String.valueOf(user.getId())));
-               List list = new ArrayList<>();
+               List<FederationEntity> list = new ArrayList<>();
                for (UserFederation userFederation : hostList) {
                     FederationEntity federationEntity = federationService.getOne(userFederation.getFederationUUid());
-                    list.add(federationEntity);
+                    if (federationEntity != null) {
+                         list.add(federationEntity);
+                    }
                }
                user.setPartakeFederation(list);
           }
@@ -159,7 +161,9 @@ public class UserController {
                List<FederationEntity> list = new ArrayList<>();
                for (UserFederation userFederation : partakeList) {
                     FederationEntity federationEntity = federationService.getOne(userFederation.getFederationUUid());
-                    list.add(federationEntity);
+                    if (federationEntity != null) {
+                         list.add(federationEntity);
+                    }
                }
                guestUser.setPartakeFederation(list);
           }

@@ -10,6 +10,7 @@ import com.cmcc.algo.entity.User;
 import com.cmcc.algo.entity.UserFederation;
 import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
+import jodd.db.QueryMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,35 @@ public class UserFederationController {
           userFederation.setFederationUUid(federationUUid);
           userFederation.setStatus("0");
           userFederationService.save(userFederation);
-          return CommonResult.success("申请加入成功");
+          return CommonResult.success("申请加入成功", new int[0]);
+     }
+
+     /**
+      * 退出联邦
+      *
+      * @param token
+      * @param federationUUid
+      * @return
+      */
+     @DeleteMapping("/logout")
+     public CommonResult logout(@RequestHeader String token, @RequestParam String federationUUid) {
+          String userId = "";
+          try {
+               userId = TokenManager.parseJWT(token).getId();
+               log.info("get user id", userId);
+          } catch (Exception e) {
+               log.error("cannot parse token", e.getMessage(), e);
+               throw new APIException("token无效");
+          }
+          QueryWrapper queryWrapper = new QueryWrapper();
+          queryWrapper.eq("user_id", userId);
+          queryWrapper.eq("federation_uuid", federationUUid);
+          UserFederation userFederation = userFederationService.getOne(queryWrapper);
+          if (userFederation == null) {
+               return CommonResult.success("资源为空", new int[0]);
+          }
+          userFederationService.remove(queryWrapper);
+          return CommonResult.success("退出成功", new int[0]);
      }
 
      /**
@@ -116,25 +145,19 @@ public class UserFederationController {
       * @return
       */
      @GetMapping("/list")
-     public CommonResult list(@RequestParam String federationUUid, @RequestParam String status) {
-          if (status.equals("0")) {
-               QueryWrapper queryWrapper = new QueryWrapper();
-               queryWrapper.eq("status", status);
-               queryWrapper.eq("federation_uuid", federationUUid);
-               List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
-               if (CollectionUtils.isEmpty(userFederationList)) {
-                    int[] zero = new int[0];
-                    return CommonResult.success("数据为空", zero);
-               }
-               for (UserFederation userFederation : userFederationList) {
-                    User user = userService.findById(userFederation.getUserId().toString());
-                    userFederation.setUser(user);
-               }
-               return CommonResult.success(userFederationList);
-          } else if (status.equals("1")) {
-               return CommonResult.success(new int[0]);
+     public CommonResult list(@RequestParam String federationUUid) {
+          QueryWrapper queryWrapper = new QueryWrapper();
+          queryWrapper.eq("federation_uuid", federationUUid);
+          List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
+          if (CollectionUtils.isEmpty(userFederationList)) {
+               int[] zero = new int[0];
+               return CommonResult.success("数据为空", zero);
           }
-          return CommonResult.fail(ResultCode.PARAMETER_CHECK_ERROR);
+          for (UserFederation userFederation : userFederationList) {
+               User user = userService.findById(userFederation.getUserId().toString());
+               userFederation.setUser(user);
+          }
+          return CommonResult.success(userFederationList);
      }
 
      /**
@@ -151,14 +174,12 @@ public class UserFederationController {
           QueryWrapper queryWrapper = new QueryWrapper();
           queryWrapper.eq("user_id", userId);
           queryWrapper.eq("federation_uuid", federationUUid);
-          List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
-          if (userFederationList.get(0).getStatus().equals("4")) {
-               throw new APIException(ResultCode.FORBIDDEN, "参数异常,请核对");
+          UserFederation userFederation = userFederationService.getOne(queryWrapper);
+          if (userFederation == null) {
+               return CommonResult.success("此成员不存在", new int[0]);
           }
-          //4:删除退出联邦
-          userFederationList.get(0).setStatus("4");
-          userFederationService.updateById(userFederationList.get(0));
-          return CommonResult.success("删除成功");
+          userFederationService.remove(queryWrapper);
+          return CommonResult.success("删除成功", new int[0]);
      }
 
 }

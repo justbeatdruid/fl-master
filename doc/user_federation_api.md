@@ -29,7 +29,7 @@
 
 | 参数名称 | 参数说明 | in   | 是否必须 | 数据类型 | schema |
 | -------- | -------- | ---- | -------- | -------- | ------ |
-| userId   | 用户id   | path | false    | string   |        |
+| userId   | 用户id   | path | true     | string   |        |
 
 **响应示例**:
 
@@ -37,10 +37,10 @@
 {
     "success": true,
     "code": 200,
-    "message": "请求成功",
-    "data": "注销成功",
-    "pageInfo": null,
-    "ext": null
+    "message": "注销成功",
+    "data": [],
+    "pageInfo": "",
+    "ext": ""
 }
 ```
 
@@ -102,7 +102,7 @@
 
 | 参数名称 | 参数说明 | in   | 是否必须 | 数据类型 | schema |
 | -------- | -------- | ---- | -------- | -------- | ------ |
-| userId   | 用户id   | path | false    | string   |        |
+| userId   | 用户id   | path | true     | string   |        |
 
 **响应示例**:
 
@@ -112,24 +112,25 @@
     "code": 200,
     "message": "查询成功",
     "data": {
-        "id": 1,
-        "uuid": "5e95e56cd6c8421ca26a28582d4ec6fd",
-        "partyId": 0,
-        "username": "admin",
+        "id": 3,
+        "uuid": "622ca575bbbd4c498a2ab53a11967d26",
+        "partyId": "",
+        "username": "小白",
         "password": "123",
-        "phone": null,
-        "email": null,
-        "companyPhone": null,
-        "companyName": null,
-        "address": null,
-        "roles": [],
-        "token": null,
-        "delFlag": 1,
-        "federationList": null,
-        "joinFederation": null
+        "phone": "",
+        "email": "",
+        "companyPhone": "",
+        "companyName": "",
+        "address": "",
+        "role": "host",
+        "token": "",
+        "permissionCode": [],
+        "delFlag": 0,
+        "createdFederation": [],
+        "partakeFederation": []
     },
-    "pageInfo": null,
-    "ext": null
+    "pageInfo": "",
+    "ext": ""
 }
 ```
 
@@ -182,7 +183,6 @@
 
 **consumes**:``
 
-
 **produces**:`["*/*"]`
 
 
@@ -191,7 +191,6 @@
 
 | 参数名称 | 参数说明 | in   | 是否必须 | 数据类型 |      |
 | -------- | -------- | ---- | -------- | -------- | ---- |
-|          |          |      |          |          |      |
 |          |          |      |          |          |      |
 
 **响应示例**:
@@ -206,105 +205,63 @@
             {
                 "id": 1,
                 "uuid": "5e95e56cd6c8421ca26a28582d4ec6fd",
-                "partyId": 0,
+                "partyId": "",
                 "username": "admin",
                 "password": "123",
-                "phone": null,
-                "email": null,
-                "companyPhone": null,
-                "companyName": null,
-                "address": null,
-                "roles": [],
-                "token": null,
+                "phone": "",
+                "email": "",
+                "companyPhone": "",
+                "companyName": "",
+                "address": "",
+                "role": "",
+                "token": "",
+                "permissionCode": [],
                 "delFlag": 0,
-                "federationList": [
+                "createdFederation": [
                     {
                         "id": 10,
-                        "name": "xiaobai",
+                        "name": "xiaobaifederation",
                         "uuid": "346f3bf1ff4e49179f7610e0771f56cf",
-                        "createdAt": null,
+                        "createdAt": "",
                         "type": false,
-                        "description": null,
+                        "description": "",
                         "guest": "1",
-                        "hosts": null,
+                        "hosts": "",
                         "status": 0,
-                        "dataFormat": null,
-                        "algorithmId": null,
-                        "param": null
-                    },
-                    {
-                        "id": 9,
-                        "name": "xiaoming",
-                        "uuid": "365a8fec7fd24c48b43af5c8c7d37383",
-                        "createdAt": null,
-                        "type": false,
-                        "description": null,
-                        "guest": "1",
-                        "hosts": null,
-                        "status": 0,
-                        "dataFormat": null,
-                        "algorithmId": null,
-                        "param": null
+                        "dataFormat": "",
+                        "algorithmId": "",
+                        "param": ""
                     }
                 ],
-                "joinFederation": [
+                "partakeFederation": [
                     {
-                        "id": 9,
-                        "name": "xiaoming",
-                        "uuid": "365a8fec7fd24c48b43af5c8c7d37383",
-                        "createdAt": null,
+                        "id": 11,
+                        "name": "ss",
+                        "uuid": "cb68ca3fe5b8420c9bf940af9db047e1",
+                        "createdAt": "",
                         "type": false,
-                        "description": null,
+                        "description": "",
                         "guest": "1",
-                        "hosts": null,
+                        "hosts": "",
                         "status": 0,
-                        "dataFormat": null,
-                        "algorithmId": null,
-                        "param": null
-                    },
-                    {
-                        "id": 10,
-                        "name": "xiaobai",
-                        "uuid": "346f3bf1ff4e49179f7610e0771f56cf",
-                        "createdAt": null,
-                        "type": false,
-                        "description": null,
-                        "guest": "1",
-                        "hosts": null,
-                        "status": 0,
-                        "dataFormat": null,
-                        "algorithmId": null,
-                        "param": null
+                        "dataFormat": "",
+                        "algorithmId": "",
+                        "param": ""
                     }
                 ]
-            },
-            {
-                "id": 2,
-                "uuid": "d291d89bb5754e38808d29647dd42745",
-                "partyId": 0,
-                "username": "heiyao",
-                "password": "123",
-                "phone": null,
-                "email": null,
-                "companyPhone": null,
-                "companyName": null,
-                "address": null,
-                "roles": [],
-                "token": null,
-                "delFlag": 0,
-                "federationList": [],
-                "joinFederation": []
             }
         ],
-        "total": 2,
+        "total": 4,
         "size": 10,
         "current": 1,
         "searchCount": true,
         "pages": 1
     },
-    "pageInfo": null,
-    "ext": null
+    "pageInfo": "",
+    "ext": ""
 }
+
+                    
 ```
 
 **响应参数**:
@@ -375,22 +332,25 @@
     "data": {
         "id": 1,
         "uuid": "5e95e56cd6c8421ca26a28582d4ec6fd",
-        "partyId": 0,
+        "partyId": "",
         "username": "admin",
         "password": "123",
-        "phone": null,
-        "email": null,
-        "companyPhone": null,
-        "companyName": null,
-        "address": null,
-        "roles": [],
-        "token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE1OTI0NDQ3MTMsImV4cCI6MTU5MjQ5NTk5OX0.sPaw-CL0_lnriZHuxQoIvYQywSRLGQlIuONOxmetY88",
+        "phone": "",
+        "email": "",
+        "companyPhone": "",
+        "companyName": "",
+        "address": "",
+        "role": "admin",
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE1OTI5MDUzNzMsImV4cCI6MTU5MjkyNzk5OX0.EBUCPE14EUOOCZe9G4YhOkdpnx5hDbF1gBGTwci1ZOI",
+        "permissionCode": [
+            "federation:delete"
+        ],
         "delFlag": 0,
-        "federationList": null,
-        "joinFederation": null
+        "createdFederation": [],
+        "partakeFederation": []
     },
-    "pageInfo": null,
-    "ext": null
+    "pageInfo": "",
+    "ext": ""
 }
 ```
 
@@ -448,82 +408,8 @@
 
 # user-federation-controller
 
-## 审批申请中成员
-
-**接口描述**:审批申请中成员
-
-**接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/access`
 
 
-**请求方式**：`PUT`
-
-
-**consumes**:`["application/json"]`
-
-
-**produces**:`["*/*"]`
-
-
-
-**请求参数**：
-
-| 参数名称       | 参数说明       | in    | 是否必须 | 数据类型 | schema |
-| -------------- | -------------- | ----- | -------- | -------- | ------ |
-| federationUUid | federationUUid | query | true     | string   |        |
-| type           | 同意:1,拒绝:2  |       |          | string   |        |
-| userId         | 用户id         |       |          | int      |        |
-
-**响应示例**:
-
-```json
-{
-    "success": true,
-    "code": 200,
-    "message": "请求成功",
-    "data": "加入成功",
-    "pageInfo": null,
-    "ext": null
-}
-```
-
-**响应参数**:
-
-
-| 参数名称 | 参数说明 | 类型           | schema         |
-| -------- | -------- | -------------- | -------------- |
-| code     | 状态码   | integer(int32) | integer(int32) |
-| data     | 返回内容 | object         |                |
-| ext      | 其他信息 | object         |                |
-| message  | 返回消息 | string         |                |
-| pageInfo | 分页信息 | PageInfo       | PageInfo       |
-| success  | 成功标志 | boolean        |                |
-
-
-
-**schema属性说明**
-
-
-
-
-**PageInfo**
-
-| 参数名称 | 参数说明     | 类型           | schema |
-| -------- | ------------ | -------------- | ------ |
-| pageNum  | 当前页       | integer(int64) |        |
-| pages    | 总页数       | integer(int64) |        |
-| step     | 每页展示条数 | integer(int64) |        |
-| total    | 总记录数     | integer(int64) |        |
-
-**响应状态**:
-
-
-| 状态码 | 说明         | schema       |
-| ------ | ------------ | ------------ |
-| 200    | OK           | CommonResult |
-| 201    | Created      |              |
-| 401    | Unauthorized |              |
-| 403    | Forbidden    |              |
-| 404    | Not Found    |              |
 ## 申请加入
 
 **接口描述**:申请加入
@@ -546,7 +432,7 @@
 | 参数名称       | 参数说明 | in     | 是否必须 | 数据类型 | schema |
 | -------------- | -------- | ------ | -------- | -------- | ------ |
 | federationUUid | 联邦UUid | query  | true     | string   |        |
-| token          | 头部信息 | header | false    | string   |        |
+| token          | 头部信息 | header | false    | string   | 后台   |
 
 **响应示例**:
 
@@ -554,10 +440,10 @@
 {
     "success": true,
     "code": 200,
-    "message": "请求成功",
-    "data": "申请加入成功！",
-    "pageInfo": null,
-    "ext": null
+    "message": "申请加入成功",
+    "data": [],
+    "pageInfo": "",
+    "ext": ""
 }
 ```
 
@@ -628,8 +514,8 @@
 {
     "success": true,
     "code": 200,
-    "message": "请求成功",
-    "data": "删除成功",
+    "message": "删除成功",
+    "data": [],
     "pageInfo": "",
     "ext": ""
 }
@@ -690,10 +576,9 @@
 
 **请求参数**：
 
-| 参数名称       | 参数说明    | in   | 是否必须 | 数据类型 | schema |
-| -------------- | ----------- | ---- | -------- | -------- | ------ |
-| status         | 0：现有成员 |      | true     | string   |        |
-| federationUUid | 联邦id      |      |          | string   |        |
+| 参数名称       | 参数说明 | in   | 是否必须 | 数据类型 | schema |
+| -------------- | -------- | ---- | -------- | -------- | ------ |
+| federationUUid | 联邦id   |      | true     | string   |        |
 
 **响应示例**:
 
@@ -746,3 +631,22 @@
 | 401    | Unauthorized |              |
 | 403    | Forbidden    |              |
 | 404    | Not Found    |              |
+## 退出联邦
+
+**接口描述**:我的联邦成员列表
+
+**接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/logout?
+
+**请求方式**：'delete'
+
+**consumes**:`["application/json"]`
+
+**produces**:`["*/*"]`
+
+
+
+**请求参数**：
+
+| 参数名称       | 参数说明 | in   | 是否必须 | 数据类型 | schema |
+| -------------- | -------- | ---- | -------- | -------- | ------ |
+| federationUUid | 联邦uuid |      | true     | string   |        |
