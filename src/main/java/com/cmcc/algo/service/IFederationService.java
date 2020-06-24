@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public interface IFederationService {
 
-     List<FederationEntity> queryFederations(Map<String, Object> params);
+     List<FederationEntity> queryFederations(Map<String, Object> params, String userId);
 
      List<FederationEntity> findListByGuest(String guest);
 

@@ -29,6 +29,9 @@ public class UserFederation implements Serializable {
      @TableField(value = "federation_uuid")
      private String federationUUid;
 
+     // 这个字段表示用户在联邦的角色。
+     // 0 表示 host
+     // 1 表示 guest
      @TableField(value = "status")
      private String status;
 
