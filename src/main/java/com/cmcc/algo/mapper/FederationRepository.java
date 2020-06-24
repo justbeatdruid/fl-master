@@ -22,10 +22,14 @@ public interface FederationRepository extends JpaRepository<FederationEntity, Lo
 
      void deleteByUuid(String uuid);
 
+     List<FederationEntity> findByGuest(String guest);
+
      List<FederationEntity> findByNameLike(String name);
 
      List<FederationEntity> findByName(String name);
 
-     List<FederationEntity> findListByGuest(String guest);
+     List<FederationEntity> findByUuidIn(List<String> uuids);
+
+     List<FederationEntity> findByNameLikeAndUuidIn(String name, List<String> uuids);
 
 }

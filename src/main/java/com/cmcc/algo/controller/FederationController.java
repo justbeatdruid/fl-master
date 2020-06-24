@@ -86,8 +86,7 @@ public class FederationController {
             throw new APIException("获取用户ID异常");
         }
 
-        params.put("userId", userId);
-        List<FederationEntity> page = federationService.queryFederations(params);
+        List<FederationEntity> page = federationService.queryFederations(params, userId);
         List<FederationVo> federations = new ArrayList<FederationVo>(page.size());
         //for (int i=0; i<page.size(); i++) {
         //    federations.set(i, getFederationVo(page.get(i)));
@@ -169,6 +168,12 @@ public class FederationController {
             federation.setType(new Boolean(true));
         }
         federationRepository.save(federation);
+
+        UserFederation userFederation = new UserFederation();
+        userFederation.setUserId(Integer.parseInt(userId));
+        userFederation.setFederationUUid(federation.getUuid());
+        userFederation.setStatus("1");
+        userFederationService.save(userFederation);
 
         FederationVo federationVo = getFederationVo(federation, userId);
         return federationVo;
@@ -505,7 +510,7 @@ public class FederationController {
         if (federation.getGuest().equals(userId)) {
             federationVo.setRole("创建者");
         } else {
-            federationVo.setRole("参与者");
+            //federationVo.setRole("参与者");
             // TODO current user is permitted to enter if not in federation hosts list
             boolean inHostsList = false;
             if (!inHostsList) {
