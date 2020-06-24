@@ -27,48 +27,48 @@ import java.util.Map;
 //@Service("federationService")
 @Service
 public class FederationServiceImpl implements IFederationService {
-     @Autowired
-     private FederationRepository federationRepository;
-     @Autowired
-     private IUserFederationService userFederationService;
+    @Autowired
+    private FederationRepository federationRepository;
+    @Autowired
+    private IUserFederationService userFederationService;
 
-     @Override
-     public List<FederationEntity> queryFederations(Map<String, Object> params, String userId) {
-         String name = (String) params.get("name");
-         Boolean pri = Boolean.parseBoolean((String) params.get("private"));
-         List<String> uuidList = new ArrayList<String>();
-         if (pri) {
-             QueryWrapper queryWrapper = new QueryWrapper();
-             queryWrapper.eq("user_id", userId);
-             List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
-             uuidList = new ArrayList<String>(userFederationList.size());
-             for ( UserFederation userFederation : userFederationList ) {
-                 uuidList.add(userFederation.getFederationUUid());
-             }
-         }
-         if (StringUtils.isNotBlank(name) && !pri) {
-             return federationRepository.findByNameLike('%' + name + '%');
-         }
-         if (StringUtils.isNotBlank(name) && pri) {
-             return federationRepository.findByNameLikeAndUuidIn('%' + name + '%', uuidList);
-         }
-         if (pri) {
-             return federationRepository.findByUuidIn(uuidList);
+    @Override
+    public List<FederationEntity> queryFederations(Map<String, Object> params, String userId) {
+        String name = (String) params.get("name");
+        Boolean pri = Boolean.parseBoolean((String) params.get("private"));
+        List<String> uuidList = new ArrayList<String>();
+        if (pri) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("user_id", userId);
+            List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
+            uuidList = new ArrayList<String>(userFederationList.size());
+            for ( UserFederation userFederation : userFederationList ) {
+                uuidList.add(userFederation.getFederationUUid());
+            }
+        }
+        if (StringUtils.isNotBlank(name) && !pri) {
+            return federationRepository.findByNameLike('%' + name + '%');
+        }
+        if (StringUtils.isNotBlank(name) && pri) {
+            return federationRepository.findByNameLikeAndUuidIn('%' + name + '%', uuidList);
+        }
+        if (pri) {
+            return federationRepository.findByUuidIn(uuidList);
+        }
+        return federationRepository.findAll();
+    }
+
+    @Override
+    public List<FederationEntity> findListByGuest(String guest) {
+         if (StringUtils.isNotBlank(guest)) {
+              return federationRepository.findByGuest(guest);
          }
          return federationRepository.findAll();
-     }
+    }
 
-     @Override
-     public List<FederationEntity> findListByGuest(String guest) {
-          if (StringUtils.isNotBlank(guest)) {
-               return federationRepository.findByGuest(guest);
-          }
-          return federationRepository.findAll();
-     }
-
-     @Override
-     public FederationEntity getOne(String uuid) {
-          return federationRepository.findByUuid(uuid);
-     }
+    @Override
+    public FederationEntity getOne(String uuid) {
+         return federationRepository.findByUuid(uuid);
+    }
 
 }

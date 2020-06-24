@@ -23,6 +23,7 @@ import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,13 +87,46 @@ public class FederationController {
             throw new APIException("获取用户ID异常");
         }
 
-        List<FederationEntity> page = federationService.queryFederations(params, userId);
+        //List<FederationEntity> page = federationService.queryFederations(params, userId);
+        List<FederationEntity> page = new ArrayList<FederationEntity>();
+        String name = (String) params.get("name");
+        Boolean pri = Boolean.parseBoolean((String) params.get("private"));
+        List<String> uuidList = new ArrayList<String>();
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_id", userId);
+        List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
+
+        uuidList = new ArrayList<String>(userFederationList.size());
+        for ( UserFederation userFederation : userFederationList ) {
+            uuidList.add(userFederation.getFederationUUid());
+        }
+
+        if (StringUtils.isNotBlank(name) && !pri) {
+            page = federationRepository.findByNameLike('%' + name + '%');
+        }else if (StringUtils.isNotBlank(name) && pri) {
+            page = federationRepository.findByNameLikeAndUuidIn('%' + name + '%', uuidList);
+        }else if (pri) {
+            page = federationRepository.findByUuidIn(uuidList);
+        }else {
+            page = federationRepository.findAll();
+        }
+
         List<FederationVo> federations = new ArrayList<FederationVo>(page.size());
         //for (int i=0; i<page.size(); i++) {
         //    federations.set(i, getFederationVo(page.get(i)));
         //}
         for ( FederationEntity federation : page) {
-            federations.add(getFederationVo(federation, userId));
+            FederationVo federationVo = getFederationVo(federation, userId);
+            if (federationVo.getGuest().equals(userId)) {
+                federationVo.setRole("创建者");
+            } else if (uuidList.contains(federationVo.getUuid())){
+                federationVo.setRole("参与者");
+            } else {
+                federationVo.setRole("");
+            }
+            federations.add(federationVo);
+            
         }
         return federations;
     }
@@ -122,8 +156,23 @@ public class FederationController {
             throw new APIException("没有操作权限");
         }
         */
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_id", userId);
+        List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
 
-        return getFederationVo(federation, userId);
+        List<String> uuidList = new ArrayList<String>(userFederationList.size());
+        for ( UserFederation userFederation : userFederationList ) {
+            uuidList.add(userFederation.getFederationUUid());
+        }
+        FederationVo federationVo = getFederationVo(federation, userId);
+        if (federationVo.getGuest().equals(userId)) {
+            federationVo.setRole("创建者");
+        } else if (uuidList.contains(federationVo.getUuid())){
+            federationVo.setRole("参与者");
+        } else {
+            federationVo.setRole("");
+        }
+        return federationVo;
     }
 
     /**
