@@ -45,7 +45,7 @@ public class User implements Serializable {
      /**
       * 物理机ID
       */
-     @TableField(exist = false)
+     @TableField(value = "party_id")
      private Integer partyId;
 
      /**

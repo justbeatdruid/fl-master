@@ -29,7 +29,9 @@ public class PermissionAop {
 
           // 1.获取当前登录用户的权限
           User user = (User) session.getAttribute(LoginConstant.SESSION_USER);
-
+          if (user == null) {
+               throw new APIException(ResultCode.FORBIDDEN, "数据异常,请重新登录", new int[0]);
+          }
           Set permission = user.getPermissionCode();
 
           // 2.获取用户正在访问方法的权限
