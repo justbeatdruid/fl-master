@@ -141,7 +141,7 @@ public class UserFederationController {
      /**
       * 我的联邦成员列表
       *
-      * @param status
+      * @param federationUUid
       * @return
       */
      @GetMapping("/list")

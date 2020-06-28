@@ -98,17 +98,72 @@ CREATE TABLE `tb_train`  (
 -- Table structure for tb_user
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_user`;
-CREATE TABLE `tb_user`  (
-  `user_id` int(0) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `party_id` int(0) NOT NULL COMMENT '物理机ID',
-  `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户名',
-  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户密码',
-  `phone` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '用户电话',
-  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '用户邮箱',
-  `role` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '用户角色',
-  PRIMARY KEY (`user_id`) USING BTREE,
-  UNIQUE INDEX `party_id`(`party_id`) USING BTREE,
-  UNIQUE INDEX `username`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
+CREATE TABLE `tb_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+  `uuid` varchar(32) DEFAULT NULL COMMENT '用户UUID',
+  `party_id` int(11) DEFAULT NULL COMMENT '物理机ID',
+  `username` varchar(255) NOT NULL COMMENT '用户名',
+  `password` varchar(255) NOT NULL COMMENT '用户密码',
+  `phone` varchar(255) DEFAULT NULL COMMENT '用户电话',
+  `email` varchar(255) DEFAULT NULL COMMENT '用户邮箱',
+  `role` varchar(255) DEFAULT NULL COMMENT '用户角色',
+  `del_flag` int(11) DEFAULT '0' COMMENT '标识位',
+  `address` varchar(255) DEFAULT NULL COMMENT '用户地址',
+  `company_name` varchar(255) DEFAULT NULL COMMENT '公司名称',
+  `company_phone` varchar(255) DEFAULT NULL COMMENT '公司电话',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
 
-SET FOREIGN_KEY_CHECKS = 1;
+-- --------------------------------------
+-- Table structure for tb_user_federation
+-- --------------------------------------
+DROP TABLE IF EXISTS `tb_user_federation`;
+CREATE TABLE `tb_user_federation` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL COMMENT '用户ID',
+  `federation_uuid` varchar(255) DEFAULT NULL COMMENT '联邦UUID',
+  `status` varchar(32) DEFAULT NULL COMMENT '0:参与者,1:创建者',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `federation_id` (`federation_uuid`)
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COLLATE = utf8_general_ci COMMENT = '用户联邦关系表' ROW_FORMAT = Dynamic;
+
+-- ---------------------------------------
+-- Table structure for tb_role
+-- ---------------------------------------
+DROP TABLE IF EXISTS `tb_role`;
+CREATE TABLE `tb_role` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '角色ID',
+  `rolename` varchar(32) DEFAULT NULL COMMENT '角色名',
+  `keyword` varchar(64) DEFAULT NULL COMMENT '关键字',
+  `description` varchar(128) DEFAULT NULL COMMENT '角色描述',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE = utf8_general_ci COMMENT = '用户角色表' ROW_FORMAT = Dynamic;
+
+-- ---------------------------------------
+-- Table structure for tb_role_menu
+-- ---------------------------------------
+DROP TABLE IF EXISTS `tb_role_menu`;
+CREATE TABLE `tb_role_menu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_id` int(11) DEFAULT NULL COMMENT '角色ID',
+  `menu_id` int(11) DEFAULT NULL COMMENT '菜单ID',
+  PRIMARY KEY (`id`),
+  KEY `menu_id` (`menu_id`),
+  KEY `tb_role_menu_ibfk_1` (`role_id`),
+  CONSTRAINT `tb_role_menu_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `tb_role` (`id`),
+  CONSTRAINT `tb_role_menu_ibfk_2` FOREIGN KEY (`menu_id`) REFERENCES `tb_menu` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE = utf8_general_ci COMMENT = '角色菜单关系表' ROW_FORMAT = Dynamic;
+
+-- ---------------------------------------
+-- Table structure for tb_menu
+-- ---------------------------------------
+DROP TABLE IF EXISTS `tb_menu`;
+CREATE TABLE `tb_menu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
+  `permissioncode` varchar(255) DEFAULT NULL COMMENT '权限码',
+  `name` varchar(32) DEFAULT NULL COMMENT '权限名',
+  `path` varchar(255) DEFAULT NULL COMMENT '路径',
+  `description` varchar(255) DEFAULT NULL COMMENT '权限描述',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE = utf8_general_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
