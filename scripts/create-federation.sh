@@ -7,16 +7,16 @@ curl localhost:10086/com/cmcc/algo/datafusion/api/v1/federations -H'content-type
   -H"token: ${token}" -d'
 {
   "name": "hello world again",
-  "description": "hello",
+  "description": "",
   "dataFormat": {
     "identity": "test",
     "label": "mylabel",
     "feature": "1;2;3;4;5"
   },
   "param": {
-    "param1": 0.1,
-    "param2": 100,
-    "param3": -12345.6789
+    "learning_rate": 0.1,
+    "iteration": 100,
+    "loss": -12345.6789
   },
-  "algorithmId": 4
+  "algorithmId": 1
 }'

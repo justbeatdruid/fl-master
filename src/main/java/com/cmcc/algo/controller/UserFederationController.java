@@ -8,6 +8,7 @@ import com.cmcc.algo.common.ResultCode;
 import com.cmcc.algo.common.utils.TokenManager;
 import com.cmcc.algo.entity.User;
 import com.cmcc.algo.entity.UserFederation;
+import com.cmcc.algo.service.IFederationService;
 import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
 import jodd.db.QueryMapper;
@@ -35,6 +36,9 @@ public class UserFederationController {
 
      @Autowired
      private IUserService userService;
+
+     @Autowired
+     private IFederationService federationService;
 
      /**
       * 申请加入联邦
@@ -67,6 +71,7 @@ public class UserFederationController {
           userFederation.setFederationUUid(federationUUid);
           userFederation.setStatus("0");
           userFederationService.save(userFederation);
+          federationService.userCountIncrease(federationUUid);
           return CommonResult.success("申请加入成功", new int[0]);
      }
 
@@ -95,6 +100,7 @@ public class UserFederationController {
                return CommonResult.success("资源为空", new int[0]);
           }
           userFederationService.remove(queryWrapper);
+          federationService.userCountDecrease(federationUUid);
           return CommonResult.success("退出成功", new int[0]);
      }
 
