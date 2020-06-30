@@ -10,12 +10,16 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_algorithm`;
 CREATE TABLE `tb_algorithm`  (
-  `id` int(0) NOT NULL COMMENT '算法ID',
-  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '算法名',
-  `desc` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '算法描述',
-  `template` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '算法模板',
+  `id` int(11) NOT NULL COMMENT '算法ID',
+  `algorithm_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '算法名',
+  `display_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '算法中文名',
+  `federation_type` tinyint(1) NULL DEFAULT NULL COMMENT '联邦学习类型（0：纵向，1：横向）',
+  `algorithm_type` tinyint(1) NULL DEFAULT NULL COMMENT '算法类型（0：分类，1：回归）',
+  `param` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '算法参数',
+  `algorithm_desc` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '算法描述',
+  `template` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '算法模板名',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `algorithm_name`(`name`) USING BTREE
+  UNIQUE INDEX `algorithm_name`(`algorithm_name`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '算法信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -59,41 +63,44 @@ CREATE TABLE `tb_federation`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_predict`;
 CREATE TABLE `tb_predict`  (
-  `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '预测记录ID',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '预测记录ID',
   `uuid` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '预测任务UUID',
   `federation_uuid` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '联邦UUID',
   `train_uuid` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '训练记录UUID',
-  `algorithm_id` int(0) NULL DEFAULT NULL COMMENT '算法ID',
+  `algorithm_id` int(11) NULL DEFAULT NULL COMMENT '算法ID',
   `status` tinyint(1) NULL DEFAULT NULL COMMENT '预测状态(0:运行中，1:成功，2:失败)',
   `job_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '预测详情URL',
   `start_time` datetime(0) NULL DEFAULT NULL COMMENT '预测开始时间',
-  `duration` datetime(0) NULL DEFAULT NULL COMMENT '预测耗时',
+  `start_timestamp` bigint(20) NULL DEFAULT NULL COMMENT '开始时间时间戳',
+  `duration` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '预测耗时',
   `predict_param` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '预测参数(包括模型、数据、运行时参数)',
-  `job_id` int(0) NULL DEFAULT NULL COMMENT '预测任务ID（用于导出数据）',
+  `job_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '预测任务ID（用于导出数据）',
   `output_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '导出文件路径',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tb_train
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_train`;
 CREATE TABLE `tb_train`  (
-  `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '训练任务ID',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '训练任务ID',
   `uuid` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '训练记录UUID',
   `federation_uuid` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '联邦UUID',
   `status` tinyint(1) NULL DEFAULT NULL COMMENT '训练状态(0:运行中，1:成功，2:失败)',
   `job_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '训练详情URL',
   `start_time` datetime(0) NULL DEFAULT NULL COMMENT '训练开始时间',
-  `duration` datetime(0) NULL DEFAULT NULL COMMENT '训练耗时',
+  `start_timestamp` bigint(20) NULL DEFAULT NULL COMMENT '开始时间时间戳',
+  `duration` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '训练耗时',
   `AUC` float(6, 0) NULL DEFAULT NULL COMMENT 'AUC值',
+  `KS` float(6, 0) NULL DEFAULT NULL COMMENT 'KS值',
   `accuracy` float(6, 0) NULL DEFAULT NULL COMMENT '准确率',
-  `algorithm_id` int(0) NULL DEFAULT NULL COMMENT '算法模型ID',
+  `algorithm_id` int(11) NULL DEFAULT NULL COMMENT '算法模型ID',
+  `job_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'FATE任务ID',
   `train_param` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '训练参数（包括数据与运行时参数）',
   `model` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '输出模型',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
-
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 -- ----------------------------
 -- Table structure for tb_user
 -- ----------------------------
@@ -167,3 +174,19 @@ CREATE TABLE `tb_menu` (
   `description` varchar(255) DEFAULT NULL COMMENT '权限描述',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE = utf8_general_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for tb_federation_dataset
+-- ----------------------------
+DROP TABLE IF EXISTS `tb_federation_dataset`;
+CREATE TABLE `tb_federation_dataset`  (
+  `id` smallint(6) NOT NULL,
+  `federation_uuid` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `rows` int(11) NULL DEFAULT NULL,
+  `size` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `type` smallint(6) NULL DEFAULT NULL,
+  `updated_at` datetime(6) NULL DEFAULT NULL,
+  `party_id` int(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
