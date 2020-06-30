@@ -212,6 +212,7 @@ public class FederationController {
         federation.setGuest(userId);
         federation.setHosts("");
         federation.setStatus(new Integer(0));
+        federation.setUserCount(new Short((short) 1));
 
         if (federation.getType() == null) {
             federation.setType(new Boolean(true));
@@ -555,22 +556,7 @@ public class FederationController {
         federationVo.setDataFormat(JSON.parseObject(federation.getDataFormat(), DataFormatVo.class));
         federationVo.setParam(JSON.parseObject(federation.getParam(), new TypeReference<LinkedHashMap<String, Double>>(){}));
 
-        federationVo.setEnterable(new Boolean(false));
-        if (federation.getGuest().equals(userId)) {
-            federationVo.setRole("创建者");
-        } else {
-            //federationVo.setRole("参与者");
-            // TODO current user is permitted to enter if not in federation hosts list
-            boolean inHostsList = false;
-            if (!inHostsList) {
-                federationVo.setEnterable(new Boolean(true));
-            }
-        }
-
-        // TODO get federation hosts count
-        short count = (short) 0 + (short) 1;
-        federationVo.setUserCount(new Short(count));
-        federationVo.setGuestName(userService.findById(userId).getUsername());
+        federationVo.setGuestName(userService.findById(federation.getGuest()).getUsername());
         return federationVo;
     }
 

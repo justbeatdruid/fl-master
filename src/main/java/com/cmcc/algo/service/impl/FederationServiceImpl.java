@@ -71,4 +71,19 @@ public class FederationServiceImpl implements IFederationService {
          return federationRepository.findByUuid(uuid);
     }
 
+    @Override 
+    public FederationEntity userCountIncrease(String uuid) {
+        FederationEntity federation = federationRepository.findByUuid(uuid);
+        federation.setUserCount(new Short((short) (federation.getUserCount() + 1)));
+        federationRepository.save(federation);
+        return federation;
+    }
+
+    @Override
+    public FederationEntity userCountDecrease(String uuid) {
+        FederationEntity federation = federationRepository.findByUuid(uuid);
+        federation.setUserCount(new Short((short) (federation.getUserCount() - 1)));
+        federationRepository.save(federation);
+        return federation;
+    }
 }

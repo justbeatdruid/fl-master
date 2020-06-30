@@ -46,26 +46,26 @@ public class FederationEntity implements Serializable {
      * 联邦名称
      */
     @NotBlank(message="名字不能为空", groups = {AddGroup.class, UpdateGroup.class})
-    @Column(length = 32)
+    @Column(length = 32, unique = true, nullable = false)
     private String name;
 
     /**
      *联邦唯一ID
      */
     @NotBlank(message="uuid不能为空")
-    @Column(length = 32)
+    @Column(length = 32, unique = true, nullable = false)
     private String uuid;
 
     /**
      * 联邦创建时间
      */
-    @Column
+    @Column(nullable = false)
     private Date createdAt;
 
     /**
      * 联邦类型(0:横向联邦，1:纵向联邦)
      */
-    @Column
+    @Column(nullable = false)
     private Boolean type;
 
     /**
@@ -111,5 +111,9 @@ public class FederationEntity implements Serializable {
     @Column(length = 65536)
     private String param;
 
-
+    /**
+     * UserCount
+     */
+    @Column
+    private Short userCount;
 }

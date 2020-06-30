@@ -21,4 +21,7 @@ public interface IFederationService {
 
      FederationEntity getOne(String uuid);
 
+     FederationEntity userCountIncrease(String uuid);
+
+     FederationEntity userCountDecrease(String uuid);
 }
