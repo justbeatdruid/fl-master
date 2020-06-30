@@ -99,7 +99,7 @@ public class User implements Serializable {
       * 角色
       */
      @TableField(exist = false)
-     private Set permissionCode = new HashSet();
+     private Set permissionCode = new HashSet(0);
 
      /**
       * 删除标志位，0为正常，1为注销状态
@@ -110,12 +110,12 @@ public class User implements Serializable {
       * 创建的联邦
       */
      @TableField(exist = false)
-     private List<FederationEntity> createdFederation = new ArrayList<>();
+     private List<FederationEntity> createdFederation = new ArrayList<>(0);
 
      /**
       * 参与的联邦
       */
      @TableField(exist = false)
-     private List<FederationEntity> partakeFederation = new ArrayList<>();
+     private List<FederationEntity> partakeFederation = new ArrayList<>(0);
 
 }

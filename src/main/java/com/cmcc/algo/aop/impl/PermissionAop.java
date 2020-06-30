@@ -51,8 +51,7 @@ public class PermissionAop {
                }
           } else {
                // 没有权限
-               throw new APIException(ResultCode.FORBIDDEN, "你没有权限访问这个资源");
-
+               throw new APIException(ResultCode.FORBIDDEN, "你没有权限访问这个资源", new int[0]);
           }
           return result;
      }
