@@ -1,4 +1,4 @@
-数据融合API接口文档**
+**数据融合API接口文档**
 
 
 **简介**：后台API接口
@@ -6,11 +6,20 @@
 **HOST**:localhost:10086
 
 
-# user-controller
+**联系人**:
+
+**Version**:1.0
+
+**接口路径**：/v2/api-docs
+
+
+
+# 用户操作接口
 
 ## 注销用户
 
-**接口描述**:注销用户
+
+**接口描述**:
 
 **接口地址**:`/com/cmcc/algo/datafusion/api/v1/user/del/{userId}`
 
@@ -20,16 +29,13 @@
 
 **consumes**:``
 
-
 **produces**:`["*/*"]`
-
-
 
 **请求参数**：
 
 | 参数名称 | 参数说明 | in   | 是否必须 | 数据类型 | schema |
 | -------- | -------- | ---- | -------- | -------- | ------ |
-| userId   | 用户id   | path | true     | string   |        |
+| userId   | 用户ID   | path | true     | string   |        |
 
 **响应示例**:
 
@@ -44,46 +50,13 @@
 }
 ```
 
-**响应参数**:
 
 
-| 参数名称 | 参数说明 | 类型           | schema         |
-| -------- | -------- | -------------- | -------------- |
-| code     | 状态码   | integer(int32) | integer(int32) |
-| data     | 返回内容 | object         |                |
-| ext      | 其他信息 | object         |                |
-| message  | 返回消息 | string         |                |
-| pageInfo | 分页信息 | PageInfo       | PageInfo       |
-| success  | 成功标志 | boolean        |                |
-
-
-
-**schema属性说明**
-
-
-
-
-**PageInfo**
-
-| 参数名称 | 参数说明     | 类型           | schema |
-| -------- | ------------ | -------------- | ------ |
-| pageNum  | 当前页       | integer(int64) |        |
-| pages    | 总页数       | integer(int64) |        |
-| step     | 每页展示条数 | integer(int64) |        |
-| total    | 总记录数     | integer(int64) |        |
-
-**响应状态**:
-
-
-| 状态码 | 说明         | schema       |
-| ------ | ------------ | ------------ |
-| 200    | OK           | CommonResult |
-| 204    | No Content   |              |
-| 401    | Unauthorized |              |
-| 403    | Forbidden    |              |
 ## 用户基础信息详情
 
-**接口描述**:用户基础信息详情
+
+**接口描述**:
+
 
 **接口地址**:`/com/cmcc/algo/datafusion/api/v1/user/detail/{userId}`
 
@@ -93,16 +66,13 @@
 
 **consumes**:``
 
-
 **produces**:`["*/*"]`
-
-
 
 **请求参数**：
 
 | 参数名称 | 参数说明 | in   | 是否必须 | 数据类型 | schema |
 | -------- | -------- | ---- | -------- | -------- | ------ |
-| userId   | 用户id   | path | true     | string   |        |
+| userId   | 用户ID   | path | true     | string   |        |
 
 **响应示例**:
 
@@ -134,46 +104,13 @@
 }
 ```
 
-**响应参数**:
 
 
-| 参数名称 | 参数说明 | 类型           | schema         |
-| -------- | -------- | -------------- | -------------- |
-| code     | 状态码   | integer(int32) | integer(int32) |
-| data     | 返回内容 | object         |                |
-| ext      | 其他信息 | object         |                |
-| message  | 返回消息 | string         |                |
-| pageInfo | 分页信息 | PageInfo       | PageInfo       |
-| success  | 成功标志 | boolean        |                |
+## 查询用户列表
 
 
+**接口描述**:
 
-**schema属性说明**
-
-
-
-
-**PageInfo**
-
-| 参数名称 | 参数说明     | 类型           | schema |
-| -------- | ------------ | -------------- | ------ |
-| pageNum  | 当前页       | integer(int64) |        |
-| pages    | 总页数       | integer(int64) |        |
-| step     | 每页展示条数 | integer(int64) |        |
-| total    | 总记录数     | integer(int64) |        |
-
-**响应状态**:
-
-
-| 状态码 | 说明         | schema       |
-| ------ | ------------ | ------------ |
-| 200    | OK           | CommonResult |
-| 401    | Unauthorized |              |
-| 403    | Forbidden    |              |
-| 404    | Not Found    |              |
-## 查询用户列表展示
-
-**接口描述**:查询用户列表展示
 
 **接口地址**:`/com/cmcc/algo/datafusion/api/v1/user/list`
 
@@ -185,13 +122,8 @@
 
 **produces**:`["*/*"]`
 
-
-
 **请求参数**：
-
-| 参数名称 | 参数说明 | in   | 是否必须 | 数据类型 |      |
-| -------- | -------- | ---- | -------- | -------- | ---- |
-|          |          |      |          |          |      |
+暂无
 
 **响应示例**:
 
@@ -260,52 +192,18 @@
     "pageInfo": "",
     "ext": ""
 }
-
-                    
 ```
 
-**响应参数**:
 
 
-| 参数名称 | 参数说明 | 类型           | schema         |
-| -------- | -------- | -------------- | -------------- |
-| code     | 状态码   | integer(int32) | integer(int32) |
-| data     | 返回内容 | object         |                |
-| ext      | 其他信息 | object         |                |
-| message  | 返回消息 | string         |                |
-| pageInfo | 分页信息 | PageInfo       | PageInfo       |
-| success  | 成功标志 | boolean        |                |
+## 用户登录
 
 
+**接口描述**:
 
-**schema属性说明**
-
-
-
-
-**PageInfo**
-
-| 参数名称 | 参数说明     | 类型           | schema |
-| -------- | ------------ | -------------- | ------ |
-| pageNum  | 当前页       | integer(int64) |        |
-| pages    | 总页数       | integer(int64) |        |
-| step     | 每页展示条数 | integer(int64) |        |
-| total    | 总记录数     | integer(int64) |        |
-
-**响应状态**:
-
-
-| 状态码 | 说明         | schema       |
-| ------ | ------------ | ------------ |
-| 200    | OK           | CommonResult |
-| 401    | Unauthorized |              |
-| 403    | Forbidden    |              |
-| 404    | Not Found    |              |
-## 登录
-
-**接口描述**:登录
 
 **接口地址**:`/com/cmcc/algo/datafusion/api/v1/user/login`
+
 
 **请求方式**：`POST`
 
@@ -314,13 +212,12 @@
 
 **produces**:`["*/*"]`
 
-
-
 **请求参数**：
 
-| 参数名称  | 参数说明 | in   | 是否必须 | 数据类型 | schema |
-| --------- | -------- | ---- | -------- | -------- | ------ |
-| loginUser | 登录用户 | body | false    | string   |        |
+| 参数名称 | 参数说明 | in   | 是否必须 | 数据类型 | schema |
+| -------- | -------- | ---- | -------- | -------- | ------ |
+| username | 用户名   | body | true     | string   |        |
+| password | 密码     | body | true     | string   |        |
 
 **响应示例**:
 
@@ -330,21 +227,19 @@
     "code": 200,
     "message": "登陆成功！",
     "data": {
-        "id": 1,
-        "uuid": "5e95e56cd6c8421ca26a28582d4ec6fd",
+        "id": 4,
+        "uuid": "880636f45ed946c688647db85b6214f7",
         "partyId": "",
-        "username": "admin",
+        "username": "小红",
         "password": "123",
         "phone": "",
         "email": "",
         "companyPhone": "",
         "companyName": "",
         "address": "",
-        "role": "admin",
-        "token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE1OTI5MDUzNzMsImV4cCI6MTU5MjkyNzk5OX0.EBUCPE14EUOOCZe9G4YhOkdpnx5hDbF1gBGTwci1ZOI",
-        "permissionCode": [
-            "federation:delete"
-        ],
+        "role": "",
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0Iiwic3ViIjoi5bCP57qiIiwiaWF0IjoxNTkzNDE2OTQ5LCJleHAiOjE1OTM0NDYzOTl9.LalA6Qhq8nUI9RKZriMbPKQgS7UKmKhd8Bd3WHxBoWk",
+        "permissionCode": [],
         "delFlag": 0,
         "createdFederation": [],
         "partakeFederation": []
@@ -354,65 +249,77 @@
 }
 ```
 
-**响应参数**:
 
 
-| 参数名称 | 参数说明 | 类型           | schema         |
-| -------- | -------- | -------------- | -------------- |
-| code     | 状态码   | integer(int32) | integer(int32) |
-| data     | 返回内容 | object         |                |
-| ext      | 其他信息 | object         |                |
-| message  | 返回消息 | string         |                |
-| pageInfo | 分页信息 | PageInfo       | PageInfo       |
-| success  | 成功标志 | boolean        |                |
+## 用户搜索
 
 
+**接口描述**:
 
-**schema属性说明**
-
-
-
-
-**PageInfo**
-
-| 参数名称 | 参数说明     | 类型           | schema |
-| -------- | ------------ | -------------- | ------ |
-| pageNum  | 当前页       | integer(int64) |        |
-| pages    | 总页数       | integer(int64) |        |
-| step     | 每页展示条数 | integer(int64) |        |
-| total    | 总记录数     | integer(int64) |        |
-
-**响应状态**:
-
-
-| 状态码 | 说明         | schema       |
-| ------ | ------------ | ------------ |
-| 200    | OK           | CommonResult |
-| 201    | Created      |              |
-| 401    | Unauthorized |              |
-| 403    | Forbidden    |              |
-| 404    | Not Found    |              |
-## 按用户名搜索
-
-**接口描述**:用户名搜索
 
 **接口地址**:`/com/cmcc/algo/datafusion/api/v1/user/select`
 
+
 **请求方式**：`GET`
 
-| 参数名   | 描述                 |      |
-| -------- | -------------------- | ---- |
-| username | 只针对中文名模糊查询 |      |
+**consumes**:``
+
+**produces**:`["*/*"]`
+
+**请求参数**：
+
+| 参数名称 | 参数说明                 | in   | 是否必须 | 数据类型 | schema |
+| -------- | ------------------------ | ---- | -------- | -------- | ------ |
+| username | 用户名只针对中文模糊查询 | path | true     | string   |        |
+
+**响应示例**:
+
+```json
+{
+    "success": true,
+    "code": 200,
+    "message": "查询成功",
+    "data": {
+        "records": [
+            {
+                "id": 2,
+                "uuid": "d291d89bb5754e38808d29647dd42745",
+                "partyId": "",
+                "username": "小黑",
+                "password": "123",
+                "phone": "",
+                "email": "",
+                "companyPhone": "",
+                "companyName": "",
+                "address": "",
+                "role": "",
+                "token": "",
+                "permissionCode": [],
+                "delFlag": 0,
+                "createdFederation": [],
+                "partakeFederation": []
+            }
+        ],
+        "total": 1,
+        "size": 10,
+        "current": 1,
+        "searchCount": true,
+        "pages": 1
+    },
+    "pageInfo": "",
+    "ext": ""
+}
+```
 
 
 
-# user-federation-controller
+# 用户联邦操作接口
+
+## 申请加入联邦
 
 
+**接口描述**:
 
-## 申请加入
-
-**接口描述**:申请加入
 
 **接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/apply`
 
@@ -422,17 +329,14 @@
 
 **consumes**:`["application/json"]`
 
-
 **produces**:`["*/*"]`
-
-
 
 **请求参数**：
 
-| 参数名称       | 参数说明 | in     | 是否必须 | 数据类型 | schema |
-| -------------- | -------- | ------ | -------- | -------- | ------ |
-| federationUUid | 联邦UUid | query  | true     | string   |        |
-| token          | 头部信息 | header | false    | string   | 后台   |
+| 参数名称       | 参数说明      | in     | 是否必须 | 数据类型 | schema |
+| -------------- | ------------- | ------ | -------- | -------- | ------ |
+| federationUUid | 联邦UUID      | body   | true     | string   |        |
+| token          | 头部token信息 | header | false    | string   |        |
 
 **响应示例**:
 
@@ -447,66 +351,30 @@
 }
 ```
 
-**响应参数**:
 
 
-| 参数名称 | 参数说明 | 类型           | schema         |
-| -------- | -------- | -------------- | -------------- |
-| code     | 状态码   | integer(int32) | integer(int32) |
-| data     | 返回内容 | object         |                |
-| ext      | 其他信息 | object         |                |
-| message  | 返回消息 | string         |                |
-| pageInfo | 分页信息 | PageInfo       | PageInfo       |
-| success  | 成功标志 | boolean        |                |
-
-
-
-**schema属性说明**
-
-
-
-
-**PageInfo**
-
-| 参数名称 | 参数说明     | 类型           | schema |
-| -------- | ------------ | -------------- | ------ |
-| pageNum  | 当前页       | integer(int64) |        |
-| pages    | 总页数       | integer(int64) |        |
-| step     | 每页展示条数 | integer(int64) |        |
-| total    | 总记录数     | integer(int64) |        |
-
-**响应状态**:
-
-
-| 状态码 | 说明         | schema       |
-| ------ | ------------ | ------------ |
-| 200    | OK           | CommonResult |
-| 201    | Created      |              |
-| 401    | Unauthorized |              |
-| 403    | Forbidden    |              |
-| 404    | Not Found    |              |
 ## 删除联邦现有用户
 
-**接口描述**:删除联邦现有用户
+
+**接口描述**:
+
 
 **接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/delete`
+
 
 **请求方式**：`DELETE`
 
 
 **consumes**:``
 
-
 **produces**:`["*/*"]`
-
-
 
 **请求参数**：
 
 | 参数名称       | 参数说明 | in   | 是否必须 | 数据类型 | schema |
 | -------------- | -------- | ---- | -------- | -------- | ------ |
-| userId         | 用户id   |      |          | string   |        |
-| federationUUid | 联邦id   |      |          | string   |        |
+| userId         | 用户ID   | body | true     | string   |        |
+| federationUUid | 联邦UUID | body | true     | string   |        |
 
 **响应示例**:
 
@@ -521,64 +389,29 @@
 }
 ```
 
-**响应参数**:
 
 
-| 参数名称 | 参数说明 | 类型           | schema         |
-| -------- | -------- | -------------- | -------------- |
-| code     | 状态码   | integer(int32) | integer(int32) |
-| data     | 返回内容 | object         |                |
-| ext      | 其他信息 | object         |                |
-| message  | 返回消息 | string         |                |
-| pageInfo | 分页信息 | PageInfo       | PageInfo       |
-| success  | 成功标志 | boolean        |                |
+## 我的联邦
 
 
+**接口描述**:
 
-**schema属性说明**
-
-
-
-
-**PageInfo**
-
-| 参数名称 | 参数说明     | 类型           | schema |
-| -------- | ------------ | -------------- | ------ |
-| pageNum  | 当前页       | integer(int64) |        |
-| pages    | 总页数       | integer(int64) |        |
-| step     | 每页展示条数 | integer(int64) |        |
-| total    | 总记录数     | integer(int64) |        |
-
-**响应状态**:
-
-
-| 状态码 | 说明         | schema       |
-| ------ | ------------ | ------------ |
-| 200    | OK           | CommonResult |
-| 204    | No Content   |              |
-| 401    | Unauthorized |              |
-| 403    | Forbidden    |              |
-## 我的联邦成员列表
-
-**接口描述**:我的联邦成员列表
 
 **接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/list`
+
 
 **请求方式**：`GET`
 
 
-**consumes**:`["application/json"]`
-
+**consumes**:``
 
 **produces**:`["*/*"]`
-
-
 
 **请求参数**：
 
 | 参数名称       | 参数说明 | in   | 是否必须 | 数据类型 | schema |
 | -------------- | -------- | ---- | -------- | -------- | ------ |
-| federationUUid | 联邦id   |      | true     | string   |        |
+| federationUUid | 联邦UUID | path | true     | string   |        |
 
 **响应示例**:
 
@@ -587,66 +420,78 @@
     "success": true,
     "code": 200,
     "message": "请求成功",
-    "data": [],
-    "pageInfo": null,
-    "ext": null
+    "data": [
+        {
+            "id": 53,
+            "userId": 2,
+            "federationUUid": "46e797e1881a48f4a10b0865f1521226",
+            "status": "0",
+            "user": {
+                "id": 2,
+                "uuid": "d291d89bb5754e38808d29647dd42745",
+                "partyId": "",
+                "username": "小建",
+                "password": "123",
+                "phone": "",
+                "email": "",
+                "companyPhone": "",
+                "companyName": "",
+                "address": "",
+                "role": "guest",
+                "token": "",
+                "permissionCode": [],
+                "delFlag": 0,
+                "createdFederation": [],
+                "partakeFederation": []
+            }
+        }
+    ],
+    "pageInfo": "",
+    "ext": ""
 }
 ```
 
-**响应参数**:
 
 
-| 参数名称 | 参数说明 | 类型           | schema         |
-| -------- | -------- | -------------- | -------------- |
-| code     | 状态码   | integer(int32) | integer(int32) |
-| data     | 返回内容 | object         |                |
-| ext      | 其他信息 | object         |                |
-| message  | 返回消息 | string         |                |
-| pageInfo | 分页信息 | PageInfo       | PageInfo       |
-| success  | 成功标志 | boolean        |                |
-
-
-
-**schema属性说明**
-
-
-
-
-**PageInfo**
-
-| 参数名称 | 参数说明     | 类型           | schema |
-| -------- | ------------ | -------------- | ------ |
-| pageNum  | 当前页       | integer(int64) |        |
-| pages    | 总页数       | integer(int64) |        |
-| step     | 每页展示条数 | integer(int64) |        |
-| total    | 总记录数     | integer(int64) |        |
-
-**响应状态**:
-
-
-| 状态码 | 说明         | schema       |
-| ------ | ------------ | ------------ |
-| 200    | OK           | CommonResult |
-| 201    | Created      |              |
-| 401    | Unauthorized |              |
-| 403    | Forbidden    |              |
-| 404    | Not Found    |              |
 ## 退出联邦
 
-**接口描述**:我的联邦成员列表
 
-**接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/logout?
+**接口描述**:
 
-**请求方式**：'delete'
+**接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/logout
 
-**consumes**:`["application/json"]`
+
+**请求方式**：`DELETE`
+
+
+**consumes**:``
 
 **produces**:`["*/*"]`
 
-
-
 **请求参数**：
 
-| 参数名称       | 参数说明 | in   | 是否必须 | 数据类型 | schema |
-| -------------- | -------- | ---- | -------- | -------- | ------ |
-| federationUUid | 联邦uuid |      | true     | string   |        |
+| 参数名称       | 参数说明      | in     | 是否必须 | 数据类型 | schema |
+| -------------- | ------------- | ------ | -------- | -------- | ------ |
+| federationUUid | 联邦UUID      | path   | true     | string   |        |
+| token          | 头部token信息 | header | false    | string   |        |
+
+**响应示例**:
+
+```json
+{
+    "success": true,
+    "code": 200,
+    "message": "退出成功",
+    "data": [],
+    "pageInfo": "",
+    "ext": ""
+}
+```
+
+
+
+
+
+
+
+

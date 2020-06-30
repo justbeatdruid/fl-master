@@ -23,15 +23,21 @@ public class UserFederation implements Serializable {
      @TableId(value = "id", type = IdType.AUTO)
      private Integer id;
 
+     /**
+      * 用户ID
+      */
      @TableField(value = "user_id")
      private Integer userId;
 
+     /**
+      * 联邦UUID
+      */
      @TableField(value = "federation_uuid")
      private String federationUUid;
 
-     // 这个字段表示用户在联邦的角色。
-     // 0 表示 host
-     // 1 表示 guest
+     /**
+      * 表示用户在联邦的角色,0表示host,1表示guest
+      */
      @TableField(value = "status")
      private String status;
 

@@ -71,8 +71,7 @@ public class UserController {
           }
           User user = userService.userLogin(loginUser.getUsername(), loginUser.getPassword());
           if (user.getDelFlag().equals(3)) {
-               int[] zero = new int[0];
-               throw new APIException(ResultCode.FORBIDDEN, "已注销,不可登录!!!", zero);
+               throw new APIException(ResultCode.FORBIDDEN, "已注销,不可登录!!!", new int[0]);
           }
           //查询用户权限列表
           Set permissionSet = new HashSet();
@@ -92,6 +91,20 @@ public class UserController {
           }
           user.setPermissionCode(permissionSet);
           session.setAttribute(LoginConstant.SESSION_USER, user);
+//          QueryWrapper queryWrapper = new QueryWrapper();
+//          queryWrapper.eq("user_id", user.getId());
+//          List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
+//          Set roles = new HashSet();
+//          for (UserFederation userFederation : userFederationList) {
+//               if (userFederation.getStatus().equals("0")) {
+//                    roles.add("host");
+//               } else if (userFederation.getStatus().equals("1")) {
+//                    roles.add("guest");
+//               } else {
+//                    roles.add("");
+//               }
+//               user.setRoles(roles);
+//          }
           return CommonResult.success("登陆成功！", user);
      }
 
@@ -121,16 +134,18 @@ public class UserController {
 //     @PermissionCode("user:list")
      @GetMapping("/list")
      public CommonResult list() {
-          QueryWrapper queryWrapper = new QueryWrapper();
+          QueryWrapper<User> queryWrapper = new QueryWrapper();
           queryWrapper.eq("del_flag", 0);
           IPage<User> page = userService.page(new Page<>(), queryWrapper);
           for (User user : page.getRecords()) {
                List<FederationEntity> guestList = federationService.findListByGuest(String.valueOf(user.getId()));
                user.setCreatedFederation(guestList);
-               List<UserFederation> hostList = userFederationService.list(
-                       new QueryWrapper<UserFederation>().eq("user_id", String.valueOf(user.getId())));
+               QueryWrapper<UserFederation> queryWrapper1 = new QueryWrapper<>();
+               queryWrapper1.eq("user_id", String.valueOf(user.getId()));
+               queryWrapper1.eq("status", "0");
+               List<UserFederation> userFederationList = userFederationService.list(queryWrapper1);
                List<FederationEntity> list = new ArrayList<>();
-               for (UserFederation userFederation : hostList) {
+               for (UserFederation userFederation : userFederationList) {
                     FederationEntity federationEntity = federationService.getOne(userFederation.getFederationUUid());
                     if (federationEntity != null) {
                          list.add(federationEntity);
@@ -153,19 +168,21 @@ public class UserController {
                queryWrapper.like("username", username);
           }
           IPage<User> page = userService.page(new Page<>(), queryWrapper);
-          for (User guestUser : page.getRecords()) {
-               List<FederationEntity> createList = federationService.findListByGuest(String.valueOf(guestUser.getId()));
-               guestUser.setCreatedFederation(createList);
-
-               List<UserFederation> partakeList = userFederationService.list(new QueryWrapper<UserFederation>().eq("user_id", guestUser.getId().toString()));
+          for (User user : page.getRecords()) {
+               List<FederationEntity> guestList = federationService.findListByGuest(String.valueOf(user.getId()));
+               user.setCreatedFederation(guestList);
+               QueryWrapper<UserFederation> queryWrapper1 = new QueryWrapper<>();
+               queryWrapper1.eq("user_id", String.valueOf(user.getId()));
+               queryWrapper1.eq("status", "0");
+               List<UserFederation> userFederationList = userFederationService.list(queryWrapper1);
                List<FederationEntity> list = new ArrayList<>();
-               for (UserFederation userFederation : partakeList) {
+               for (UserFederation userFederation : userFederationList) {
                     FederationEntity federationEntity = federationService.getOne(userFederation.getFederationUUid());
                     if (federationEntity != null) {
                          list.add(federationEntity);
                     }
                }
-               guestUser.setPartakeFederation(list);
+               user.setPartakeFederation(list);
           }
           return CommonResult.success("查询成功", page);
      }
