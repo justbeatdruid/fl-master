@@ -1,7 +1,6 @@
 package com.cmcc.algo.controller;
 
 
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +14,10 @@ import com.cmcc.algo.constant.LoginConstant;
 import com.cmcc.algo.entity.*;
 import com.cmcc.algo.service.*;
 import io.jsonwebtoken.Claims;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,7 @@ import java.util.*;
  * @author hjy
  * @since 2020-05-25
  */
+@Api(tags = "用户管理接口")
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -63,6 +67,10 @@ public class UserController {
       * @param loginUser
       * @return
       */
+     @ApiOperation(value = "用户登录", notes = "根据用户名密码进行登录")
+     @ApiImplicitParams({@ApiImplicitParam(name = "username", value = "用户名", paramType = "body", required = true),
+             @ApiImplicitParam(name = "password", value = "用户密码", paramType = "body", required = true),
+             @ApiImplicitParam(name = "loginUser", value = "User", paramType = "body", required = false)})
      @PostMapping("/login")
      public CommonResult login(@RequestBody User loginUser, HttpSession session) {
 
@@ -128,10 +136,11 @@ public class UserController {
      /**
       * 查询用户列表展示
       *
-      * @param user
+      * @param
       * @return
       */
 //     @PermissionCode("user:list")
+     @ApiOperation(value = "用户列表展示")
      @GetMapping("/list")
      public CommonResult list() {
           QueryWrapper<User> queryWrapper = new QueryWrapper();
@@ -161,6 +170,8 @@ public class UserController {
       *
       * @return
       */
+     @ApiOperation(value = "用户搜索")
+     @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String", paramType = "path")
      @GetMapping("/select")
      public CommonResult searchUser(@RequestParam String username) {
           QueryWrapper queryWrapper = new QueryWrapper();
@@ -193,6 +204,8 @@ public class UserController {
       * @param userId
       * @return
       */
+     @ApiOperation("注销")
+     @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "String", paramType = "path")
      @DeleteMapping("/del/{userId}")
      @Transactional(rollbackFor = Exception.class)
      public CommonResult delFlag(@PathVariable("userId") String userId) {
@@ -215,6 +228,8 @@ public class UserController {
       * @param userId
       * @return
       */
+     @ApiOperation("用户信息详情")
+     @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "String", paramType = "path")
      @GetMapping("/detail/{userId}")
      public CommonResult getDetail(@PathVariable(name = "userId") String userId) {
           User user = userService.findById(userId);

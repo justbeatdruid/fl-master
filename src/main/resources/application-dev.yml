@@ -18,7 +18,6 @@ dbserver:
     dbname: federated_learning
 
 
-
 spring:
   profiles: dev
 

@@ -11,12 +11,14 @@ import com.cmcc.algo.entity.UserFederation;
 import com.cmcc.algo.service.IFederationService;
 import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
+import io.swagger.annotations.*;
 import jodd.db.QueryMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +28,7 @@ import java.util.Map;
  * @Author: lc
  * @Description: //TODO
  */
+@Api(tags = "联邦成员管理操作类")
 @Slf4j
 @RestController
 @RequestMapping("/userFederation")
@@ -44,9 +47,13 @@ public class UserFederationController {
       * 申请加入联邦
       *
       * @param
-      * @param federationUUid
+      * @param
       * @return
       */
+     @ApiOperation(value = "申请加入联邦")
+     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息", paramType = "header", required = false),
+             @ApiImplicitParam(name = "federationUUid", value = "联邦UUID", paramType = "body", required = true),
+             @ApiImplicitParam(name = "params", value = "Map", paramType = "body", required = false)})
      @PostMapping("/apply")
      @Transactional(rollbackFor = Exception.class)
      public CommonResult apply(@RequestHeader String token, @RequestBody Map<String, String> params) {
@@ -82,6 +89,10 @@ public class UserFederationController {
       * @param federationUUid
       * @return
       */
+     @ApiOperation(value = "退出联邦")
+     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息", paramType = "header", required = false),
+             @ApiImplicitParam(name = "federationUUid", value = "联邦UUID", dataType = "String", paramType = "path", required = true)
+     })
      @DeleteMapping("/logout")
      public CommonResult logout(@RequestHeader String token, @RequestParam String federationUUid) {
           String userId = "";
@@ -104,14 +115,14 @@ public class UserFederationController {
           return CommonResult.success("退出成功", new int[0]);
      }
 
-     /**
-      * 审批操作
-      *
-      * @param userId
-      * @param federationUUid
-      * @param type
-      * @return
-      *//*
+/**
+ * 审批操作
+ *
+ * @param userId
+ * @param federationUUid
+ * @param type
+ * @return
+ *//*
      @PutMapping("/access")
      @Transactional(rollbackFor = Exception.class)
      public CommonResult access(@RequestBody Map<String, String> params) {
@@ -150,6 +161,8 @@ public class UserFederationController {
       * @param federationUUid
       * @return
       */
+     @ApiOperation(value = "我的联邦成员列表")
+     @ApiImplicitParam(name = "federationUUid", value = "联邦UUID", required = true, dataType = "String", paramType = "path")
      @GetMapping("/list")
      public CommonResult list(@RequestParam String federationUUid) {
           QueryWrapper queryWrapper = new QueryWrapper();
@@ -172,6 +185,10 @@ public class UserFederationController {
       * @param
       * @return
       */
+     @ApiOperation(value = "删除联邦现有用户")
+     @ApiImplicitParams({@ApiImplicitParam(name = "userId", value = "用户ID", paramType = "body", required = true),
+             @ApiImplicitParam(name = "federationUUid", value = "联邦UUID", paramType = "body", required = true),
+             @ApiImplicitParam(name = "params", value = "Map", paramType = "body", required = false)})
      @DeleteMapping("/delete")
      @Transactional(rollbackFor = Exception.class)
      public CommonResult delUser(@RequestBody Map<String, String> params) {
