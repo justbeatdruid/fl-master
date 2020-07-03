@@ -475,8 +475,8 @@ public class FederationController {
         if (dataset == null) {
             throw new APIException(String.format(String.format("数据集%s不存在", inputDataset.getName())));
         }
-        if (dataset.getPartyId() != partyId ) {
-            throw new APIException(String.format(String.format("数据集不属于当前用户")));
+        if (dataset.getPartyId().intValue() != partyId.intValue() ) {
+            throw new APIException(String.format(String.format("数据集不属于当前用户。当前用户：%d。数据集用户%d。", partyId, dataset.getPartyId())));
         }
         
         FederationDataset federationDataset = new FederationDataset(uuid, partyId);
