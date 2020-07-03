@@ -11,6 +11,7 @@ import com.cmcc.algo.dto.Statistic;
 import com.cmcc.algo.entity.Dataset;
 import com.cmcc.algo.entity.FederationEntity;
 import com.cmcc.algo.entity.FederationDataset;
+import com.cmcc.algo.entity.User;
 import com.cmcc.algo.entity.UserFederation;
 import com.cmcc.algo.mapper.DatasetRepository;
 import com.cmcc.algo.mapper.FederationRepository;
@@ -556,7 +557,12 @@ public class FederationController {
         federationVo.setDataFormat(JSON.parseObject(federation.getDataFormat(), DataFormatVo.class));
         federationVo.setParam(JSON.parseObject(federation.getParam(), new TypeReference<LinkedHashMap<String, Double>>(){}));
 
-        federationVo.setGuestName(userService.findById(federation.getGuest()).getUsername());
+        String username = "用户信息丢失";
+        User user = userService.findById(federation.getGuest());
+        if (user != null) {
+            username = user.getUsername();
+        }
+        federationVo.setGuestName(username);
         return federationVo;
     }
 
