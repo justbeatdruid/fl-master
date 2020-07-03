@@ -19,6 +19,7 @@ import com.cmcc.algo.mapper.FederationDatasetRepository;
 import com.cmcc.algo.vo.FederationVo;
 import com.cmcc.algo.vo.FederationDatasetVo;
 import com.cmcc.algo.vo.DataFormatVo;
+import com.cmcc.algo.service.IFederationDatasetService;
 import com.cmcc.algo.service.IFederationService;
 import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
@@ -69,6 +70,8 @@ public class FederationController {
     private FederationDatasetRepository federationDatasetRepository;
     @Autowired
     private IUserFederationService userFederationService;
+    @Autowired
+    private IFederationDatasetService federationDatasetService;
 
     /**
      * list federations
@@ -330,6 +333,7 @@ public class FederationController {
     @SysLog("update federation status to ready")
     @Transactional
     public FederationVo update(@RequestHeader String token,
+                               @RequestParam Map<String, Object> params,
                                @PathVariable(name = "uuid") String uuid) throws APIException {
         String userId = "";
         try {
@@ -339,6 +343,15 @@ public class FederationController {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
+
+        String typeParam = (String) params.get("type");
+        if ( typeParam == null ){
+            throw new APIException("没有找到数据类型参数");
+        }
+        if ( !typeParam.equals("0") && !typeParam.equals("1") ){
+            throw new APIException("错误的联邦类型参数");
+        }
+        Short type = Short.parseShort(typeParam);
 
         FederationEntity updatedFederation = federationRepository.findByUuid(uuid);
         if (updatedFederation == null) {
@@ -350,9 +363,11 @@ public class FederationController {
         }
         */
         Integer status = updatedFederation.getStatus();
-        if (status != 0 || status != 3 || status != 4) {
+        if (status != 0 && status != 3 && status != 4) {
             throw new APIException(String.format("不能就绪状态%s的联邦", getReadableStatusFromCode(updatedFederation.getStatus())));
         }
+
+        federationDatasetService.uploadData(uuid, type);
         // attributes update permitted
         updatedFederation.setStatus(1);
         federationRepository.save(updatedFederation);
@@ -381,6 +396,9 @@ public class FederationController {
         }
 
         String typeParam = (String) params.get("type");
+        if ( typeParam == null ){
+            throw new APIException("没有找到数据类型参数");
+        }
         if ( !typeParam.equals("0") && !typeParam.equals("1") ){
             throw new APIException("错误的联邦类型参数");
         }
@@ -440,6 +458,9 @@ public class FederationController {
         }
 
         String typeParam = (String) params.get("type");
+        if ( typeParam == null ){
+            throw new APIException("没有找到数据类型参数");
+        }
         if ( !typeParam.equals("0") && !typeParam.equals("1") ){
             throw new APIException("错误的联邦类型参数");
         }
@@ -492,6 +513,9 @@ public class FederationController {
         }
 
         String typeParam = (String) params.get("type");
+        if ( typeParam == null ){
+            throw new APIException("没有找到数据类型参数");
+        }
         if ( !typeParam.equals("0") && !typeParam.equals("1") ){
             throw new APIException("错误的联邦类型参数");
         }

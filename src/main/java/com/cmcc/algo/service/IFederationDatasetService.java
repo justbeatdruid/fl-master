@@ -10,6 +10,8 @@ import com.cmcc.algo.entity.Dataset;
  * @author hjy
  * @since 2020-05-25
  */
-public interface IDatasetService {
+public interface IFederationDatasetService {
+
+    void uploadData(String federationUuid, Short dataType);
 
 }
