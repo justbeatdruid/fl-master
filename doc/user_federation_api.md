@@ -257,7 +257,7 @@
 **接口描述**:
 
 
-**接口地址**:`/com/cmcc/algo/datafusion/api/v1/user/select`
+**接口地址**:`/com/cmcc/algo/datafusion/api/v1/user/select?username=XXX`
 
 
 **请求方式**：`GET`
@@ -270,7 +270,7 @@
 
 | 参数名称 | 参数说明                 | in   | 是否必须 | 数据类型 | schema |
 | -------- | ------------------------ | ---- | -------- | -------- | ------ |
-| username | 用户名只针对中文模糊查询 | path | true     | string   |        |
+| username | 根据用户名模糊查询 | path | true     | string   |        |
 
 **响应示例**:
 
@@ -397,7 +397,7 @@
 **接口描述**:
 
 
-**接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/list`
+**接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/list?federationUUid=XXX`
 
 
 **请求方式**：`GET`
@@ -458,7 +458,7 @@
 
 **接口描述**:
 
-**接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/logout
+**接口地址**:`/com/cmcc/algo/datafusion/api/v1/userFederation/logout?federationUUid=XXX`
 
 
 **请求方式**：`DELETE`

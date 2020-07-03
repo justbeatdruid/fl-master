@@ -4,19 +4,14 @@ package com.cmcc.algo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.additional.query.impl.QueryChainWrapper;
-import com.cmcc.algo.aop.bean.PermissionCode;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.CommonResult;
 import com.cmcc.algo.common.ResultCode;
-import com.cmcc.algo.common.utils.TokenManager;
 import com.cmcc.algo.constant.LoginConstant;
 import com.cmcc.algo.entity.*;
 import com.cmcc.algo.service.*;
-import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -68,9 +63,6 @@ public class UserController {
       * @return
       */
      @ApiOperation(value = "用户登录", notes = "根据用户名密码进行登录")
-     @ApiImplicitParams({@ApiImplicitParam(name = "username", value = "用户名", paramType = "body", required = true),
-             @ApiImplicitParam(name = "password", value = "用户密码", paramType = "body", required = true),
-             @ApiImplicitParam(name = "loginUser", value = "User", paramType = "body", required = false)})
      @PostMapping("/login")
      public CommonResult login(@RequestBody User loginUser, HttpSession session) {
 
@@ -131,6 +123,30 @@ public class UserController {
           User user = userService.userRegister(registerUser.getUsername(), registerUser.getPassword());
           userService.save(user);
           return CommonResult.success("注册成功！", user);
+     }
+
+     /**
+      * 注销用户
+      *
+      * @param userId
+      * @return
+      */
+     @ApiOperation("注销")
+     @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "String", paramType = "path")
+     @DeleteMapping("/del/{userId}")
+     @Transactional(rollbackFor = Exception.class)
+     public CommonResult delFlag(@PathVariable("userId") String userId) {
+          User user = userService.findById(userId);
+          if (user == null) {
+               return CommonResult.fail(ResultCode.NOT_FOUND, new int[0]);
+          }
+          if (user.getDelFlag().equals(3)) {
+               throw new APIException(ResultCode.REQUEST_ERROR, "用户已注销", new int[0]);
+          }
+          //0:默认,3:注销
+          user.setDelFlag(3);
+          userService.updateById(user);
+          return CommonResult.success("注销成功", new int[0]);
      }
 
      /**
@@ -198,29 +214,6 @@ public class UserController {
           return CommonResult.success("查询成功", page);
      }
 
-     /**
-      * 注销用户
-      *
-      * @param userId
-      * @return
-      */
-     @ApiOperation("注销")
-     @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "String", paramType = "path")
-     @DeleteMapping("/del/{userId}")
-     @Transactional(rollbackFor = Exception.class)
-     public CommonResult delFlag(@PathVariable("userId") String userId) {
-          User user = userService.findById(userId);
-          if (user == null) {
-               return CommonResult.fail(ResultCode.NOT_FOUND, new int[0]);
-          }
-          if (user.getDelFlag().equals(3)) {
-               throw new APIException(ResultCode.REQUEST_ERROR, "用户已注销", new int[0]);
-          }
-          //0:默认,3:注销
-          user.setDelFlag(3);
-          userService.updateById(user);
-          return CommonResult.success("注销成功", new int[0]);
-     }
 
      /**
       * 用户基础信息详情
