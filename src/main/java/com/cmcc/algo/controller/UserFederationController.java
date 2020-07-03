@@ -12,7 +12,6 @@ import com.cmcc.algo.service.IFederationService;
 import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.service.IUserService;
 import io.swagger.annotations.*;
-import jodd.db.QueryMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +50,7 @@ public class UserFederationController {
       * @return
       */
      @ApiOperation(value = "申请加入联邦")
-     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息", paramType = "header", required = false),
-             @ApiImplicitParam(name = "federationUUid", value = "联邦UUID", paramType = "body", required = true),
-             @ApiImplicitParam(name = "params", value = "Map", paramType = "body", required = false)})
+     @ApiImplicitParam(name = "federationUUid", value = "联邦UUID")
      @PostMapping("/apply")
      @Transactional(rollbackFor = Exception.class)
      public CommonResult apply(@RequestHeader String token, @RequestBody Map<String, String> params) {
@@ -90,10 +87,9 @@ public class UserFederationController {
       * @return
       */
      @ApiOperation(value = "退出联邦")
-     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息", paramType = "header", required = false),
-             @ApiImplicitParam(name = "federationUUid", value = "联邦UUID", dataType = "String", paramType = "path", required = true)
-     })
+     @ApiImplicitParam(name = "federationUUid", value = "联邦UUID", dataType = "String", paramType = "path", required = true)
      @DeleteMapping("/logout")
+     @Transactional(rollbackFor = Exception.class)
      public CommonResult logout(@RequestHeader String token, @RequestParam String federationUUid) {
           String userId = "";
           try {
@@ -162,7 +158,7 @@ public class UserFederationController {
       * @return
       */
      @ApiOperation(value = "我的联邦成员列表")
-     @ApiImplicitParam(name = "federationUUid", value = "联邦UUID", required = true, dataType = "String", paramType = "path")
+     @ApiImplicitParam(name = "federationUUid", value = "联邦UUID", paramType = "path")
      @GetMapping("/list")
      public CommonResult list(@RequestParam String federationUUid) {
           QueryWrapper queryWrapper = new QueryWrapper();
@@ -188,7 +184,7 @@ public class UserFederationController {
      @ApiOperation(value = "删除联邦现有用户")
      @ApiImplicitParams({@ApiImplicitParam(name = "userId", value = "用户ID", paramType = "body", required = true),
              @ApiImplicitParam(name = "federationUUid", value = "联邦UUID", paramType = "body", required = true),
-             @ApiImplicitParam(name = "params", value = "Map", paramType = "body", required = false)})
+     })
      @DeleteMapping("/delete")
      @Transactional(rollbackFor = Exception.class)
      public CommonResult delUser(@RequestBody Map<String, String> params) {
