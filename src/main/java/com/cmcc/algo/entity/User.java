@@ -29,6 +29,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tb_user")
+@ApiModel
 public class User implements Serializable {
 
      private static final long serialVersionUID = 1L;
@@ -40,7 +41,7 @@ public class User implements Serializable {
      private Integer id;
 
      /**
-      * `
+      * 
       * 用户唯一ID
       */
      private String uuid;
@@ -54,11 +55,13 @@ public class User implements Serializable {
      /**
       * 用户名
       */
+     @ApiModelProperty(value = "用户名")
      private String username;
 
      /**
       * 用户密码
       */
+     @ApiModelProperty(value = "密码")
      private String password;
 
      /**
