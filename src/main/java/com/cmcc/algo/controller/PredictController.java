@@ -100,7 +100,7 @@ public class PredictController {
         }
 
         // 向Agent提交训练任务
-        String submitUrl = agentConfig.getAgentUrl()+SUBMIT_PREDICT_TASK_URL;
+        String submitUrl = agentConfig.getAgentUrl(userId)+SUBMIT_PREDICT_TASK_URL;
 
         Train train = trainService.getOne(Wrappers.<Train>lambdaQuery()
                 .eq(Train::getFederationUuid, federationUuid)
