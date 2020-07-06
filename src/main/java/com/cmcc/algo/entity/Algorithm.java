@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <p>
@@ -41,7 +42,7 @@ public class Algorithm implements Serializable {
     @ApiModelProperty(value = "算法中文名")
     private String displayName;
 
-    @ApiModelProperty(value = "联邦学习类型（0：纵向，1：横向）")
+    @ApiModelProperty(value = "联邦学习类型（1：纵向，0：横向）")
     private Boolean federationType;
 
     @ApiModelProperty(value = "算法类型（0：分类，1：回归）")
@@ -62,5 +63,6 @@ public class Algorithm implements Serializable {
     @ApiModelProperty(value = "算法模板名")
     private String template;
 
-
+    @ApiModelProperty(value = "算法组件名")
+    private String algorithmComponent;
 }
