@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.UUID;
 
-import javax.validation.Valid; 
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -83,7 +83,7 @@ public class FederationController {
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
@@ -102,17 +102,17 @@ public class FederationController {
         List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
 
         uuidList = new ArrayList<String>(userFederationList.size());
-        for ( UserFederation userFederation : userFederationList ) {
+        for (UserFederation userFederation : userFederationList) {
             uuidList.add(userFederation.getFederationUUid());
         }
 
         if (StringUtils.isNotBlank(name) && !pri) {
             page = federationRepository.findByNameLike('%' + name + '%');
-        }else if (StringUtils.isNotBlank(name) && pri) {
+        } else if (StringUtils.isNotBlank(name) && pri) {
             page = federationRepository.findByNameLikeAndUuidIn('%' + name + '%', uuidList);
-        }else if (pri) {
+        } else if (pri) {
             page = federationRepository.findByUuidIn(uuidList);
-        }else {
+        } else {
             page = federationRepository.findAll();
         }
 
@@ -120,17 +120,17 @@ public class FederationController {
         //for (int i=0; i<page.size(); i++) {
         //    federations.set(i, getFederationVo(page.get(i)));
         //}
-        for ( FederationEntity federation : page) {
+        for (FederationEntity federation : page) {
             FederationVo federationVo = getFederationVo(federation, userId);
             if (federationVo.getGuest().equals(userId)) {
                 federationVo.setRole("创建者");
-            } else if (uuidList.contains(federationVo.getUuid())){
+            } else if (uuidList.contains(federationVo.getUuid())) {
                 federationVo.setRole("参与者");
             } else {
                 federationVo.setRole("");
             }
             federations.add(federationVo);
-            
+
         }
         return federations;
     }
@@ -142,7 +142,7 @@ public class FederationController {
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
@@ -165,13 +165,13 @@ public class FederationController {
         List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
 
         List<String> uuidList = new ArrayList<String>(userFederationList.size());
-        for ( UserFederation userFederation : userFederationList ) {
+        for (UserFederation userFederation : userFederationList) {
             uuidList.add(userFederation.getFederationUUid());
         }
         FederationVo federationVo = getFederationVo(federation, userId);
         if (federationVo.getGuest().equals(userId)) {
             federationVo.setRole("创建者");
-        } else if (uuidList.contains(federationVo.getUuid())){
+        } else if (uuidList.contains(federationVo.getUuid())) {
             federationVo.setRole("参与者");
         } else {
             federationVo.setRole("");
@@ -180,21 +180,21 @@ public class FederationController {
     }
 
     /**
-      * create a new federation
-      */
+     * create a new federation
+     */
     @SysLog("save federation")
     @PostMapping("")
     @Transactional
     public FederationVo save(@RequestHeader String token,
-                             @Valid @RequestBody FederationDto federationDto){
-        if (federationDto==null) {
+                             @Valid @RequestBody FederationDto federationDto) {
+        if (federationDto == null) {
             throw new APIException("请求数据为空");
         }
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
@@ -207,7 +207,7 @@ public class FederationController {
                         .or().eq("uuid", federation.getUuid()));
         */
         List<FederationEntity> list = federationRepository.findByName(federation.getName());
-        if(CollectionUtils.isNotEmpty(list)){
+        if (CollectionUtils.isNotEmpty(list)) {
             throw new APIException("名字重复，请重试。");
         }
 
@@ -240,12 +240,12 @@ public class FederationController {
     @DeleteMapping("/{id}")
     @Transactional
     public void delete(@RequestHeader String token,
-                       @PathVariable(name = "id") String id){
+                       @PathVariable(name = "id") String id) {
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
@@ -282,7 +282,7 @@ public class FederationController {
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
@@ -301,7 +301,7 @@ public class FederationController {
         */
         if (federation.getName() != null && !federation.getName().equals(updatedFederation.getName())) {
             List<FederationEntity> list = federationRepository.findByName(federation.getName());
-            if(CollectionUtils.isNotEmpty(list)){
+            if (CollectionUtils.isNotEmpty(list)) {
                 throw new APIException("名字重复，请重试。");
             }
         }
@@ -339,16 +339,16 @@ public class FederationController {
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
 
         String typeParam = (String) params.get("type");
-        if ( typeParam == null ){
+        if (typeParam == null) {
             throw new APIException("没有找到数据类型参数");
         }
-        if ( !typeParam.equals("0") && !typeParam.equals("1") ){
+        if (!typeParam.equals("0") && !typeParam.equals("1")) {
             throw new APIException("错误的联邦类型参数");
         }
         Short type = Short.parseShort(typeParam);
@@ -380,14 +380,15 @@ public class FederationController {
     @GetMapping("/{uuid}/datasets")
     @SysLog("query datasets")
     public List<FederationDatasetVo> getdatasets(@RequestHeader String token,
-                                                @RequestParam Map<String, Object> params,
-                                                @PathVariable(name = "uuid") String uuid) throws APIException {
+                                                 @RequestParam Map<String, Object> params,
+                                                 @PathVariable(name = "uuid") String uuid) throws APIException {
         Integer partyId = -1;
         try {
             String userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-            partyId = Integer.valueOf(userId);;
-        }catch(Exception e) {
+            partyId = Integer.valueOf(userId);
+            ;
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
@@ -396,10 +397,10 @@ public class FederationController {
         }
 
         String typeParam = (String) params.get("type");
-        if ( typeParam == null ){
+        if (typeParam == null) {
             throw new APIException("没有找到数据类型参数");
         }
-        if ( !typeParam.equals("0") && !typeParam.equals("1") ){
+        if (!typeParam.equals("0") && !typeParam.equals("1")) {
             throw new APIException("错误的联邦类型参数");
         }
         Short type = Short.parseShort(typeParam);
@@ -423,12 +424,12 @@ public class FederationController {
         for (FederationDataset fd : federationDatasets) {
             datasetMap.remove(fd.getPartyId());
         }
-        for(Integer datasetPartyId : datasetMap.keySet()){
+        for (Integer datasetPartyId : datasetMap.keySet()) {
             federationDatasets.add(new FederationDataset(uuid, datasetPartyId));
         }
 
         List<FederationDatasetVo> datasets = new ArrayList<FederationDatasetVo>(federationDatasets.size());
-        for ( FederationDataset federationDataset: federationDatasets) {
+        for (FederationDataset federationDataset : federationDatasets) {
             datasets.add(getFederationDatasetVo(federationDataset, partyId));
         }
         return datasets;
@@ -441,15 +442,16 @@ public class FederationController {
     @SysLog("update federation dataset")
     @Transactional
     public FederationDataset updateDataset(@RequestHeader String token,
-                                                @RequestParam Map<String, Object> params,
-                                                @RequestBody Dataset inputDataset,
-                                                @PathVariable(name = "uuid") String uuid) throws APIException {
+                                           @RequestParam Map<String, Object> params,
+                                           @RequestBody Dataset inputDataset,
+                                           @PathVariable(name = "uuid") String uuid) throws APIException {
         Integer partyId = -1;
         try {
             String userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-            partyId = Integer.valueOf(userId);;
-        }catch(Exception e) {
+            partyId = Integer.valueOf(userId);
+            ;
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
@@ -458,10 +460,10 @@ public class FederationController {
         }
 
         String typeParam = (String) params.get("type");
-        if ( typeParam == null ){
+        if (typeParam == null) {
             throw new APIException("没有找到数据类型参数");
         }
-        if ( !typeParam.equals("0") && !typeParam.equals("1") ){
+        if (!typeParam.equals("0") && !typeParam.equals("1")) {
             throw new APIException("错误的联邦类型参数");
         }
         Short type = Short.parseShort(typeParam);
@@ -475,10 +477,10 @@ public class FederationController {
         if (dataset == null) {
             throw new APIException(String.format(String.format("数据集%s不存在", inputDataset.getName())));
         }
-        if (dataset.getPartyId().intValue() != partyId.intValue() ) {
+        if (dataset.getPartyId().intValue() != partyId.intValue()) {
             throw new APIException(String.format(String.format("数据集不属于当前用户。当前用户：%d。数据集用户%d。", partyId, dataset.getPartyId())));
         }
-        
+
         FederationDataset federationDataset = new FederationDataset(uuid, partyId);
         federationDataset.setName(dataset.getName());
         federationDataset.setUpdatedAt(dataset.getUpdatedAt());
@@ -503,8 +505,9 @@ public class FederationController {
         try {
             String userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-            partyId = Integer.valueOf(userId);;
-        }catch(Exception e) {
+            partyId = Integer.valueOf(userId);
+            ;
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
@@ -513,10 +516,10 @@ public class FederationController {
         }
 
         String typeParam = (String) params.get("type");
-        if ( typeParam == null ){
+        if (typeParam == null) {
             throw new APIException("没有找到数据类型参数");
         }
-        if ( !typeParam.equals("0") && !typeParam.equals("1") ){
+        if (!typeParam.equals("0") && !typeParam.equals("1")) {
             throw new APIException("错误的联邦类型参数");
         }
         Short type = Short.parseShort(typeParam);
@@ -538,21 +541,21 @@ public class FederationController {
     public List<Statistic> statistic() throws Exception {
         Map<Integer, Short> statistic = new HashMap<Integer, Short>();
         List<FederationEntity> page = federationRepository.findAll();
-        Integer[] statusList = {0,1,2,3,4};
-        for(Integer s : statusList) {
+        Integer[] statusList = {0, 1, 2, 3, 4};
+        for (Integer s : statusList) {
             statistic.put(s, new Short((short) 0));
         }
         for (FederationEntity federation : page) {
             Integer status = federation.getStatus();
-            if(statistic.get(status) == null) {
+            if (statistic.get(status) == null) {
                 statistic.put(status, new Short((short) 1));
-            }else{
+            } else {
                 statistic.put(status, new Short((short) (statistic.get(status) + 1)));
             }
         }
 
         List<Statistic> result = new ArrayList<Statistic>(statistic.size());
-        for(Integer s : statusList) {
+        for (Integer s : statusList) {
             result.add(new Statistic(getReadableStatusFromCode(s), statistic.get(s)));
         }
         result.add(new Statistic("所有", new Short((short) page.size())));
@@ -575,11 +578,12 @@ public class FederationController {
         BeanUtils.copyProperties(federation, federationVo);
         Integer status = federation.getStatus();
         if (status == null) {
-          status = -1;
+            status = -1;
         }
         federationVo.setDisplayStatus(getReadableStatusFromCode(status));
         federationVo.setDataFormat(JSON.parseObject(federation.getDataFormat(), DataFormatVo.class));
-        federationVo.setParam(JSON.parseObject(federation.getParam(), new TypeReference<LinkedHashMap<String, Double>>(){}));
+        federationVo.setParam(JSON.parseObject(federation.getParam(), new TypeReference<LinkedHashMap<String, Double>>() {
+        }));
 
         String username = "用户信息丢失";
         User user = userService.findById(federation.getGuest());
@@ -601,19 +605,19 @@ public class FederationController {
     }
 
     public static String getReadableStatusFromCode(Integer status) {
-        switch(status) {
-        case 0:
-            return new String("等待");
-        case 1:
-            return new String("就绪");
-        case 2:
-            return new String("运行中");
-        case 3:
-            return new String("成功");
-        case 4:
-            return new String("失败");
-        default:
-            return new String("未知");
+        switch (status) {
+            case 0:
+                return new String("等待");
+            case 1:
+                return new String("就绪");
+            case 2:
+                return new String("运行中");
+            case 3:
+                return new String("成功");
+            case 4:
+                return new String("失败");
+            default:
+                return new String("未知");
         }
     }
 }

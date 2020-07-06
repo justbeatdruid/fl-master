@@ -11,6 +11,7 @@ import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.Builder;
 import com.cmcc.algo.common.CommonResult;
 import com.cmcc.algo.common.ResultCode;
+import com.cmcc.algo.common.utils.TimeUtils;
 import com.cmcc.algo.common.utils.TokenManager;
 import com.cmcc.algo.config.AgentConfig;
 import com.cmcc.algo.entity.FederationEntity;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 import static com.cmcc.algo.constant.PageConstant.PAGENUM;
@@ -38,7 +40,7 @@ import static com.cmcc.algo.constant.CommonConstant.DATE_FORMAT;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author hjy
@@ -60,14 +62,14 @@ public class TrainController {
 
     @ApiOperation(value = "查询训练记录", notes = "查询训练记录")
     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
-                        @ApiImplicitParam(name = "request", value = "请求jsonStr，包括'federationUuid'和分页参数（可选）'pageNum','step'")})
+            @ApiImplicitParam(name = "request", value = "请求jsonStr，包括'federationUuid'和分页参数（可选）'pageNum','step'")})
     @PostMapping("/list")
-    public CommonResult getTrainTaskList(@RequestHeader String token,  @RequestBody String request){
+    public CommonResult getTrainTaskList(@RequestHeader String token, @RequestBody String request) {
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
@@ -76,55 +78,43 @@ public class TrainController {
         long step = Optional.ofNullable(JSONUtil.parseObj(request).getLong(STEP)).orElse(10L);
         String federationUuid = Optional.ofNullable(JSONUtil.parseObj(request).getStr("federationUuid")).orElseThrow(() -> new APIException(ResultCode.NOT_FOUND, "联邦UUID为空"));
 
-        IPage result = trainService.page(new Page(pageNum, step), Wrappers.<Train>lambdaQuery()
+        IPage resultPage = trainService.page(new Page(pageNum, step), Wrappers.<Train>lambdaQuery()
                 .eq(Train::getFederationUuid, federationUuid)
                 .orderByDesc(Train::getStartTime));
-        return CommonResult.success(result.getRecords(), result.getTotal(), result.getCurrent(), result.getSize());
+
+        List<Train> result = resultPage.getRecords();
+        result.forEach(x -> {
+            if (x.getStatus() == 0)
+                x.setDuration(TimeUtils.getDurationStrByTimestamp(System.currentTimeMillis() - x.getStartTimestamp()));
+        });
+
+        return CommonResult.success(result, resultPage.getTotal(), resultPage.getCurrent(), resultPage.getSize());
     }
 
     @ApiOperation(value = "开始训练", notes = "开始训练")
     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
-                        @ApiImplicitParam(name = "federationUuid", value = "联邦UUID")})
+            @ApiImplicitParam(name = "federationUuid", value = "联邦UUID")})
     @PostMapping("/submit")
     @Transactional(rollbackFor = Exception.class)
-    public Boolean submitTrainTask(@RequestHeader String token, @RequestBody String federationUuid){
+    public Boolean submitTrainTask(@RequestHeader String token, @RequestBody String federationUuid) {
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
 
         // 向Agent提交训练任务
-//        String submitUrl = agentConfig.getAgentUrl()+SUBMIT_TRAIN_TASK_URL;
-//
-//        FederationEntity federationEntity = federationRepository.findByUuid(federationUuid);
-//
-//        //TODO 数据集参数和训练参数放在一个map中
-//
-//        Train train = Builder.of(Train::new)
-//                .with(Train::setFederationUuid, federationUuid)
-//                .with(Train::setUuid, IdUtil.randomUUID())
-//                .with(Train::setAlgorithmId, federationEntity.getAlgorithmId())
-//                .with(Train::setStatus, 0)
-//                .with(Train::setStartTime, LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))
-//                .with(Train::setTrainParam, federationEntity.getParam())
-//                .build();
-//
-//        if (!trainService.save(train)) {
-//            log.warn("train record is failed to save, probably because db connection error");
-//            throw new APIException(ResultCode.NOT_FOUND, "保存失败");
-//        }
-//
-//        String str = JSONUtil.toJsonStr(train);
-//        String responseBody = HttpUtil.post(submitUrl,str);
-        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
+        String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_TRAIN_TASK_URL;
 
-        if (!(boolean) JSONUtil.parseObj(responseBody).get("success")) {
+        String responseBody = HttpUtil.post(submitUrl, federationUuid);
+//        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
+
+        if (!JSONUtil.parseObj(responseBody).getBool("success")) {
             log.warn("train task is failed to submit, the error detail is in agent log");
-            throw new APIException(ResultCode.NOT_FOUND, "提交agent失败");
+            throw new APIException(ResultCode.NOT_FOUND, "提交agent失败", JSONUtil.parseObj(responseBody).getStr("data"));
         }
         return true;
     }

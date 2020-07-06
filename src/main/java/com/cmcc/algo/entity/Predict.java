@@ -62,6 +62,7 @@ public class Predict implements Serializable {
      */
     private String startTime;
 
+    private Long startTimestamp;
     /**
      * 预测耗时
      */

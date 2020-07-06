@@ -40,7 +40,7 @@ import static com.cmcc.algo.constant.CommonConstant.DATE_FORMAT;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author hjy
@@ -62,14 +62,14 @@ public class PredictController {
 
     @ApiOperation(value = "查询预测记录", notes = "查询预测记录")
     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
-                        @ApiImplicitParam(name = "request", value = "请求jsonStr，包括'federationUuid'和分页参数（可选）'pageNum','step'")})
+            @ApiImplicitParam(name = "request", value = "请求jsonStr，包括'federationUuid'和分页参数（可选）'pageNum','step'")})
     @PostMapping("/list")
-    public CommonResult getPredictTaskList(@RequestHeader String token, @RequestBody String request){
+    public CommonResult getPredictTaskList(@RequestHeader String token, @RequestBody String request) {
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
@@ -86,21 +86,21 @@ public class PredictController {
 
     @ApiOperation(value = "开始预测", notes = "开始预测")
     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
-                        @ApiImplicitParam(name = "federationUuid", value = "联邦UUID")})
+            @ApiImplicitParam(name = "federationUuid", value = "联邦UUID")})
     @PostMapping("/submit")
     @Transactional(rollbackFor = Exception.class)
-    public boolean submitPredictTask(@RequestHeader String token, @RequestBody String federationUuid){
+    public boolean submitPredictTask(@RequestHeader String token, @RequestBody String federationUuid) {
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
 
         // 向Agent提交训练任务
-        String submitUrl = agentConfig.getAgentUrl(userId)+SUBMIT_PREDICT_TASK_URL;
+        String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_PREDICT_TASK_URL;
 
         Train train = trainService.getOne(Wrappers.<Train>lambdaQuery()
                 .eq(Train::getFederationUuid, federationUuid)
@@ -144,29 +144,29 @@ public class PredictController {
 
     @ApiOperation(value = "导出结果", notes = "导出结果")
     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
-                        @ApiImplicitParam(name = "predictUuid", value = "预测记录UUID")})
+            @ApiImplicitParam(name = "predictUuid", value = "预测记录UUID")})
     @PostMapping("/export")
-    public String exportResult(@RequestHeader String token, @RequestBody String predictUuid){
+    public String exportResult(@RequestHeader String token, @RequestBody String predictUuid) {
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
             log.info("get user id", userId);
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
         }
 
-//        String exportUrl = agentConfig.getAgentUrl() + EXPORT_DATA_URL;
-//
+        String exportUrl = agentConfig.getAgentUrl(userId) + EXPORT_DATA_URL;
+
 //        Predict predict = predictService.getOne(Wrappers.<Predict>lambdaQuery().eq(Predict::getUuid, predictUuid));
 //
 //        JSONObject request = new JSONObject().putOnce("jobId", predict.getJobId()).putOnce("outputPath", predict.getOutputPath());
-//        String responseBody = HttpUtil.post(exportUrl, JSONUtil.toJsonStr(request));
+        String responseBody = HttpUtil.post(exportUrl, predictUuid);
 
-        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
-        if (!(boolean) JSONUtil.parseObj(responseBody).get("success")) {
+//        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
+        if (!JSONUtil.parseObj(responseBody).getBool("success")) {
             log.warn("export data is failed, the error detail is in agent log");
-            throw new APIException(ResultCode.NOT_FOUND, "数据导出失败");
+            throw new APIException(ResultCode.NOT_FOUND, "数据导出失败", JSONUtil.parseObj(responseBody).getStr("data"));
         }
         return JSONUtil.parseObj(responseBody).get("data").toString();
     }
