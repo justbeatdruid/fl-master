@@ -1,7 +1,10 @@
 package com.cmcc.algo.controller;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -34,9 +37,8 @@ import java.util.Optional;
 
 import static com.cmcc.algo.constant.PageConstant.PAGENUM;
 import static com.cmcc.algo.constant.PageConstant.STEP;
-import static com.cmcc.algo.constant.URLConstant.EXPORT_DATA_URL;
-import static com.cmcc.algo.constant.URLConstant.SUBMIT_PREDICT_TASK_URL;
 import static com.cmcc.algo.constant.CommonConstant.DATE_FORMAT;
+import static com.cmcc.algo.constant.URLConstant.*;
 
 /**
  * <p>
@@ -100,44 +102,19 @@ public class PredictController {
         }
 
         // 向Agent提交训练任务
-        String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_PREDICT_TASK_URL;
+//        String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_PREDICT_TASK_URL;
+        // 本地调试
+        String submitUrl = "http://localhost:10087" + SUBMIT_PREDICT_TASK_URL;
 
-        Train train = trainService.getOne(Wrappers.<Train>lambdaQuery()
-                .eq(Train::getFederationUuid, federationUuid)
-                .orderByDesc(Train::getStartTime)
-                .last("limit 1"));
+        String responseBody = HttpRequest.post(submitUrl)
+                .header(Header.CONTENT_TYPE, "application/json")//头信息，多个头信息多次调用此方法即可
+                .form("federationUuid", federationUuid)//表单内容
+                .execute().body();
 
-        //TODO 添加数据参数
-//        Map<String, Object> paramMap = MapUtil.newHashMap();
-//        JSONObject model = JSONUtil.parseObj(train.getModel());
-//        if (ObjectUtil.isEmpty(model.get("modelId")) || ObjectUtil.isEmpty(model.get("modelVersion"))) {
-//            log.warn("model doesn't exists, perhaps you didn't finish this training job");
-//            throw new APIException(ResultCode.NOT_FOUND, "训练任务未执行成功，模型未生成");
-//        }
-//        paramMap.put("conf", train.getTrainParam());
-//        paramMap.put("model", model);
-//
-//        Predict predict = Builder.of(Predict::new)
-//                .with(Predict::setFederationUuid, federationUuid)
-//                .with(Predict::setTrainUuid, train.getUuid())
-//                .with(Predict::setStatus, 0)
-//                .with(Predict::setAlgorithmId, train.getAlgorithmId())
-//                .with(Predict::setStartTime, LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))
-//                .with(Predict::setPredictParam, JSONUtil.toJsonStr(paramMap))
-//                .build();
-//
-//        if (!predictService.save(predict)) {
-//            log.warn("predict record is failed to save, probably because db connection error");
-//            throw new APIException(ResultCode.NOT_FOUND, "保存失败");
-//        }
-//
-//        String str = JSONUtil.toJsonStr(predict);
-//        String responseBody = HttpUtil.post(submitUrl, str);
-
-        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
-        if (!(boolean) JSONUtil.parseObj(responseBody).get("success")) {
+//        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
+        if (!JSONUtil.parseObj(responseBody).getBool("success")) {
             log.warn("predict task is failed to submit, the error detail is in agent log");
-            throw new APIException(ResultCode.NOT_FOUND, "提交agent失败");
+            throw new APIException(ResultCode.NOT_FOUND, "提交agent失败", JSONUtil.parseObj(responseBody).getStr("message"));
         }
         return true;
     }
@@ -156,17 +133,19 @@ public class PredictController {
             throw new APIException("token无效");
         }
 
-        String exportUrl = agentConfig.getAgentUrl(userId) + EXPORT_DATA_URL;
-
-//        Predict predict = predictService.getOne(Wrappers.<Predict>lambdaQuery().eq(Predict::getUuid, predictUuid));
-//
-//        JSONObject request = new JSONObject().putOnce("jobId", predict.getJobId()).putOnce("outputPath", predict.getOutputPath());
-        String responseBody = HttpUtil.post(exportUrl, predictUuid);
+//        String exportUrl = agentConfig.getAgentUrl(userId) + EXPORT_DATA_URL;
+//        String responseBody = HttpUtil.post(exportUrl, predictUuid);
+        // 本地调试
+        String exportUrl = "http://localhost:10087" + SUBMIT_PREDICT_TASK_URL;
+        String responseBody = HttpRequest.post(exportUrl)
+                .header(Header.CONTENT_TYPE, "application/json")//头信息，多个头信息多次调用此方法即可
+                .form("predictUuid", predictUuid)//表单内容
+                .execute().body();
 
 //        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
         if (!JSONUtil.parseObj(responseBody).getBool("success")) {
             log.warn("export data is failed, the error detail is in agent log");
-            throw new APIException(ResultCode.NOT_FOUND, "数据导出失败", JSONUtil.parseObj(responseBody).getStr("data"));
+            throw new APIException(ResultCode.NOT_FOUND, "数据导出失败", JSONUtil.parseObj(responseBody).getStr("message"));
         }
         return JSONUtil.parseObj(responseBody).get("data").toString();
     }
