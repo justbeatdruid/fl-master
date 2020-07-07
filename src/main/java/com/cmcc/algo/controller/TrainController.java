@@ -2,6 +2,8 @@ package com.cmcc.algo.controller;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -93,7 +95,7 @@ public class TrainController {
 
     @ApiOperation(value = "开始训练", notes = "开始训练")
     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
-            @ApiImplicitParam(name = "federationUuid", value = "联邦UUID")})
+            @ApiImplicitParam(name = "request", value = "联邦UUID")})
     @PostMapping("/submit")
     @Transactional(rollbackFor = Exception.class)
     public Boolean submitTrainTask(@RequestHeader String token, @RequestBody String federationUuid) {
@@ -107,14 +109,20 @@ public class TrainController {
         }
 
         // 向Agent提交训练任务
-        String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_TRAIN_TASK_URL;
+//        String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_TRAIN_TASK_URL;
+        // 本地调试
+        String submitUrl = "http://localhost:10087" + SUBMIT_TRAIN_TASK_URL;
 
-        String responseBody = HttpUtil.post(submitUrl, federationUuid);
+        String responseBody = HttpRequest.post(submitUrl)
+                .header(Header.CONTENT_TYPE, "application/json")//头信息，多个头信息多次调用此方法即可
+                .form("federationUuid", federationUuid)//表单内容
+                .execute().body();
+//        String responseBody = HttpUtil.post(submitUrl, federationUuid);
 //        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
 
         if (!JSONUtil.parseObj(responseBody).getBool("success")) {
             log.warn("train task is failed to submit, the error detail is in agent log");
-            throw new APIException(ResultCode.NOT_FOUND, "提交agent失败", JSONUtil.parseObj(responseBody).getStr("data"));
+            throw new APIException(ResultCode.NOT_FOUND, "提交agent失败", JSONUtil.parseObj(responseBody).getStr("message"));
         }
         return true;
     }
