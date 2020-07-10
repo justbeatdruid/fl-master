@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
@@ -89,20 +90,6 @@ public class UserController {
           }
           user.setPermissionCode(permissionSet);
           session.setAttribute(LoginConstant.SESSION_USER, user);
-//          QueryWrapper queryWrapper = new QueryWrapper();
-//          queryWrapper.eq("user_id", user.getId());
-//          List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
-//          Set roles = new HashSet();
-//          for (UserFederation userFederation : userFederationList) {
-//               if (userFederation.getStatus().equals("0")) {
-//                    roles.add("host");
-//               } else if (userFederation.getStatus().equals("1")) {
-//                    roles.add("guest");
-//               } else {
-//                    roles.add("");
-//               }
-//               user.setRoles(roles);
-//          }
           return CommonResult.success("登陆成功！", user);
      }
 
@@ -159,23 +146,7 @@ public class UserController {
      public CommonResult list() {
           QueryWrapper<User> queryWrapper = new QueryWrapper();
           queryWrapper.eq("del_flag", 0);
-          IPage<User> page = userService.page(new Page<>(), queryWrapper);
-          for (User user : page.getRecords()) {
-               List<FederationEntity> guestList = federationService.findListByGuest(String.valueOf(user.getId()));
-               user.setCreatedFederation(guestList);
-               QueryWrapper<UserFederation> queryWrapper1 = new QueryWrapper<>();
-               queryWrapper1.eq("user_id", String.valueOf(user.getId()));
-               queryWrapper1.eq("status", "0");
-               List<UserFederation> userFederationList = userFederationService.list(queryWrapper1);
-               List<FederationEntity> list = new ArrayList<>();
-               for (UserFederation userFederation : userFederationList) {
-                    FederationEntity federationEntity = federationService.getOne(userFederation.getFederationUUid());
-                    if (federationEntity != null) {
-                         list.add(federationEntity);
-                    }
-               }
-               user.setPartakeFederation(list);
-          }
+          IPage<User> page = getUserFederationMsg(queryWrapper);
           return CommonResult.success("查询成功", page);
      }
 
@@ -192,6 +163,25 @@ public class UserController {
           if (org.apache.commons.lang.StringUtils.isNotBlank(username)) {
                queryWrapper.like("username", username);
           }
+          IPage<User> page = getUserFederationMsg(queryWrapper);
+          return CommonResult.success("查询成功", page);
+     }
+
+     /**
+      * 用户基础信息详情
+      *
+      * @param userId
+      * @return
+      */
+     @ApiOperation("用户信息详情")
+     @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "String", paramType = "path")
+     @GetMapping("/detail/{userId}")
+     public CommonResult getDetail(@PathVariable(name = "userId") String userId) {
+          User user = userService.findById(userId);
+          return CommonResult.success("查询成功", user);
+     }
+
+     private IPage<User> getUserFederationMsg(QueryWrapper queryWrapper) {
           IPage<User> page = userService.page(new Page<>(), queryWrapper);
           for (User user : page.getRecords()) {
                List<FederationEntity> guestList = federationService.findListByGuest(String.valueOf(user.getId()));
@@ -209,22 +199,6 @@ public class UserController {
                }
                user.setPartakeFederation(list);
           }
-          return CommonResult.success("查询成功", page);
+          return page;
      }
-
-
-     /**
-      * 用户基础信息详情
-      *
-      * @param userId
-      * @return
-      */
-     @ApiOperation("用户信息详情")
-     @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "String", paramType = "path")
-     @GetMapping("/detail/{userId}")
-     public CommonResult getDetail(@PathVariable(name = "userId") String userId) {
-          User user = userService.findById(userId);
-          return CommonResult.success("查询成功", user);
-     }
-
 }
