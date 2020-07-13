@@ -59,5 +59,6 @@ requesturls:
   url: www.baidu.com
 
 fl-agent:
+  service: fl-agent
   ip: fl-agent
   port: 10087
