@@ -88,10 +88,10 @@ public class PredictController {
 
     @ApiOperation(value = "开始预测", notes = "开始预测")
     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
-            @ApiImplicitParam(name = "federationUuid", value = "联邦UUID")})
+            @ApiImplicitParam(name = "request", value = "包含federationUuid")})
     @PostMapping("/submit")
     @Transactional(rollbackFor = Exception.class)
-    public boolean submitPredictTask(@RequestHeader String token, @RequestBody String federationUuid) {
+    public boolean submitPredictTask(@RequestHeader String token, @RequestBody String request) {
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
@@ -101,17 +101,9 @@ public class PredictController {
             throw new APIException("token无效");
         }
 
-        // 向Agent提交训练任务
-//        String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_PREDICT_TASK_URL;
-        // 本地调试
-        String submitUrl = "http://localhost:10087" + SUBMIT_PREDICT_TASK_URL;
+        String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_PREDICT_TASK_URL;
+        String responseBody = HttpUtil.post(submitUrl, request);
 
-        String responseBody = HttpRequest.post(submitUrl)
-                .header(Header.CONTENT_TYPE, "application/json")//头信息，多个头信息多次调用此方法即可
-                .form("federationUuid", federationUuid)//表单内容
-                .execute().body();
-
-//        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
         if (!JSONUtil.parseObj(responseBody).getBool("success")) {
             log.warn("predict task is failed to submit, the error detail is in agent log");
             throw new APIException(ResultCode.NOT_FOUND, "提交agent失败", JSONUtil.parseObj(responseBody).getStr("message"));
@@ -121,9 +113,9 @@ public class PredictController {
 
     @ApiOperation(value = "导出结果", notes = "导出结果")
     @ApiImplicitParams({@ApiImplicitParam(name = "token", value = "头部token信息"),
-            @ApiImplicitParam(name = "predictUuid", value = "预测记录UUID")})
+            @ApiImplicitParam(name = "request", value = "包含predictUuid")})
     @PostMapping("/export")
-    public String exportResult(@RequestHeader String token, @RequestBody String predictUuid) {
+    public String exportResult(@RequestHeader String token, @RequestBody String request) {
         String userId = "";
         try {
             userId = TokenManager.parseJWT(token).getId();
@@ -133,16 +125,9 @@ public class PredictController {
             throw new APIException("token无效");
         }
 
-//        String exportUrl = agentConfig.getAgentUrl(userId) + EXPORT_DATA_URL;
-//        String responseBody = HttpUtil.post(exportUrl, predictUuid);
-        // 本地调试
-        String exportUrl = "http://localhost:10087" + SUBMIT_PREDICT_TASK_URL;
-        String responseBody = HttpRequest.post(exportUrl)
-                .header(Header.CONTENT_TYPE, "application/json")//头信息，多个头信息多次调用此方法即可
-                .form("predictUuid", predictUuid)//表单内容
-                .execute().body();
+        String exportUrl = agentConfig.getAgentUrl(userId) + EXPORT_DATA_URL;
+        String responseBody = HttpUtil.post(exportUrl, request);
 
-//        String responseBody = "{\n\t\"code\": 200,\n\t\"data\": null,\n\t\"ext\": null,\n\t\"message\": \"请求成功\",\n\t\"pageInfo\": null,\n\t\"success\": true\n}";
         if (!JSONUtil.parseObj(responseBody).getBool("success")) {
             log.warn("export data is failed, the error detail is in agent log");
             throw new APIException(ResultCode.NOT_FOUND, "数据导出失败", JSONUtil.parseObj(responseBody).getStr("message"));
