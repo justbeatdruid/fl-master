@@ -62,7 +62,4 @@ public class Algorithm implements Serializable {
      */
     @ApiModelProperty(value = "算法模板名")
     private String template;
-
-    @ApiModelProperty(value = "算法组件名")
-    private String algorithmComponent;
 }

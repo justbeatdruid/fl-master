@@ -20,4 +20,5 @@ public interface FederationDatasetRepository extends JpaRepository<FederationDat
     List<FederationDataset> findByFederationUuidAndType(String federationUuid, Short type);
     void removeByFederationUuid(String federationUuid);
     void removeByFederationUuidAndPartyIdAndType(String federationUuid, Integer partyId, Short type);
+    List<FederationDataset> findByFederationUuidAndAndPartyIdIn(String federationUuid, List<Integer> partyIdList);
 }
