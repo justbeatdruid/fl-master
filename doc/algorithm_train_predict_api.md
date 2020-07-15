@@ -336,10 +336,10 @@
 
 **请求参数**：
 
-| 参数名称       | 参数说明      | in     | 是否必须 | 数据类型 | schema |
-| -------------- | ------------- | ------ | -------- | -------- | ------ |
-| federationUuid | 联邦UUID      | body   | true     | string   |        |
-| token          | 头部token信息 | header | true     | string   |        |
+| 参数名称 | 参数说明             | in     | 是否必须 | 数据类型 | schema |
+| -------- | -------------------- | ------ | -------- | -------- | ------ |
+| request  | 包含'federationUuid' | body   | true     | string   |        |
+| token    | 头部token信息        | header | true     | string   |        |
 
 **请求示例**:
 
@@ -404,10 +404,18 @@
 
 **请求参数**：
 
-| 参数名称    | 参数说明      | in     | 是否必须 | 数据类型 | schema |
-| ----------- | ------------- | ------ | -------- | -------- | ------ |
-| predictUuid | 预测记录UUID  | body   | true     | string   |        |
-| token       | 头部token信息 | header | true     | string   |        |
+| 参数名称 | 参数说明          | in     | 是否必须 | 数据类型 | schema |
+| -------- | ----------------- | ------ | -------- | -------- | ------ |
+| request  | 包含'predictUuid' | body   | true     | string   |        |
+| token    | 头部token信息     | header | true     | string   |        |
+
+**请求示例**:
+
+```json
+{
+    "predictUuid":"98a2984d5e9d4c6ab94d0770767a366e"
+}
+```
 
 **响应示例**:
 
@@ -416,7 +424,7 @@
     "success": true,
     "code": 200,
     "message": "请求成功",
-    "data": true,
+    "data": "/output/path",
     "pageInfo": "",
     "ext": ""
 }
@@ -575,12 +583,20 @@
 
 **请求参数**：
 
-| 参数名称       | 参数说明      | in     | 是否必须 | 数据类型 | schema |
-| -------------- | ------------- | ------ | -------- | -------- | ------ |
-| federationUuid | 联邦UUID      | body   | true     | string   |        |
-| token          | 头部token信息 | header | true     | string   |        |
+| 参数名称 | 参数说明             | in     | 是否必须 | 数据类型 | schema |
+| -------- | -------------------- | ------ | -------- | -------- | ------ |
+| request  | 包含'federationUuid' | body   | true     | string   |        |
+| token    | 头部token信息        | header | true     | string   |        |
 
-**响应示例**:
+**请求示例**:
+
+```json
+{
+    "federationUuid":"98a2984d5e9d4c6ab94d0770767a366e"
+}
+```
+
+响应示例**:
 
 ```json
 {

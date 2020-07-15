@@ -16,11 +16,16 @@ import com.cmcc.algo.common.ResultCode;
 import com.cmcc.algo.common.utils.TimeUtils;
 import com.cmcc.algo.common.utils.TokenManager;
 import com.cmcc.algo.config.AgentConfig;
+import com.cmcc.algo.entity.FederationDataset;
 import com.cmcc.algo.entity.FederationEntity;
 import com.cmcc.algo.entity.Train;
 //import com.cmcc.algo.service.IFederationService;
+import com.cmcc.algo.entity.UserFederation;
+import com.cmcc.algo.mapper.FederationDatasetRepository;
 import com.cmcc.algo.mapper.FederationRepository;
+import com.cmcc.algo.service.IFederationDatasetService;
 import com.cmcc.algo.service.ITrainService;
+import com.cmcc.algo.service.IUserFederationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -34,6 +39,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.cmcc.algo.constant.PageConstant.PAGENUM;
 import static com.cmcc.algo.constant.PageConstant.STEP;
@@ -58,6 +64,12 @@ public class TrainController {
 
     @Autowired
     FederationRepository federationRepository;
+
+    @Autowired
+    IUserFederationService userFederationService;
+
+    @Autowired
+    FederationDatasetRepository federationDatasetRepository;
 
     @Autowired
     AgentConfig agentConfig;
@@ -106,6 +118,15 @@ public class TrainController {
         } catch (Exception e) {
             log.error("cannot parse token", e.getMessage(), e);
             throw new APIException("token无效");
+        }
+        // 判断数据是否准备完成
+        String federationUuid = JSONUtil.parseObj(request).getStr("federationUuid");
+
+        List<Integer> userList = userFederationService.list(Wrappers.<UserFederation>lambdaQuery().eq(UserFederation::getFederationUUid, federationUuid))
+                .stream().map(x -> x.getUserId()).collect(Collectors.toList());
+        List<FederationDataset> federationDatasetList = federationDatasetRepository.findByFederationUuidAndAndPartyIdIn(federationUuid, userList);
+        if (federationDatasetList.size() != userList.size()) {
+            throw new APIException(ResultCode.NOT_FOUND,"联邦用户未全部上传数据集");
         }
 
         String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_TRAIN_TASK_URL;
