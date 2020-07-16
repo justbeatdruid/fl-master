@@ -35,4 +35,8 @@ public class APIException extends RuntimeException{
         this.message = message;
         this.data = data;
     }
+
+    public APIException(String format, Object... args) {
+        this(String.format(format, args));
+    }
 }

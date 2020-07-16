@@ -331,7 +331,7 @@ public class FederationController {
     /**
      * update a federation
      */
-    @PutMapping("/{uuid}/ready")
+    @PutMapping("/{uuid}/status")
     @SysLog("update federation status to ready")
     @Transactional
     public FederationVo update(@RequestHeader String token,
@@ -346,6 +346,11 @@ public class FederationController {
             throw new APIException("token无效");
         }
 
+        String statusParam = (String) params.get("status");
+        if (!StringUtils.isNotBlank(statusParam)) {
+            throw new APIException("没有找到状态参数");
+        }
+        Integer updateStatus = Integer.valueOf(statusParam);
         /*
         String typeParam = (String) params.get("type");
         if (typeParam == null) {
@@ -367,14 +372,15 @@ public class FederationController {
         }
         */
         Integer status = updatedFederation.getStatus();
-        if (status != 0 && status != 3 && status != 4) {
-            throw new APIException(String.format("不能就绪状态%s的联邦", getReadableStatusFromCode(updatedFederation.getStatus())));
+
+        if ( !statusTransferPermitted(status, updateStatus) ) {
+            throw new APIException("不能变更状态%s的联邦到%s", getReadableStatusFromCode(status), getReadableStatusFromCode(updateStatus));
         }
 
         // upload data when train or predict
         // federationDatasetService.uploadData(uuid, type);
         // attributes update permitted
-        updatedFederation.setStatus(1);
+        updatedFederation.setStatus(updateStatus);
         federationRepository.save(updatedFederation);
         return getFederationVo(updatedFederation);
     }
@@ -624,5 +630,34 @@ public class FederationController {
             default:
                 return new String("未知");
         }
+    }
+
+    public static boolean statusTransferPermitted(Integer oldStatus, Integer newStatus) {
+        switch (oldStatus) {
+            case 0:
+                switch (newStatus) {
+                    case 1:
+                        return true;
+                }
+            case 1:
+                switch (newStatus) {
+                    case 0:
+                        return true;
+                }
+            case 2:
+                switch (newStatus) {
+                }
+            case 3:
+                switch (newStatus) {
+                    case 1:
+                        return true;
+                }
+            case 4:
+                switch (newStatus) {
+                    case 1:
+                        return true;
+                }
+        }
+        return false;
     }
 }
