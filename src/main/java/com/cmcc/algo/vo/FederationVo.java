@@ -98,4 +98,16 @@ public class FederationVo implements Serializable {
      * 当前用户是否可加入联邦
      */
     private Boolean enterable;
+
+    /**
+     * 
+     */
+    //@ApiModelProperty(value = "训练数据就绪")
+    private Boolean trainDatasetPrepared;
+
+    /**
+     * 
+     */
+    //@ApiModelProperty(value = "预测数据就绪")
+    private Boolean predictDatasetPrepared;
 }

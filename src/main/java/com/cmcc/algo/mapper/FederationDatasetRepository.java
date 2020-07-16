@@ -18,6 +18,7 @@ import java.util.List;
 @Repository
 public interface FederationDatasetRepository extends JpaRepository<FederationDataset, Long> {
     List<FederationDataset> findByFederationUuidAndType(String federationUuid, Short type);
+    FederationDataset findByFederationUuidAndPartyIdAndType(String federationUuid, Integer partyId, Short type);
     void removeByFederationUuid(String federationUuid);
     void removeByFederationUuidAndPartyIdAndType(String federationUuid, Integer partyId, Short type);
 }

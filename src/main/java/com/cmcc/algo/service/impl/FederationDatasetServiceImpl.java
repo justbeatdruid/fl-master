@@ -2,10 +2,14 @@ package com.cmcc.algo.service.impl;
 
 //import com.cmcc.algo.entity.Dataset;
 //import com.cmcc.algo.mapper.DatasetRepository;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.config.AgentConfig;
 import com.cmcc.algo.entity.FederationDataset;
+import com.cmcc.algo.entity.UserFederation;
 import com.cmcc.algo.service.IFederationDatasetService;
+import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.mapper.FederationDatasetRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +39,8 @@ public class FederationDatasetServiceImpl implements IFederationDatasetService {
     private FederationDatasetRepository federationDatasetRepository;
     @Autowired
     private AgentConfig agentConfig;
+    @Autowired
+    private IUserFederationService userFederationService;
 
     @Override
     public void uploadData(String federationUuid, Short dataType) {
@@ -60,6 +66,26 @@ public class FederationDatasetServiceImpl implements IFederationDatasetService {
             throw new APIException(String.format("request for upload data error: %s", response.toString()));
         }
         //System.out.println(response.getBody());
+    }
+
+    @Override
+    public boolean datasetPrepared(String federationUuid, Short dataType) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("federation_uuid", federationUuid);
+        try {
+            List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
+        
+            for ( UserFederation userFederation : userFederationList ) {
+                FederationDataset federationDataset = federationDatasetRepository.findByFederationUuidAndPartyIdAndType(federationUuid, Integer.valueOf(userFederation.getUserId()), dataType);
+                if (federationDataset == null || federationDataset.getName() == null || federationDataset.getName().isEmpty()) {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 }

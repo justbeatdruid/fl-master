@@ -14,4 +14,5 @@ public interface IFederationDatasetService {
 
     void uploadData(String federationUuid, Short dataType);
 
+    boolean datasetPrepared(String federationUuid, Short dataType);
 }
