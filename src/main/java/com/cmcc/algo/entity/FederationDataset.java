@@ -88,6 +88,8 @@ public class FederationDataset implements Serializable {
 
     /**
      * 数据类别
+     * 0 表示训练
+     * 1 表示预测
      */
     @Column
     @ApiModelProperty(value = "数据类别")

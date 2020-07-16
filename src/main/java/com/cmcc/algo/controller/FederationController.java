@@ -121,7 +121,7 @@ public class FederationController {
         //    federations.set(i, getFederationVo(page.get(i)));
         //}
         for (FederationEntity federation : page) {
-            FederationVo federationVo = getFederationVo(federation, userId);
+            FederationVo federationVo = getFederationVo(federation);
             if (federationVo.getGuest().equals(userId)) {
                 federationVo.setRole("创建者");
             } else if (uuidList.contains(federationVo.getUuid())) {
@@ -161,21 +161,23 @@ public class FederationController {
         }
         */
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("federation_uuid", id);
         List<UserFederation> userFederationList = userFederationService.list(queryWrapper);
 
-        List<String> uuidList = new ArrayList<String>(userFederationList.size());
+        List<String> userList = new ArrayList<String>(userFederationList.size());
         for (UserFederation userFederation : userFederationList) {
-            uuidList.add(userFederation.getFederationUUid());
+            userList.add(userFederation.getUserId().toString());
         }
-        FederationVo federationVo = getFederationVo(federation, userId);
+        FederationVo federationVo = getFederationVo(federation);
         if (federationVo.getGuest().equals(userId)) {
             federationVo.setRole("创建者");
-        } else if (uuidList.contains(federationVo.getUuid())) {
+        } else if (userList.contains(userId)) {
             federationVo.setRole("参与者");
         } else {
             federationVo.setRole("");
         }
+        federationVo.setTrainDatasetPrepared(federationDatasetService.datasetPrepared(id, new Short((short) 0)));
+        federationVo.setPredictDatasetPrepared(federationDatasetService.datasetPrepared(id, new Short((short) 1)));
         return federationVo;
     }
 
@@ -229,7 +231,7 @@ public class FederationController {
         userFederation.setStatus("1");
         userFederationService.save(userFederation);
 
-        FederationVo federationVo = getFederationVo(federation, userId);
+        FederationVo federationVo = getFederationVo(federation);
         return federationVo;
     }
 
@@ -323,7 +325,7 @@ public class FederationController {
         }
 
         federationRepository.save(updatedFederation);
-        return getFederationVo(updatedFederation, userId);
+        return getFederationVo(updatedFederation);
     }
 
     /**
@@ -371,7 +373,7 @@ public class FederationController {
         // attributes update permitted
         updatedFederation.setStatus(1);
         federationRepository.save(updatedFederation);
-        return getFederationVo(updatedFederation, userId);
+        return getFederationVo(updatedFederation);
     }
 
     /**
@@ -570,7 +572,7 @@ public class FederationController {
         return federation;
     }
 
-    public FederationVo getFederationVo(FederationEntity federation, String userId) {
+    public FederationVo getFederationVo(FederationEntity federation) {
         FederationVo federationVo = new FederationVo();
         if (federation == null) {
             return federationVo;

@@ -64,7 +64,9 @@ body参数：
     "guestName": "admin",
     "userCount": 1,
     "role": "创建者",
-    "enterable": false
+    "enterable": false,
+    "trainDatasetPrepared": true, // 可以开始训练
+    "predictDatasetPrepared": false  // 可以开始预测
   }
 }
 ```
