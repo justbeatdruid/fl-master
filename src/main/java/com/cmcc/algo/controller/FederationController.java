@@ -346,6 +346,7 @@ public class FederationController {
             throw new APIException("token无效");
         }
 
+        /*
         String typeParam = (String) params.get("type");
         if (typeParam == null) {
             throw new APIException("没有找到数据类型参数");
@@ -354,6 +355,7 @@ public class FederationController {
             throw new APIException("错误的联邦类型参数");
         }
         Short type = Short.parseShort(typeParam);
+        */
 
         FederationEntity updatedFederation = federationRepository.findByUuid(uuid);
         if (updatedFederation == null) {
@@ -369,7 +371,8 @@ public class FederationController {
             throw new APIException(String.format("不能就绪状态%s的联邦", getReadableStatusFromCode(updatedFederation.getStatus())));
         }
 
-        federationDatasetService.uploadData(uuid, type);
+        // upload data when train or predict
+        // federationDatasetService.uploadData(uuid, type);
         // attributes update permitted
         updatedFederation.setStatus(1);
         federationRepository.save(updatedFederation);
