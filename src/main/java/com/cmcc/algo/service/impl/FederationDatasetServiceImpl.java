@@ -52,7 +52,7 @@ public class FederationDatasetServiceImpl implements IFederationDatasetService {
 
     public void uploadPartyData(String federationUuid, Integer partyId, Short dataType) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = agentConfig.getAgentUrl(partyId);
+        String url = agentConfig.getAgentUrl(partyId) + "/com/cmcc/datafusion/agent/dataset/upload";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
