@@ -180,14 +180,15 @@ body参数：
 ```
 
 
-#### 将联邦状态转为就绪
+#### 更新联邦状态
 1. 请求方法：PUT
-2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/{uuid}/ready
+2. 请求路径：/com/cmcc/algo/datafusion/api/v1/federations/{uuid}/status?status=1
 3. 请求参数：
 
 | 字段 | 类型 | 说明 |
 | ---- | ---- | ---- |
 uuid | string | 联邦uuid 
+status | string | 更新状态
 
 #### 联邦统计信息
 1. 请求方法：GET
