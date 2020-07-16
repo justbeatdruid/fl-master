@@ -21,10 +21,11 @@ import com.cmcc.algo.entity.FederationDataset;
 import com.cmcc.algo.entity.Predict;
 import com.cmcc.algo.entity.Train;
 import com.cmcc.algo.entity.UserFederation;
-import com.cmcc.algo.mapper.FederationDatasetRepository;
+//import com.cmcc.algo.mapper.FederationDatasetRepository;
+import com.cmcc.algo.service.IFederationDatasetService;
 import com.cmcc.algo.service.IPredictService;
 import com.cmcc.algo.service.ITrainService;
-import com.cmcc.algo.service.IUserFederationService;
+//import com.cmcc.algo.service.IUserFederationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -65,11 +66,14 @@ public class PredictController {
     @Autowired
     ITrainService trainService;
 
-    @Autowired
-    IUserFederationService userFederationService;
+    //@Autowired
+    //IUserFederationService userFederationService;
+
+    //@Autowired
+    //FederationDatasetRepository federationDatasetRepository;
 
     @Autowired
-    FederationDatasetRepository federationDatasetRepository;
+    IFederationDatasetService federationDatasetService;
 
     @Autowired
     AgentConfig agentConfig;
@@ -115,12 +119,20 @@ public class PredictController {
         // 判断数据是否准备完成
         String federationUuid = JSONUtil.parseObj(request).getStr("federationUuid");
 
+        /*
         List<Integer> userList = userFederationService.list(Wrappers.<UserFederation>lambdaQuery().eq(UserFederation::getFederationUUid, federationUuid))
                 .stream().map(x -> x.getUserId()).collect(Collectors.toList());
         List<FederationDataset> federationDatasetList = federationDatasetRepository.findByFederationUuidAndAndPartyIdIn(federationUuid, userList);
         if (federationDatasetList.size() != userList.size()) {
             throw new APIException(ResultCode.NOT_FOUND,"联邦用户未全部上传数据集");
         }
+        */
+        if (!federationDatasetService.datasetPrepared(federationUuid, new Short((short) 1))) {
+            throw new APIException(ResultCode.NOT_FOUND,"联邦用户未全部上传数据集");
+        }
+
+        // 上传预测数据
+        federationDatasetService.uploadData(federationUuid, new Short((short) 1));
 
         String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_PREDICT_TASK_URL;
         String responseBody = HttpUtil.post(submitUrl, request);
