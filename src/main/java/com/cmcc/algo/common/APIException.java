@@ -21,13 +21,13 @@ public class APIException extends RuntimeException{
     public APIException(String message) {
         this.resultCode = ResultCode.SYSTEM_ERROR;
         this.message = message;
-        this.data = null;
+        this.data = message;
     }
 
     public APIException(ResultCode resultCode, String message) {
         this.resultCode = resultCode;
         this.message = message;
-        this.data = null;
+        this.data = message;
     }
 
     public APIException(ResultCode resultCode, String message, Object data) {

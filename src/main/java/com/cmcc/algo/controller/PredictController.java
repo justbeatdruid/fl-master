@@ -23,6 +23,7 @@ import com.cmcc.algo.entity.Train;
 import com.cmcc.algo.entity.UserFederation;
 //import com.cmcc.algo.mapper.FederationDatasetRepository;
 import com.cmcc.algo.service.IFederationDatasetService;
+import com.cmcc.algo.service.IFederationService;
 import com.cmcc.algo.service.IPredictService;
 import com.cmcc.algo.service.ITrainService;
 //import com.cmcc.algo.service.IUserFederationService;
@@ -66,11 +67,8 @@ public class PredictController {
     @Autowired
     ITrainService trainService;
 
-    //@Autowired
-    //IUserFederationService userFederationService;
-
-    //@Autowired
-    //FederationDatasetRepository federationDatasetRepository;
+    @Autowired
+    IFederationService federationService;
 
     @Autowired
     IFederationDatasetService federationDatasetService;
@@ -129,6 +127,10 @@ public class PredictController {
         */
         if (!federationDatasetService.datasetPrepared(federationUuid, new Short((short) 1))) {
             throw new APIException(ResultCode.NOT_FOUND,"联邦用户未全部上传数据集");
+        }
+
+        if (federationService.getOne(federationUuid).getUserCount() == 1) {
+            throw new APIException(ResultCode.NOT_FOUND,"联邦用户数为1，无法训练");
         }
 
         // 上传预测数据
