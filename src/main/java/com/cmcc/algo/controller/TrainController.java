@@ -24,6 +24,7 @@ import com.cmcc.algo.entity.UserFederation;
 //import com.cmcc.algo.mapper.FederationDatasetRepository;
 import com.cmcc.algo.mapper.FederationRepository;
 import com.cmcc.algo.service.IFederationDatasetService;
+import com.cmcc.algo.service.IFederationService;
 import com.cmcc.algo.service.ITrainService;
 //import com.cmcc.algo.service.IUserFederationService;
 import io.swagger.annotations.Api;
@@ -65,11 +66,8 @@ public class TrainController {
     @Autowired
     FederationRepository federationRepository;
 
-    //@Autowired
-    //IUserFederationService userFederationService;
-
-    //@Autowired
-    //FederationDatasetRepository federationDatasetRepository;
+    @Autowired
+    IFederationService federationService;
 
     @Autowired
     IFederationDatasetService federationDatasetService;
@@ -136,6 +134,10 @@ public class TrainController {
 
         if (!federationDatasetService.datasetPrepared(federationUuid, new Short((short) 0))) {
             throw new APIException(ResultCode.NOT_FOUND,"联邦用户未全部上传数据集");
+        }
+
+        if (federationService.getOne(federationUuid).getUserCount() == 1) {
+            throw new APIException(ResultCode.NOT_FOUND,"联邦用户数为1，无法训练");
         }
 
         // 上传训练数据
