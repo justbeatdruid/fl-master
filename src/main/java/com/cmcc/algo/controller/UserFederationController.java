@@ -122,7 +122,8 @@ public class UserFederationController {
  * @param federationUUid
  * @param type
  * @return
- *//*
+ */
+/*
      @PutMapping("/access")
      @Transactional(rollbackFor = Exception.class)
      public CommonResult access(@RequestBody Map<String, String> params) {

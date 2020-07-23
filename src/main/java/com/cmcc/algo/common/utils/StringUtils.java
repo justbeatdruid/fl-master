@@ -2,6 +2,7 @@ package com.cmcc.algo.common.utils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +39,18 @@ public class StringUtils {
         return rs;
     }
 
-
+     /**
+      * 获取六位随机数验证码
+      * @return
+      */
+     public static String getVerifyCode() {
+          Random random = new Random();
+          StringBuilder stringBuilder = new StringBuilder();
+          for (int i = 0; i < 6; i++) {
+               stringBuilder.append(random.nextInt(10));
+          }
+          return stringBuilder.toString();
+     }
 }
 
 
