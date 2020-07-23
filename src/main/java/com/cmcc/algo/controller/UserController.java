@@ -8,6 +8,8 @@ import com.cmcc.algo.aop.bean.PermissionCode;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.CommonResult;
 import com.cmcc.algo.common.ResultCode;
+import com.cmcc.algo.common.utils.SMSUtil;
+import com.cmcc.algo.constant.CommonConstant;
 import com.cmcc.algo.constant.LoginConstant;
 import com.cmcc.algo.entity.*;
 import com.cmcc.algo.service.*;
@@ -17,11 +19,15 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -54,6 +60,9 @@ public class UserController {
 
      @Autowired
      IMenuService menuService;
+
+     @Autowired
+     StringRedisTemplate stringRedisTemplate;
 
      /**
       * 登录
@@ -99,15 +108,57 @@ public class UserController {
       * @param registerUser
       * @return
       */
+     @ApiOperation(value = "用户注册", notes = "用户注册")
      @PostMapping("/register")
      public CommonResult register(@RequestBody User registerUser) {
 
           if (StringUtils.isEmpty(registerUser.getUsername()) || StringUtils.isEmpty(registerUser.getPassword())) {
                return CommonResult.fail("用户名或者密码不能为空");
           }
-          User user = userService.userRegister(registerUser.getUsername(), registerUser.getPassword());
-          userService.save(user);
+          User user = userService.userRegister(registerUser);
           return CommonResult.success("注册成功！", user);
+     }
+
+     /**
+      * 获取短信验证码
+      *
+      * @param phone
+      * @return
+      */
+     @ApiOperation(value = "获取短信验证码", notes = "获取短信验证码")
+     @PostMapping("/verify")
+     public CommonResult getVerify(@RequestParam String phone) {
+          User user = userService.getUserByMobile(phone);
+          if (user != null) {
+               return CommonResult.success("手机号已经被注册！", new int[0]);
+          }
+          String verifyCode = SMSUtil.send(phone);
+          System.out.println(verifyCode);
+          stringRedisTemplate.opsForValue().set(phone, verifyCode, 12L, TimeUnit.HOURS);
+          return CommonResult.success(CommonConstant.REQUEST_SUCCESS, verifyCode);
+     }
+
+     /**
+      * 校验验证码
+      *
+      * @param phone
+      * @param verifyCode
+      * @return
+      */
+     @ApiOperation(value = "校验验证码", notes = "校验验证码")
+     @PostMapping(value = "/check")
+     public CommonResult checkVerifyCode(@RequestParam("phone") String phone, @RequestParam("verifyCode") String verifyCode) {
+          //从Redis中取出这个手机号的验证码
+          String code = stringRedisTemplate.opsForValue().get(phone);
+          if (StringUtils.isNotEmpty(code)) {
+               //和客户端传过来的验证码比对
+               if (code.equals(verifyCode)) {
+                    return CommonResult.success(CommonConstant.VERIFY_CHECK_SUCCESS, new int[0]);
+               } else {
+                    return CommonResult.fail(ResultCode.PARAMETER_CHECK_ERROR, CommonConstant.VERIFY_CHECK_FAIL, new int[0]);
+               }
+          }
+          return CommonResult.fail(CommonConstant.VERIFY_ERROR, new int[0]);
      }
 
      /**

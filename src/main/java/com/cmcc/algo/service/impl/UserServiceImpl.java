@@ -1,6 +1,7 @@
 package com.cmcc.algo.service.impl;
 
 
+import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cmcc.algo.common.APIException;
 import com.cmcc.algo.common.utils.TokenManager;
@@ -50,15 +51,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
 
      @Override
-     public User userRegister(String username, String password) {
-          if (userMapper.findByUserName(username) != null) {
+     public User userRegister(User registerUser) {
+          if (userMapper.findByUserName(registerUser.getUsername()) != null) {
                throw new APIException("用户已存在！");
           }
           User user = new User();
           user.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
-          user.setUsername(username);
-          user.setPassword(password);
+          user.setUsername(registerUser.getUsername());
+          user.setPassword(BCrypt.hashpw(registerUser.getPassword(), BCrypt.gensalt()));
+          user.setPhone(registerUser.getPhone());
+          user.setEmail(registerUser.getEmail());
+          user.setManager(registerUser.getManager());
+          user.setAddress(registerUser.getAddress());
+          user.setCompanyName(registerUser.getCompanyName());
+          user.setCompanyPhone(registerUser.getCompanyPhone());
+          user.setRole("user");
+          userMapper.insert(user);
           return user;
+     }
+
+     @Override
+     public User getUserByMobile(String phone) {
+          return userMapper.getUserByMobile(phone);
      }
 
 }
