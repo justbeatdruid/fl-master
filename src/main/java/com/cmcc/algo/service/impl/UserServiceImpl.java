@@ -61,7 +61,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
           user.setPassword(BCrypt.hashpw(registerUser.getPassword(), BCrypt.gensalt()));
           user.setPhone(registerUser.getPhone());
           user.setEmail(registerUser.getEmail());
-          user.setManager(registerUser.getManager());
+//          user.setManager(registerUser.getManager());
           user.setAddress(registerUser.getAddress());
           user.setCompanyName(registerUser.getCompanyName());
           user.setCompanyPhone(registerUser.getCompanyPhone());
