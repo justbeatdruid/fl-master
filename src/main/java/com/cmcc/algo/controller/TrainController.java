@@ -100,7 +100,7 @@ public class TrainController {
         // 判断数据是否准备完成
         String federationUuid = JSONUtil.parseObj(request).getStr("federationUuid");
 
-        if (!federationDatasetService.datasetPrepared(federationUuid, new Short((short) 0))) {
+        if (!federationDatasetService.datasetPrepared(federationUuid, (short) 0)) {
             throw new APIException(ResultCode.NOT_FOUND,"联邦用户未全部上传数据集");
         }
 
@@ -108,11 +108,7 @@ public class TrainController {
             throw new APIException(ResultCode.NOT_FOUND,"联邦用户数为1，无法训练");
         }
 
-        // 上传训练数据
-        federationDatasetService.uploadData(federationUuid, new Short((short) 0));
-
-        String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_TRAIN_TASK_URL;
-        String responseBody = HttpUtil.post(submitUrl, request);
+        String responseBody = trainService.submitTrainJob(federationUuid, userId);
 
         if (!JSONUtil.parseObj(responseBody).getBool("success")) {
             log.warn("train task is failed to submit, the error detail is in agent log");
