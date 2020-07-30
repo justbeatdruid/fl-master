@@ -7,4 +7,7 @@
     <select id="findById" resultType="com.cmcc.algo.entity.User">
         select * from  tb_user where id = #{userId}
     </select>
+    <select id="getUserByMobile" resultType="com.cmcc.algo.entity.User">
+        select * from  tb_user where phone = #{phone}
+    </select>
 </mapper>
