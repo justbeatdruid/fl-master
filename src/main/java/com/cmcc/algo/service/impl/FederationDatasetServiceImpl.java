@@ -2,6 +2,9 @@ package com.cmcc.algo.service.impl;
 
 //import com.cmcc.algo.entity.Dataset;
 //import com.cmcc.algo.mapper.DatasetRepository;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import com.cmcc.algo.common.APIException;
@@ -12,6 +15,7 @@ import com.cmcc.algo.service.IFederationDatasetService;
 import com.cmcc.algo.service.IUserFederationService;
 import com.cmcc.algo.mapper.FederationDatasetRepository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +26,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +38,7 @@ import java.util.List;
  * @since 2020-05-25
  */
 @Service
+@Slf4j
 public class FederationDatasetServiceImpl implements IFederationDatasetService {
 
     @Autowired
@@ -43,29 +49,36 @@ public class FederationDatasetServiceImpl implements IFederationDatasetService {
     private IUserFederationService userFederationService;
 
     @Override
-    public void uploadData(String federationUuid, Short dataType) {
+    public List<String> uploadData(String federationUuid, Short dataType) {
+        List<String> responseList = new ArrayList<>();
         List<FederationDataset> federationDatasets = federationDatasetRepository.findByFederationUuidAndType(federationUuid, dataType);
         for ( FederationDataset federationDataset : federationDatasets ) {
-            uploadPartyData(federationUuid, federationDataset.getPartyId(), dataType);
+            responseList.add(uploadPartyData(federationUuid, federationDataset.getPartyId(), dataType));
         }
+        return responseList;
     }
 
-    public void uploadPartyData(String federationUuid, Integer partyId, Short dataType) {
-        RestTemplate restTemplate = new RestTemplate();
+    public String uploadPartyData(String federationUuid, Integer partyId, Short dataType) {
+//        RestTemplate restTemplate = new RestTemplate();
         String url = agentConfig.getAgentUrl(partyId) + "/com/cmcc/datafusion/agent/dataset/upload";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
         MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
         map.add("federationUuid", federationUuid);
         map.add("dataType", dataType.toString());
         map.add("partyId", partyId.toString());
- 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, request , String.class);
-        if (response.getStatusCodeValue() / 100 != 2) {
-            throw new APIException(String.format("request for upload data error: %s", response.toString()));
-        }
-        //System.out.println(response.getBody());
+//        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+//        ResponseEntity<String> response = restTemplate.postForEntity(url, request , String.class);
+//        if (response.getStatusCodeValue() / 100 != 2) {
+//            throw new APIException(String.format("request for upload data error: %s", response.toString()));
+//        }
+        JSONObject requestObj = new JSONObject();
+        requestObj.putAll(map);
+        String request = JSONUtil.toJsonStr(requestObj);
+
+        String responseBody = HttpUtil.post(url, request);
+        log.info(responseBody);
+        return responseBody;
     }
 
     @Override

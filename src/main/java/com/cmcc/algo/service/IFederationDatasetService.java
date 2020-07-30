@@ -2,6 +2,8 @@ package com.cmcc.algo.service;
 
 import com.cmcc.algo.entity.Dataset;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -12,7 +14,7 @@ import com.cmcc.algo.entity.Dataset;
  */
 public interface IFederationDatasetService {
 
-    void uploadData(String federationUuid, Short dataType);
+    List<String> uploadData(String federationUuid, Short dataType);
 
     boolean datasetPrepared(String federationUuid, Short dataType);
 }

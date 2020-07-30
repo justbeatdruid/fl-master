@@ -78,17 +78,9 @@ public class PredictController {
         long step = Optional.ofNullable(JSONUtil.parseObj(request).getLong(STEP)).orElse(10L);
         String federationUuid = Optional.ofNullable(JSONUtil.parseObj(request).getStr("federationUuid")).orElseThrow(() -> new APIException(ResultCode.NOT_FOUND, "联邦UUID为空"));
 
-        IPage resultPage = predictService.page(new Page(pageNum, step), Wrappers.<Predict>lambdaQuery()
-                .eq(Predict::getFederationUuid, federationUuid)
-                .orderByDesc(Predict::getStartTime));
+        IPage resultPage = predictService.getPredictList(federationUuid, pageNum, step);
 
-        List<Predict> result = resultPage.getRecords();
-        result.forEach(x -> {
-            if (x.getStatus() == 0)
-                x.setDuration(TimeUtils.getDurationStrByTimestamp(System.currentTimeMillis() - x.getStartTimestamp()));
-        });
-
-        return CommonResult.success(result, resultPage.getTotal(), resultPage.getCurrent(), resultPage.getSize());
+        return CommonResult.success(resultPage.getRecords(), resultPage.getTotal(), resultPage.getCurrent(), resultPage.getSize());
     }
 
     @ApiOperation(value = "开始预测", notes = "开始预测")
@@ -108,7 +100,7 @@ public class PredictController {
         // 判断数据是否准备完成
         String federationUuid = JSONUtil.parseObj(request).getStr("federationUuid");
 
-        if (!federationDatasetService.datasetPrepared(federationUuid, new Short((short) 1))) {
+        if (!federationDatasetService.datasetPrepared(federationUuid, (short) 1)) {
             throw new APIException(ResultCode.NOT_FOUND,"联邦用户未全部上传数据集");
         }
 
@@ -116,11 +108,7 @@ public class PredictController {
             throw new APIException(ResultCode.NOT_FOUND,"联邦用户数为1，无法训练");
         }
 
-        // 上传预测数据
-        federationDatasetService.uploadData(federationUuid, new Short((short) 1));
-
-        String submitUrl = agentConfig.getAgentUrl(userId) + SUBMIT_PREDICT_TASK_URL;
-        String responseBody = HttpUtil.post(submitUrl, request);
+        String responseBody = predictService.submitPredictJob(federationUuid, userId);
 
         if (!JSONUtil.parseObj(responseBody).getBool("success")) {
             log.warn("predict task is failed to submit, the error detail is in agent log");
@@ -143,8 +131,7 @@ public class PredictController {
             throw new APIException("token无效");
         }
 
-        String exportUrl = agentConfig.getAgentUrl(userId) + EXPORT_DATA_URL;
-        String responseBody = HttpUtil.post(exportUrl, request);
+        String responseBody = predictService.exportData(request, userId);
 
         if (!JSONUtil.parseObj(responseBody).getBool("success")) {
             log.warn("export data is failed, the error detail is in agent log");

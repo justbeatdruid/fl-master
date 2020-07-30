@@ -13,5 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2020-05-25
  */
 public interface ITrainService extends IService<Train> {
-    public IPage getTrainList(String federationUuid, long pageNum, long step);
+    IPage getTrainList(String federationUuid, long pageNum, long step);
+
+    String submitTrainJob(String federationUuid, String userId);
 }
